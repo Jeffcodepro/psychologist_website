@@ -52,3 +52,7 @@ config/credentials/*.key
 log/*
 tmp/*
 storage/*
+
+# Local browser validation artifacts
+.playwright-cli/
+output/playwright/

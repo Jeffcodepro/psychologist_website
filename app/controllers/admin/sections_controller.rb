@@ -61,7 +61,10 @@ class Admin::SectionsController < Admin::BaseController
             media_layout: @section.effective_media_layout,
             media_size: @section.effective_media_size,
             image_shape: @section.effective_image_shape,
-            banner_layout: @section.effective_banner_layout
+            banner_layout: @section.effective_banner_layout,
+            style_variables: helpers.section_style_variables(@section),
+            banner_tablet: @section.visual_value("banner_layout", "tablet"),
+            banner_mobile: @section.visual_value("banner_layout", "mobile")
           }
         end
       end
@@ -137,9 +140,9 @@ class Admin::SectionsController < Admin::BaseController
     when "body_en"
       @section.update!(body_en: nil)
     when "image"
-      @section.image.purge
+      @section.image.detach
     when "banner"
-      @section.banner.purge
+      @section.banner.detach
     else
       head :unprocessable_entity
       return
@@ -162,7 +165,7 @@ class Admin::SectionsController < Admin::BaseController
   end
 
   def section_params
-    params
+    permitted = params
       .require(:section)
       .permit(
         :section_type,
@@ -183,6 +186,9 @@ class Admin::SectionsController < Admin::BaseController
         :body_font_size_desktop,
         :body_font_size_mobile,
         :text_alignment,
+        :title_alignment,
+        :body_alignment,
+        :text_order,
         :text_theme,
         :title_color,
         :body_color,
@@ -204,14 +210,34 @@ class Admin::SectionsController < Admin::BaseController
         :banner_layout,
         :image,
         :banner,
+        :remove_image,
+        :remove_banner,
         :cards_orientation,
+        :cards_placement,
+        :cards_alignment,
+        :media_interval_seconds,
+        :use_profile_image,
         :cards_wrap,
         :cards_columns_desktop,
         :cards_columns_tablet,
         :cards_columns_mobile,
         :cards_autoplay,
-        :cards_autoplay_seconds
+        :cards_autoplay_seconds,
+        media_adjustments: MediaAdjustable::PARAMS,
+        section_slides_attributes: [:id, :role, :position, :image, :image_position_x, :image_position_y,
+          :image_zoom, :image_shape, :_destroy, { media_adjustments: MediaAdjustable::PARAMS }],
+        responsive_settings: {
+          tablet: ResponsiveSection::FIELDS,
+          mobile: ResponsiveSection::FIELDS
+        }
       )
+
+    if permitted[:responsive_settings] && @section&.persisted?
+      permitted[:responsive_settings] = @section.responsive_settings.deep_merge(
+        permitted[:responsive_settings].to_h
+      )
+    end
+    permitted
   end
 
   def next_position
@@ -233,27 +259,38 @@ class Admin::SectionsController < Admin::BaseController
   end
 
   def swap_text_fields(source, target, field)
-    source_value = source.public_send(field)
-    target_value = target.public_send(field)
-
+    fields = [field, "#{field}_en"]
+    source_values = source.attributes.slice(*fields)
+    target_values = target.attributes.slice(*fields)
     Section.transaction do
-      source.update!(field => target_value)
-      target.update!(field => source_value)
+      source.update!(target_values)
+      target.update!(source_values)
     end
   end
 
   def swap_attachment(source, target, field)
-    source_attachment = source.public_send(field)
-    target_attachment = target.public_send(field)
-
-    source_blob = source_attachment.blob if source_attachment.attached?
-    target_blob = target_attachment.blob if target_attachment.attached?
-
-    source_attachment.detach if source_attachment.attached?
-    target_attachment.detach if target_attachment.attached?
-
-    source_attachment.attach(target_blob) if target_blob
-    target_attachment.attach(source_blob) if source_blob
+    Section.transaction do
+      source_attachment = source.public_send(field)
+      target_attachment = target.public_send(field)
+      source_blob = source_attachment.blob if source_attachment.attached?
+      target_blob = target_attachment.blob if target_attachment.attached?
+      source_slides = source.section_slides.where(role: field).to_a
+      target_slides = target.section_slides.where(role: field).to_a
+      source_attachment.detach if source_attachment.attached?
+      target_attachment.detach if target_attachment.attached?
+      source_attachment.attach(target_blob) if target_blob
+      target_attachment.attach(source_blob) if source_blob
+      source_slides.each { |slide| slide.update!(section: target) }
+      target_slides.each { |slide| slide.update!(section: source) }
+      fields = %W[#{field}_position_x #{field}_position_y #{field}_zoom]
+      fields += %w[image_shape use_profile_image] if field == "image"
+      source_values = source.attributes.slice(*fields)
+      target_values = target.attributes.slice(*fields)
+      source_adjustments = source.media_adjustments.deep_dup
+      target_adjustments = target.media_adjustments.deep_dup
+      source.update!(target_values.merge(media_adjustments: source_adjustments.merge(field => target_adjustments.fetch(field, {}))))
+      target.update!(source_values.merge(media_adjustments: target_adjustments.merge(field => source_adjustments.fetch(field, {}))))
+    end
   end
 
   def redirect_after_change

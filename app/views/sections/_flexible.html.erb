@@ -1,0 +1,36 @@
+<% preview_mode = local_assigns[:preview_mode] %>
+<section class="flexible-section flexible-section--<%= section.section_type %>" id="<%= section.anchor.presence %>" data-section-id="<%= section.id %>">
+  <div class="container flexible-section__container">
+    <% if section.cards_placement == "before" %><%= render "sections/card_collection", section: section %><% end %>
+    <% if section.localized_title.present? || section.localized_body.present? || images.any? || %w[faq gallery].include?(section.section_type) %>
+      <div class="flexible-section__layout <%= 'flexible-section__layout--with-image' if images.any? %>">
+        <div class="flexible-section__copy">
+          <% if section.localized_title.present? %>
+            <div class="preview-movable preview-movable--title" data-preview-field="title">
+              <% if preview_mode %><%= render "admin/page_previews/element_handle", field: "title", label: "Título" %><% end %>
+              <%= content_tag(section.section_type == "hero" ? :h1 : :h2, section.localized_title, class: "section-heading") %>
+            </div>
+          <% end %>
+          <% if section.localized_body.present? %>
+            <div class="preview-movable preview-movable--body" data-preview-field="body">
+              <% if preview_mode %><%= render "admin/page_previews/element_handle", field: "body", label: "Parágrafo" %><% end %>
+              <div class="section-body"><%= simple_format(section.localized_body) %></div>
+            </div>
+          <% end %>
+          <% if section.section_type == "faq" %><%= render "sections/questions", section: section %><% end %>
+          <% if section.section_type == "gallery" %><%= render "sections/gallery_items", section: section %><% end %>
+          <% if %w[hero cta].include?(section.section_type) %>
+            <%= link_to(I18n.locale == :en ? "Book a conversation" : "Agende agora", "#agendamento", class: "hero-section__primary-action appointment-link") %>
+          <% end %>
+        </div>
+        <% if images.any? %>
+          <div class="flexible-section__media" data-preview-field="image">
+            <% if preview_mode %><%= render "admin/page_previews/element_handle", field: "image", label: "Imagem" %><% end %>
+            <div class="flexible-section__image-frame"><%= render "sections/media_sequence", section: section, role: "image", entries: images %></div>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+    <% if section.cards_placement == "after" %><%= render "sections/card_collection", section: section %><% end %>
+  </div>
+</section>

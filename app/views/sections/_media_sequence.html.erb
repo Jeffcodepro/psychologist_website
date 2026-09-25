@@ -1,0 +1,13 @@
+<div class="media-sequence" data-controller="media-sequence" data-media-sequence-delay-value="<%= section.media_interval_seconds * 1000 %>"
+     data-action="focusin->media-sequence#pause focusout->media-sequence#resume"
+     aria-label="<%= role == 'banner' ? 'Banners da seção' : 'Imagens da seção' %>">
+  <% entries.each_with_index do |entry, index| %>
+    <div class="media-sequence__slide <%= 'is-active' if index.zero? %>" data-media-sequence-target="slide" aria-hidden="<%= !index.zero? %>" style="<%= section_media_slide_style(entry, role) %>">
+      <%= image_tag entry[:attachment], alt: role == "banner" ? "" : section.localized_title, class: "media-sequence__image", loading: section.section_type == "hero" ? "eager" : "lazy" %>
+    </div>
+  <% end %>
+  <% if entries.size > 1 %>
+    <button type="button" class="media-sequence__pause" data-media-sequence-target="button" data-action="media-sequence#toggle" aria-pressed="false" aria-label="Pausar troca de imagens">Ⅱ</button>
+    <span class="media-sequence__counter" data-media-sequence-target="counter" aria-hidden="true">1 / <%= entries.size %></span>
+  <% end %>
+</div>

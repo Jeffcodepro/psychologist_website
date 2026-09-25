@@ -12,12 +12,14 @@ class Admin::SectionItemsController < Admin::BaseController
     @section_items =
       @section
         .section_items
+        .where(item_kind: requested_kind)
         .ordered
   end
 
   def new
     @section_item =
       @section.section_items.new(
+        item_kind: requested_kind,
         visible: true,
         position: next_position
       )
@@ -36,9 +38,9 @@ class Admin::SectionItemsController < Admin::BaseController
       redirect_to(
         admin_page_section_section_items_path(
           @page,
-          @section
+          @section, kind: @section_item.item_kind
         ),
-        notice: "Card criado com sucesso."
+        notice: "Conteúdo criado com sucesso."
       )
     else
       render :new,
@@ -56,9 +58,9 @@ class Admin::SectionItemsController < Admin::BaseController
       redirect_to(
         admin_page_section_section_items_path(
           @page,
-          @section
+          @section, kind: @section_item.item_kind
         ),
-        notice: "Card atualizado com sucesso."
+        notice: "Conteúdo atualizado com sucesso."
       )
     else
       render :edit,
@@ -74,9 +76,9 @@ class Admin::SectionItemsController < Admin::BaseController
     redirect_to(
       admin_page_section_section_items_path(
         @page,
-        @section
+        @section, kind: @section_item.item_kind
       ),
-      notice: "Card removido."
+      notice: "Conteúdo removido."
     )
   end
 
@@ -112,14 +114,26 @@ class Admin::SectionItemsController < Admin::BaseController
     params
       .require(:section_item)
       .permit(
+        :item_kind,
         :title,
         :body,
         :title_en,
         :body_en,
         :position,
         :visible,
-        :image
+        :image,
+        :remove_image,
+        :image_position_x,
+        :image_position_y,
+        :image_zoom,
+        :image_shape,
+        media_adjustments: MediaAdjustable::PARAMS
       )
+  end
+
+  def requested_kind
+    return params[:kind] if SectionItem::KINDS.include?(params[:kind])
+    { "faq" => "question", "gallery" => "gallery" }.fetch(@section.section_type, "card")
   end
 
   def next_position

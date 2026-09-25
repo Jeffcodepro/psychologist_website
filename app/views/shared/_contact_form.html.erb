@@ -1,0 +1,25 @@
+<% english = I18n.locale == :en %>
+<%= turbo_frame_tag "contact_form" do %>
+  <% if sent %>
+    <div class="appointment-form__success" role="status" tabindex="-1">
+      <span aria-hidden="true">✓</span><h3><%= english ? "Message received" : "Mensagem recebida" %></h3>
+      <p><%= english ? "Thank you for reaching out. I will get back to you using the details provided." : "Obrigada pelo contato. Retornarei pelos dados que você informou." %></p>
+    </div>
+  <% else %>
+    <%= form_with model: contact_request, url: contact_requests_path(locale: I18n.locale), class: "appointment-form" do |f| %>
+      <% if contact_request.errors.any? %>
+        <div class="appointment-form__errors" role="alert"><strong><%= english ? "Please check your details:" : "Confira seus dados:" %></strong><ul><% contact_request.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul></div>
+      <% end %>
+      <%= hidden_field_tag :source_path, request.path %>
+      <div class="appointment-form__honeypot" aria-hidden="true"><%= f.label :website, "Website" %><%= f.text_field :website, tabindex: -1, autocomplete: "off" %></div>
+      <div class="appointment-form__field"><%= f.label :full_name, english ? "Full name" : "Nome completo" %><%= f.text_field :full_name, required: true, maxlength: 150, autocomplete: "name", placeholder: english ? "How would you like to be called?" : "Como você gostaria de ser chamado(a)?" %></div>
+      <div class="appointment-form__row">
+        <div class="appointment-form__field"><%= f.label :phone, english ? "Phone number" : "Telefone com DDD" %><%= f.telephone_field :phone, required: true, maxlength: 30, autocomplete: "tel", placeholder: "(11) 99999-9999" %></div>
+        <div class="appointment-form__field"><%= f.label :email, "E-mail" %><%= f.email_field :email, required: true, maxlength: 254, autocomplete: "email", placeholder: "voce@exemplo.com" %></div>
+      </div>
+      <div class="appointment-form__field"><%= f.label :message, english ? "Tell me a little about what is happening" : "Conte um pouco sobre o que está acontecendo" %><%= f.text_area :message, required: true, maxlength: 5000, rows: 5, placeholder: english ? "Share only what you feel comfortable sharing." : "Compartilhe apenas o que se sentir à vontade para contar." %></div>
+      <%= f.submit local_assigns[:preview] ? "Prévia do formulário" : (english ? "Request a conversation" : "Quero agendar uma conversa"), class: "appointment-form__submit", disabled: local_assigns[:preview], data: { turbo_submits_with: english ? "Sending…" : "Enviando…" } %>
+      <% if local_assigns[:preview] %><small>O envio fica disponível no site.</small><% end %>
+    <% end %>
+  <% end %>
+<% end %>

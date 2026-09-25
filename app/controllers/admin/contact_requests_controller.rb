@@ -1,0 +1,18 @@
+class Admin::ContactRequestsController < Admin::BaseController
+  def index
+    @page_number = [params[:page].to_i, 1].max
+    @total_pages = [(ContactRequest.count / 25.0).ceil, 1].max
+    @page_number = [@page_number, @total_pages].min
+    @contact_requests = ContactRequest.recent.limit(25).offset((@page_number - 1) * 25)
+  end
+
+  def show
+    @contact_request = ContactRequest.find(params[:id])
+    @contact_request.update!(read_at: Time.current) unless @contact_request.read_at
+  end
+
+  def destroy
+    ContactRequest.find(params[:id]).destroy!
+    redirect_to admin_contact_requests_path, notice: "Mensagem excluída.", status: :see_other
+  end
+end

@@ -1,0 +1,18 @@
+<% selected = f.object.public_send(field) %>
+<fieldset class="font-picker" data-controller="font-picker">
+  <legend><%= label %></legend>
+  <details>
+    <summary>
+      <span data-font-picker-target="name"><%= SectionsHelper::FONT_NAMES[selected] %></span>
+      <span class="font-picker__sample" data-font-picker-target="sample" style="font-family: <%= SectionsHelper::FONT_STACKS[selected] %>">Aa · Cuidar de você</span>
+    </summary>
+    <div class="font-picker__options">
+      <% SectionsHelper::FONT_NAMES.each do |value, name| %>
+        <label class="font-picker__option" style="font-family: <%= SectionsHelper::FONT_STACKS[value] %>">
+          <%= f.radio_button field, value, data: { action: "change->font-picker#choose", font_name: name, font_stack: SectionsHelper::FONT_STACKS[value] } %>
+          <span><strong><%= name %></strong><small>Cuidar de você · Aa Bb Çç 123</small></span>
+        </label>
+      <% end %>
+    </div>
+  </details>
+</fieldset>

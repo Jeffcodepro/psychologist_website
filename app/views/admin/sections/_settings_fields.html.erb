@@ -24,25 +24,26 @@
           <h3>Identificação</h3>
 
           <p>
-            Informações utilizadas internamente pelo CMS.
+            Escolha o tipo de conteúdo desta seção.
           </p>
         </div>
       </header>
 
       <div class="section-settings-card__fields">
+        <% if section.persisted? %>
         <%= f.input(
               :section_type,
               collection: Section::SECTION_TYPES.map {
-                |type| [type.humanize, type]
+                |type| [Section.new(section_type: type).editor_type_label, type]
               },
               label: "Tipo do bloco"
             ) %>
 
-        <%= f.input(
-              :anchor,
-              label: "Identificador",
-              hint: "Use letras minúsculas, números e hífens."
-            ) %>
+        <% end %>
+        <details class="admin-optional-fields">
+          <summary>Link direto para esta seção (opcional)</summary>
+          <%= f.input :anchor, label: "Identificador do link", hint: "Ex.: sobre-mim cria um link como /pagina#sobre-mim. Pode deixar vazio se não precisar compartilhar um link para esta seção." %>
+        </details>
       </div>
     </article>
 

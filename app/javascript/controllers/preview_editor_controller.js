@@ -56,6 +56,7 @@ export default class extends Controller {
       return
     }
 
+    document.dispatchEvent(new CustomEvent("cms:editing-device"))
     panel.hidden = false
 
     if (this.hasBackdropTarget) {

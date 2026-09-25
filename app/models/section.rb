@@ -1,4 +1,6 @@
 class Section < ApplicationRecord
+  include ResponsiveSection
+  include MediaAdjustable
   SECTION_TYPES = %w[
     hero
     text
@@ -16,6 +18,12 @@ class Section < ApplicationRecord
     cormorant
     lora
     montserrat
+    libre_baskerville
+    merriweather
+    inter
+    manrope
+    source_sans
+    nunito_sans
   ].freeze
 
   TEXT_ALIGNMENTS = %w[left center right].freeze
@@ -55,9 +63,35 @@ class Section < ApplicationRecord
   belongs_to :page
 
   has_many :section_items, dependent: :destroy
+  has_many :section_slides, dependent: :destroy
+  accepts_nested_attributes_for :section_slides, allow_destroy: true,
+    reject_if: ->(attrs) { attrs["id"].blank? && attrs["image"].blank? }
+
+  validates :text_order, inclusion: { in: %w[title_first body_first] }
+  validates :title_alignment, :body_alignment, inclusion: { in: TEXT_ALIGNMENTS }, allow_blank: true
+
+  def effective_title_alignment
+    title_alignment.presence || text_alignment
+  end
+
+  def effective_body_alignment
+    body_alignment.presence || text_alignment
+  end
+
+  validates :cards_placement, inclusion: { in: %w[before after] }
+  validates :cards_alignment, inclusion: { in: %w[left center right] }
+  validates :media_interval_seconds, numericality: { only_integer: true, greater_than_or_equal_to: 2, less_than_or_equal_to: 30 }
+
+  def slides_for(role)
+    section_slides.reject(&:marked_for_destruction?).select { |slide| slide.role == role && slide.image.attached? }.sort_by { |slide| [slide.position, slide.id || 0] }
+  end
 
   has_one_attached :image
   has_one_attached :banner
+  attr_accessor :remove_image, :remove_banner
+  after_save do
+    %w[image banner].each { |media| public_send(media).detach if ActiveModel::Type::Boolean.new.cast(public_send("remove_#{media}")) }
+  end
 
   enum :publication_state, {
     draft: "draft",
@@ -287,7 +321,7 @@ class Section < ApplicationRecord
 
   def editor_type_label
     {
-      "hero" => "Hero",
+      "hero" => "Destaque de abertura",
       "text" => "Texto",
       "text_image" => "Texto + imagem",
       "cards" => "Cards",

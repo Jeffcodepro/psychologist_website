@@ -29,25 +29,20 @@
   preview_frame =
     request.path.include?("/preview/frame")
 
-  pt_path =
-    if preview_frame && defined?(@page) && @page.present?
-      admin_page_preview_frame_path(
-        page_id: @page.id,
-        locale: "pt-BR"
-      )
+  language_path = ->(locale) do
+    if preview_frame && @page.present?
+      admin_page_preview_frame_path(page_id: @page.id, locale: locale)
+    elsif @page.present? && !@page.home?
+      public_page_path(slug: @page.slug, locale: locale)
     else
-      root_path(locale: "pt-BR")
+      root_path(locale: locale)
     end
-
-  en_path =
-    if preview_frame && defined?(@page) && @page.present?
-      admin_page_preview_frame_path(
-        page_id: @page.id,
-        locale: "en"
-      )
-    else
-      root_path(locale: "en")
-    end
+  end
+  pt_path = language_path.call("pt-BR")
+  en_path = language_path.call("en")
+  demo_contacts = @site_setting&.demo_contacts?
+  contact_available = demo_contacts || [email, phone, whatsapp_number.presence, instagram, linkedin].any?(&:present?)
+  appointment_path = "#agendamento"
 
   appointment_label =
     I18n.locale == :en ?
@@ -62,7 +57,7 @@
 
 <footer
   class="site-footer"
-  id="contato"
+  id="rodape"
 >
 
   <div class="container site-footer__container">
@@ -71,7 +66,7 @@
          TOP
     =========================================== -->
 
-    <div class="site-footer__top">
+    <div class="site-footer__top <%= "site-footer__top--without-contact" unless contact_available %>">
 
       <!-- BRAND -->
 
@@ -85,7 +80,7 @@
                 class: "site-footer__logo"
               ) %>
 
-        <% else %>
+        <% end %>
 
           <span class="site-footer__brand-name">
             <%= professional_name %>
@@ -97,7 +92,7 @@
                   "Psicologia & Desenvolvimento Humano" %>
           </span>
 
-        <% end %>
+
 
 
         <p class="site-footer__description">
@@ -105,25 +100,8 @@
         </p>
 
 
-        <% if whatsapp_number.present? %>
-
-          <%= link_to(
-                appointment_label,
-                "https://wa.me/#{whatsapp_number}",
-                target: "_blank",
-                rel: "noopener",
-                class: "site-footer__cta"
-              ) %>
-
-        <% else %>
-
-          <a
-            href="#contato"
-            class="site-footer__cta"
-          >
-            <%= appointment_label %>
-          </a>
-
+        <% if appointment_path.present? %>
+          <%= link_to appointment_label, appointment_path, class: "site-footer__cta" %>
         <% end %>
 
       </div>
@@ -139,32 +117,17 @@
                 "Navegação" %>
         </span>
 
-        <nav class="site-footer__links">
-
-          <a href="#psicoterapia">
-            <%= I18n.locale == :en ?
-                  "Psychotherapy" :
-                  "Psicoterapia" %>
-          </a>
-
-          <a href="#desenvolvimento-humano">
-            <%= I18n.locale == :en ?
-                  "Human Development" :
-                  "Desenvolvimento Humano" %>
-          </a>
-
-          <a href="#sobre">
-            <%= I18n.locale == :en ?
-                  "About" :
-                  "Sobre" %>
-          </a>
-
-          <a href="#conteudos">
-            <%= I18n.locale == :en ?
-                  "Insights" :
-                  "Conteúdos" %>
-          </a>
-
+        <nav class="site-footer__links" aria-label="<%= I18n.locale == :en ? 'Footer navigation' : 'Navegação do rodapé' %>">
+          <% Array(@navigation_pages).each do |page| %>
+            <% destination = if preview_frame
+              admin_page_preview_path(page, locale: I18n.locale)
+            elsif page.home?
+              root_path(locale: I18n.locale)
+            else
+              public_page_path(slug: page.slug, locale: I18n.locale)
+            end %>
+            <%= link_to page.localized_nav_label, destination, target: preview_frame ? "_top" : nil %>
+          <% end %>
         </nav>
 
       </div>
@@ -172,6 +135,7 @@
 
       <!-- CONTACT + SOCIAL -->
 
+      <% if contact_available %>
       <div class="site-footer__group">
 
         <span class="site-footer__group-title">
@@ -181,6 +145,12 @@
         </span>
 
         <div class="site-footer__links">
+          <% if demo_contacts && (email.blank? || phone.blank?) %>
+            <small class="site-footer__demo-label"><%= I18n.locale == :en ? "Sample contacts" : "Contatos de demonstração" %></small>
+            <% if email.blank? %><span class="site-footer__contact-link">contato@example.com</span><% end %>
+            <% if phone.blank? %><span class="site-footer__contact-link">(11) 00000-0000</span><% end %>
+            <span class="site-footer__contact-link"><%= I18n.locale == :en ? "Online and in-person sessions" : "Atendimento online e presencial" %></span>
+          <% end %>
 
           <% if email.present? %>
 
@@ -264,6 +234,7 @@
 
       </div>
 
+      <% end %>
     </div>
 
 
@@ -292,7 +263,7 @@
           <span class="site-footer__dot"></span>
 
           <span>
-            <%= crp %>
+            CRP <%= crp %>
           </span>
 
         <% end %>

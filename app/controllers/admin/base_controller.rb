@@ -1,5 +1,6 @@
 class Admin::BaseController < ApplicationController
   before_action :authenticate_user!
+  before_action -> { @admin_site_setting = SiteSetting.first }
 
   layout "admin"
 

@@ -17,7 +17,7 @@
         </h2>
 
         <p>
-          Nome, endereço e descrição da página.
+          Dê um nome à página. O endereço é criado automaticamente se ficar vazio.
         </p>
       </div>
     </header>
@@ -30,16 +30,20 @@
 
       <%= f.input(
             :slug,
-            label: "URL",
-            hint: "Ex.: psicoterapia ou desenvolvimento-humano"
+            label: "Endereço da página (opcional)",
+            required: false,
+            hint: "Ex.: psicoterapia. Se deixar vazio ao criar, usamos o nome da página."
           ) %>
     </div>
 
+    <details class="admin-optional-fields">
+      <summary>Descrições opcionais</summary>
+      <p>Não são necessárias para criar a página. A descrição também serve como alternativa para as buscas quando a descrição SEO estiver vazia.</p>
     <div class="admin-form-grid admin-form-grid--2">
       <%= f.input(
             :description,
             as: :text,
-            label: "Descrição administrativa",
+            label: "Descrição da página (opcional)",
             input_html: {
               rows: 4
             }
@@ -54,6 +58,7 @@
             }
           ) %>
     </div>
+    </details>
   </section>
 
   <section class="admin-settings-section">
@@ -64,7 +69,7 @@
 
       <div>
         <h2>
-          Navbar
+          Menu do site
         </h2>
 
         <p>
@@ -76,12 +81,12 @@
     <div class="admin-form-grid admin-form-grid--2">
       <%= f.input(
             :nav_label,
-            label: "Nome na navbar"
+            label: "Nome na menu"
           ) %>
 
       <%= f.input(
             :nav_label_en,
-            label: "Nome na navbar em inglês"
+            label: "Nome na menu em inglês"
           ) %>
 
       <%= f.input(
@@ -92,7 +97,7 @@
       <%= f.input(
             :show_in_nav,
             as: :boolean,
-            label: "Exibir na navbar"
+            label: "Exibir na menu"
           ) %>
     </div>
   </section>

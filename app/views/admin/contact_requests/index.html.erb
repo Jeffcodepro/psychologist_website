@@ -1,0 +1,10 @@
+<div class="admin-section-editor">
+  <header class="admin-section-editor__heading"><div><span class="admin-page-eyebrow">Contato</span><h1>Mensagens recebidas</h1><p>Solicitações enviadas pelo formulário do site.</p></div></header>
+  <section class="admin-section-editor__panel is-active">
+    <% @contact_requests.each do |contact| %>
+      <article class="card-content-list__item"><div><strong><%= contact.full_name %></strong><small><%= l(contact.created_at, format: "%d/%m/%Y %H:%M") %> · <%= contact.read_at ? "Lida" : "Nova mensagem" %></small></div><%= link_to "Abrir mensagem", admin_contact_request_path(contact), class: "admin-button-secondary" %></article>
+    <% end %>
+    <% if @contact_requests.empty? %><p>Nenhuma mensagem recebida ainda.</p><% end %>
+    <% if @total_pages > 1 %><nav class="card-content-list__heading" aria-label="Páginas de mensagens"><% if @page_number > 1 %><%= link_to "Anteriores", admin_contact_requests_path(page: @page_number - 1), class: "admin-button-secondary" %><% end %><span>Página <%= @page_number %> de <%= @total_pages %></span><% if @page_number < @total_pages %><%= link_to "Próximas", admin_contact_requests_path(page: @page_number + 1), class: "admin-button-secondary" %><% end %></nav><% end %>
+  </section>
+</div>

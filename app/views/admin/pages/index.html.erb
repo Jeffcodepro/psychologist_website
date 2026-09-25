@@ -60,7 +60,7 @@
 
               <% if page.show_in_nav? %>
                 <span class="admin-site-page__badge">
-                  Navbar
+                  No menu
                 </span>
               <% end %>
             </div>
@@ -97,8 +97,9 @@
         </div>
 
         <div class="admin-site-page__actions">
+          <%= button_to "Excluir página", admin_page_path(page), method: :delete, class: "admin-button-quiet admin-button-danger", form: { data: { turbo_confirm: "Excluir a página #{page.name} e todos os seus blocos? Esta ação remove também a versão publicada." } } %>
           <%= link_to(
-                "Editar estrutura",
+                "Editar conteúdo",
                 admin_page_sections_path(page),
                 class: "admin-button admin-button--primary"
               ) %>

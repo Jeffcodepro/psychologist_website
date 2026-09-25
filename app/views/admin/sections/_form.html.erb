@@ -82,34 +82,11 @@
       Mídia
     </button>
 
-    <% if editing && section.section_type == "cards" %>
-      <button
-        type="button"
-        class="admin-section-editor__tab"
-        data-section-form-tabs-target="tab"
-        data-tab="items"
-        data-action="click->section-form-tabs#select"
-      >
-        Cards
-
-        <span>
-          <%= section.section_items.count %>
-        </span>
-      </button>
-    <% elsif editing && section.section_type == "faq" %>
-      <button
-        type="button"
-        class="admin-section-editor__tab"
-        data-section-form-tabs-target="tab"
-        data-tab="items"
-        data-action="click->section-form-tabs#select"
-      >
-        Perguntas
-
-        <span>
-          <%= section.section_items.count %>
-        </span>
-      </button>
+    <% if editing %>
+      <button type="button" class="admin-section-editor__tab" data-section-form-tabs-target="tab" data-tab="items" data-action="section-form-tabs#select">Cards <span><%= section.section_items.cards.count %></span></button>
+      <% if %w[faq gallery].include?(section.section_type) %>
+        <button type="button" class="admin-section-editor__tab" data-section-form-tabs-target="tab" data-tab="special_items" data-action="section-form-tabs#select"><%= section.section_type == "faq" ? "Perguntas" : "Galeria" %></button>
+      <% end %>
     <% end %>
 
     <button
@@ -130,12 +107,16 @@
           class: "admin-section-editor__form"
         }
       ) do |f| %>
+    <% if section.errors.any? %><div class="alert alert-danger" role="alert"><%= section.errors.full_messages.to_sentence %></div><% end %>
 
     <section
       class="admin-section-editor__panel is-active"
       data-section-form-tabs-target="panel"
       data-panel="content"
     >
+      <% unless editing %>
+        <%= f.input :section_type, collection: Section::SECTION_TYPES.map { |type| [Section.new(section_type: type).editor_type_label, type] }, label: "Que tipo de seção deseja criar?", include_blank: false %>
+      <% end %>
       <%= render(
             "admin/sections/content_fields",
             f: f,
@@ -147,6 +128,7 @@
       class="admin-section-editor__panel"
       data-section-form-tabs-target="panel"
       data-panel="appearance"
+        data-controller="device-appearance"
       hidden
     >
       <div class="admin-section-editor__panel-heading">
@@ -159,33 +141,31 @@
         </p>
       </div>
 
+      <%= render "admin/sections/device_selector" %>
+      <div data-device-appearance-target="panel" data-device="desktop">
       <%= render(
             "admin/sections/composition_settings",
             f: f,
             section: section
           ) %>
 
+
+
       <div class="admin-section-editor__content-grid">
         <article class="admin-section-editor__card">
           <h3>Título</h3>
 
-          <%= f.input(
-                :title_font_family,
-                collection: Section::FONT_FAMILIES.map {
-                  |font| [font.humanize, font]
-                },
-                label: "Fonte"
-              ) %>
+          <%= render "admin/sections/font_picker", f: f, field: :title_font_family, label: "Fonte" %>
 
           <div class="admin-section-editor__input-grid">
             <%= f.input(
                   :title_font_size_desktop,
-                  label: "Desktop"
+                  label: "Desktop (px)"
                 ) %>
 
             <%= f.input(
                   :title_font_size_mobile,
-                  label: "Mobile"
+                  label: "Mobile padrão (px)"
                 ) %>
           </div>
         </article>
@@ -193,23 +173,17 @@
         <article class="admin-section-editor__card">
           <h3>Texto</h3>
 
-          <%= f.input(
-                :body_font_family,
-                collection: Section::FONT_FAMILIES.map {
-                  |font| [font.humanize, font]
-                },
-                label: "Fonte"
-              ) %>
+          <%= render "admin/sections/font_picker", f: f, field: :body_font_family, label: "Fonte" %>
 
           <div class="admin-section-editor__input-grid">
             <%= f.input(
                   :body_font_size_desktop,
-                  label: "Desktop"
+                  label: "Desktop (px)"
                 ) %>
 
             <%= f.input(
                   :body_font_size_mobile,
-                  label: "Mobile"
+                  label: "Mobile padrão (px)"
                 ) %>
           </div>
         </article>
@@ -253,6 +227,8 @@
               ) %>
         </article>
       <% end %>
+          </div>
+      <%= render "admin/sections/responsive_settings", f: f, section: section %>
     </section>
 
     <section
@@ -279,50 +255,15 @@
           ) %>
     </section>
 
-    <% if editing && %w[cards faq].include?(section.section_type) %>
-      <section
-        class="admin-section-editor__panel"
-        data-section-form-tabs-target="panel"
-        data-panel="items"
-        hidden
-      >
-        <% if section.section_type == "cards" %>
-          <%= render(
-                "admin/page_previews/cards_settings",
-                f: f,
-                section: section
-              ) %>
-        <% else %>
-          <div class="admin-section-editor__panel-heading">
-            <span>FAQ</span>
-
-            <h2>Perguntas frequentes</h2>
-          </div>
-
-          <div class="admin-section-items">
-            <% section.section_items.ordered.each_with_index do |item, index| %>
-              <div class="admin-section-items__row">
-                <span>
-                  <%= format("%02d", index + 1) %>
-                </span>
-
-                <strong>
-                  <%= item.title %>
-                </strong>
-              </div>
-            <% end %>
-
-            <%= link_to(
-                  "Gerenciar perguntas",
-                  admin_page_section_section_items_path(
-                    @page,
-                    section
-                  ),
-                  class: "admin-button-secondary"
-                ) %>
-          </div>
-        <% end %>
+    <% if editing %>
+      <section class="admin-section-editor__panel" data-section-form-tabs-target="panel" data-panel="items" hidden>
+        <%= render "admin/page_previews/cards_settings", f: f, section: section %>
       </section>
+      <% if %w[faq gallery].include?(section.section_type) %>
+        <section class="admin-section-editor__panel" data-section-form-tabs-target="panel" data-panel="special_items" hidden>
+          <%= render "admin/sections/special_items", section: section %>
+        </section>
+      <% end %>
     <% end %>
 
     <section

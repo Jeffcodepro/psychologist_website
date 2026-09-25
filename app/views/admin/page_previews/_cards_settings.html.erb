@@ -1,3 +1,24 @@
+<div class="card-content-list">
+  <div class="card-content-list__heading">
+    <div><h3>Conteúdo e imagem de cada card</h3><p>Cada card pode ter sua própria imagem e enquadramento.</p></div>
+    <%= link_to "+ Adicionar card", new_admin_page_section_section_item_path(@page, section, kind: "card"), class: "admin-button-secondary", data: { turbo_frame: "_top" } %>
+  </div>
+  <% section.section_items.cards.ordered.each do |item| %>
+    <div class="card-content-list__item">
+      <% if item.image.attached? %>
+        <%= image_tag item.image, alt: "", class: "card-content-list__thumbnail" %>
+      <% else %>
+        <span class="card-content-list__placeholder" aria-hidden="true">▧</span>
+      <% end %>
+      <div><strong><%= item.title %></strong><small><%= item.image.attached? ? "Com imagem" : "Sem imagem" %> · <%= item.visible? ? "Visível" : "Oculto" %></small></div>
+      <%= link_to "Editar conteúdo e imagem", edit_admin_page_section_section_item_path(@page, section, item), class: "admin-button-quiet", data: { turbo_frame: "_top" } %>
+    </div>
+  <% end %>
+</div>
+<div class="admin-section-editor__input-grid">
+  <%= f.input :cards_placement, collection: [["Depois do conteúdo", "after"], ["Antes do conteúdo", "before"]], label: "Posição dos cards na seção", include_blank: false %>
+  <%= f.input :cards_alignment, collection: [["Esquerda", "left"], ["Centro", "center"], ["Direita", "right"]], label: "Alinhamento do conjunto", include_blank: false %>
+</div>
 <section
   class="preview-editor-group cards-settings"
   data-controller="cards-settings"
@@ -245,8 +266,7 @@
             </strong>
 
             <p>
-              Os cards ficarão em uma única linha,
-              com setas laterais e avanço automático.
+              Os cards ocupam a largura disponível em uma única linha. A rolagem aparece quando não cabem todos; o avanço automático é opcional.
             </p>
 
           </div>
@@ -316,6 +336,7 @@
                   {},
                   {
                     class: "cards-device-setting__select",
+                    "aria-label": "Quantidade de cards no Desktop",
                     data: {
                       cards_settings_target: "desktopColumns",
                       action: "change->cards-settings#refresh"
@@ -351,6 +372,7 @@
                   {},
                   {
                     class: "cards-device-setting__select",
+                    "aria-label": "Quantidade de cards no Tablet",
                     data: {
                       cards_settings_target: "tabletColumns",
                       action: "change->cards-settings#refresh"
@@ -385,6 +407,7 @@
                   {},
                   {
                     class: "cards-device-setting__select",
+                    "aria-label": "Quantidade de cards no Mobile",
                     data: {
                       cards_settings_target: "mobileColumns",
                       action: "change->cards-settings#refresh"
@@ -520,12 +543,18 @@
           </div>
 
 
-          <span class="cards-settings-preview__badge">
+          <span class="cards-settings-preview__badge" data-cards-settings-target="deviceLabel">
             Desktop
           </span>
 
         </div>
 
+
+        <div class="device-appearance__selector" role="group" aria-label="Tela da prévia dos cards">
+          <% { "desktop" => "Desktop", "tablet" => "Tablet", "mobile" => "Mobile" }.each do |device, label| %>
+            <button type="button" data-device="<%= device %>" data-cards-settings-target="deviceButton" data-action="cards-settings#chooseDevice" aria-pressed="<%= device == 'desktop' %>"><%= label %></button>
+          <% end %>
+        </div>
 
         <div
           class="cards-layout-preview"

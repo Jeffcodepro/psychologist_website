@@ -60,6 +60,7 @@ export default class extends Controller {
         button.dataset.device === device
       )
     })
+    this.syncEditingDevice()
   }
 
   changeLanguage(event) {
@@ -85,6 +86,7 @@ export default class extends Controller {
   }
 
   handleFrameLoad() {
+    this.syncEditingDevice()
     const url =
       this.currentFrameUrl()
 
@@ -95,6 +97,14 @@ export default class extends Controller {
     this.locale = locale
 
     this.updateLanguageButtons(locale)
+  }
+
+  syncEditingDevice() {
+    try {
+      this.iframeTarget.contentDocument.documentElement.dataset.editingDevice = this.device
+      this.iframeTarget.contentDocument.dispatchEvent(new CustomEvent("cms:editing-device"))
+    } catch (_error) {
+    }
   }
 
   currentFrameUrl() {

@@ -1,0 +1,10 @@
+<% kind = section.section_type == "faq" ? "question" : "gallery" %>
+<div class="card-content-list">
+  <div class="card-content-list__heading">
+    <h3><%= kind == "question" ? "Perguntas frequentes" : "Imagens da galeria" %></h3>
+    <%= link_to kind == "question" ? "+ Adicionar pergunta" : "+ Adicionar imagem", new_admin_page_section_section_item_path(@page, section, kind: kind), class: "admin-button-secondary", target: "_top" %>
+  </div>
+  <% section.section_items.where(item_kind: kind).ordered.each do |item| %>
+    <div class="card-content-list__item"><strong><%= item.title %></strong><%= link_to "Editar", edit_admin_page_section_section_item_path(@page, section, item), class: "admin-button-quiet", target: "_top" %></div>
+  <% end %>
+</div>

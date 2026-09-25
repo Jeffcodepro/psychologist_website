@@ -18,10 +18,6 @@
       "Book a session" :
       "Agendar atendimento"
 
-  image_x = section.effective_image_position_x
-  image_y = section.effective_image_position_y
-  image_zoom = section.effective_image_zoom
-
   media_layout = section.effective_media_layout
   media_size = section.effective_media_size
   image_shape = section.effective_image_shape
@@ -60,10 +56,6 @@
         <% if section.localized_title.present? %>
           <h1
             class="hero-section__title"
-            style="
-              font-size: <%= section.title_font_size_desktop %>px;
-              text-align: <%= section.text_alignment %>;
-            "
           >
             <%= section.localized_title %>
           </h1>
@@ -72,10 +64,6 @@
         <% if section.localized_body.present? %>
           <div
             class="hero-section__body"
-            style="
-              font-size: <%= section.body_font_size_desktop %>px;
-              text-align: <%= section.text_alignment %>;
-            "
           >
             <%= simple_format(section.localized_body) %>
           </div>
@@ -105,12 +93,7 @@
             <%= image_tag(
                   profile_image,
                   alt: @site_setting&.professional_name.presence || "Rosemary Dias",
-                  class: "hero-section__profile-image",
-                  style: "
-                    object-position: #{image_x}% #{image_y}%;
-                    transform: scale(#{image_zoom});
-                    transform-origin: #{image_x}% #{image_y}%;
-                  "
+                  class: "hero-section__profile-image"
                 ) %>
 
             <% if preview_mode %>

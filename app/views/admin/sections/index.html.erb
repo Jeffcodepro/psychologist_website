@@ -102,14 +102,14 @@
 
               <% if section.section_type == "cards" %>
                 <span class="admin-section-node__badge">
-                  <%= section.section_items.count %>
+                  <%= section.section_items.cards.count %>
                   cards
                 </span>
               <% end %>
 
               <% if section.section_type == "faq" %>
                 <span class="admin-section-node__badge">
-                  <%= section.section_items.count %>
+                  <%= section.section_items.questions.count %>
                   perguntas
                 </span>
               <% end %>
@@ -169,6 +169,7 @@
         </div>
 
         <div class="admin-section-node__actions">
+          <%= button_to "Excluir bloco", admin_page_section_path(@page, section), method: :delete, class: "admin-button-quiet admin-button-danger", form: { data: { turbo_confirm: "Excluir este bloco do rascunho? A versão publicada só muda quando você publicar novamente." } } %>
           <%= link_to(
                 "Editar bloco",
                 edit_admin_page_section_path(

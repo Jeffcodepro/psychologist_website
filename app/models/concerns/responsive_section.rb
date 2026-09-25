@@ -1,0 +1,89 @@
+module ResponsiveSection
+  extend ActiveSupport::Concern
+
+  DEVICES = %w[tablet mobile].freeze
+  ENUM_FIELDS = {
+    "media_layout" => %w[text_left text_right media_top media_bottom],
+    "media_size" => %w[small medium large],
+    "image_shape" => %w[rectangle rounded square circle oval arch],
+    "banner_layout" => %w[top background bottom],
+    "text_alignment" => %w[left center right],
+    "title_alignment" => %w[left center right],
+    "body_alignment" => %w[left center right],
+    "text_order" => %w[title_first body_first],
+    "visible" => %w[true false]
+  }.freeze
+  NUMBER_FIELDS = {
+    "title_font_size" => 10..120, "body_font_size" => 10..120,
+    "image_position_x" => 0..100, "image_position_y" => 0..100,
+    "banner_position_x" => 0..100, "banner_position_y" => 0..100,
+    "image_zoom" => 1..3, "banner_zoom" => 1..3, "banner_overlay" => 0..90
+  }.freeze
+  FONT_FIELDS = %w[title_font_family body_font_family].freeze
+  COLOR_FIELDS = %w[title_color body_color background_color accent_color overlay_color].freeze
+  FIELDS = (ENUM_FIELDS.keys + NUMBER_FIELDS.keys + FONT_FIELDS + COLOR_FIELDS).freeze
+
+  included do
+    before_validation :compact_responsive_settings
+    validate :validate_responsive_settings
+  end
+
+  # Each device inherits the base independently; a mobile edit never changes tablet.
+  def visual_value(field, device = "desktop")
+    override = responsive_settings.dig(device.to_s, field.to_s)
+    return override unless override.nil? || override == ""
+
+    if %w[title_font_size body_font_size].include?(field.to_s)
+      return public_send("#{field}_#{device.to_s == 'mobile' ? 'mobile' : 'desktop'}")
+    end
+
+    if %w[title_alignment body_alignment].include?(field.to_s) && public_send(field).blank?
+      return visual_value("text_alignment", device)
+    end
+
+    return visible? if field.to_s == "visible"
+
+    effective = "effective_#{field}"
+    respond_to?(effective) ? public_send(effective) : public_send(field)
+  end
+
+  private
+
+  def compact_responsive_settings
+    return unless responsive_settings.is_a?(Hash)
+
+    self.responsive_settings = responsive_settings.transform_values do |settings|
+      settings.is_a?(Hash) ? settings.reject { |_key, value| value.nil? || value == "" } : settings
+    end.reject { |_device, settings| settings == {} }
+  end
+
+  def validate_responsive_settings
+    unless responsive_settings.is_a?(Hash)
+      errors.add(:responsive_settings, "deve conter ajustes por tela")
+      return
+    end
+
+    responsive_settings.each do |device, settings|
+      unless DEVICES.include?(device) && settings.is_a?(Hash)
+        errors.add(:responsive_settings, "tela inválida")
+        next
+      end
+
+      settings.each do |field, value|
+        valid = if ENUM_FIELDS.key?(field)
+          ENUM_FIELDS.fetch(field).include?(value.to_s)
+        elsif NUMBER_FIELDS.key?(field)
+          number = Float(value, exception: false)
+          number && NUMBER_FIELDS.fetch(field).cover?(number)
+        elsif FONT_FIELDS.include?(field)
+          Section::FONT_FAMILIES.include?(value)
+        elsif COLOR_FIELDS.include?(field)
+          value.is_a?(String) && value.match?(/\A#[0-9a-fA-F]{6}\z/)
+        else
+          false
+        end
+        errors.add(:responsive_settings, "#{device}: #{field} inválido") unless valid
+      end
+    end
+  end
+end

@@ -52,6 +52,13 @@ class PagePublicationService
         attachment_name: :banner
       )
 
+      draft_section.section_slides.ordered.each do |slide|
+        copy = slide.dup
+        copy.section = published_section
+        copy.image.attach(slide.image.blob) if slide.image.attached?
+        copy.save!
+      end
+
       copy_items(
         source_section: draft_section,
         target_section: published_section

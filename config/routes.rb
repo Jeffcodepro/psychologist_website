@@ -12,10 +12,12 @@ Rails.application.routes.draw do
   end
 
   root to: "pages#home"
+  resources :contact_requests, only: :create, path: "contato"
 
   namespace :admin do
     root to: "dashboard#index"
 
+    resources :contact_requests, only: %i[index show destroy]
     resource :translation, only: :create
     resource :site_setting, only: %i[edit update]
 

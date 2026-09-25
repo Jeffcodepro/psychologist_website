@@ -6,8 +6,9 @@
   <%= @page.localized_seo_description %>
 <% end %>
 
-<main class="public-page public-page--<%= @page.slug %>">
+<main class="public-page public-page--<%= @page.slug %>" data-controller="text-reveal">
   <% @sections.each do |section| %>
     <%= render "shared/section_render", section: section %>
   <% end %>
+  <%= render "shared/contact_section" %>
 </main>

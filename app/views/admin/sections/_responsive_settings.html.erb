@@ -1,0 +1,61 @@
+<div class="responsive-settings">
+  <% { "tablet" => "Tablet · 601 a 1024 px", "mobile" => "Mobile · até 600 px" }.each do |device, label| %>
+    <details class="responsive-settings__device" data-device-appearance-target="panel" data-device="<%= device %>" hidden>
+      <summary><%= label %> <small><%= section.responsive_settings.fetch(device, {}).any? ? "Personalizado" : "Usando padrão" %></small></summary>
+      <p>Deixe vazio para usar o desktop. No mobile, o tamanho padrão do texto vem dos campos “Mobile padrão” e a composição se adapta para uma coluna.</p>
+      <div class="responsive-settings__fields">
+        <% choices = {
+          "text_order" => ["Ordem do texto", [["Título acima do parágrafo", "title_first"], ["Parágrafo acima do título", "body_first"]]],
+          "title_alignment" => ["Alinhamento do título", [["Esquerda", "left"], ["Centro", "center"], ["Direita", "right"]]],
+          "body_alignment" => ["Alinhamento do parágrafo", [["Esquerda", "left"], ["Centro", "center"], ["Direita", "right"]]],
+          "visible" => ["Exibir nesta tela", [["Sim", "true"], ["Não", "false"]]],
+          "text_alignment" => ["Alinhamento", [["Esquerda", "left"], ["Centro", "center"], ["Direita", "right"]]],
+          "title_font_family" => ["Fonte do título", SectionsHelper::FONT_NAMES.map { |value, name| [name, value] }],
+          "body_font_family" => ["Fonte do texto", SectionsHelper::FONT_NAMES.map { |value, name| [name, value] }]
+        }
+          choices.merge!(
+            "media_layout" => ["Posição da imagem", SectionsHelper::LAYOUT_OPTIONS],
+            "image_shape" => ["Formato da imagem", SectionsHelper::SHAPE_OPTIONS],
+            "media_size" => ["Tamanho da imagem", [["Pequena", "small"], ["Média", "medium"], ["Grande", "large"]]]
+          )
+        choices["banner_layout"] = ["Posição do banner", [["Acima", "top"], ["Fundo", "background"], ["Abaixo", "bottom"]]]
+        %>
+        <% choices.each do |field, (title, options)| %>
+          <% input_id = "#{f.options[:html]&.dig(:id) || section.id || 'new'}_#{device}_#{field}" %>
+          <% font_field = ResponsiveSection::FONT_FIELDS.include?(field)
+             if font_field
+               options = options.map { |name, value| [name, value, { "data-font-stack" => SectionsHelper::FONT_STACKS[value] }] }
+             end
+             default_option = ["Usar padrão", "", { "data-font-stack" => font_field ? SectionsHelper::FONT_STACKS[section.public_send(field)] : nil }]
+          %>
+          <div <%= 'data-controller="font-picker"'.html_safe if font_field %>>
+            <%= label_tag input_id, title %>
+            <%= select_tag "section[responsive_settings][#{device}][#{field}]", options_for_select([default_option] + options, section.responsive_settings.dig(device, field)), id: input_id, data: font_field ? { font_picker_target: "select", action: "font-picker#selectFont" } : {} %>
+            <% if font_field %><span class="font-picker__sample" data-font-picker-target="sample">Cuidar de você · Aa Bb Çç 123</span><% end %>
+          </div>
+        <% end %>
+        <% { "title_font_size" => "Título (px)", "body_font_size" => "Texto (px)", "banner_overlay" => "Escurecimento do banner (%)" }.each do |field, title| %>
+          <% input_id = "responsive_#{section.id}_#{device}_#{field}"; range = ResponsiveSection::NUMBER_FIELDS.fetch(field) %>
+          <div>
+            <%= label_tag input_id, title %>
+            <%= number_field_tag "section[responsive_settings][#{device}][#{field}]", section.responsive_settings.dig(device, field), id: input_id, min: range.begin, max: range.end, placeholder: "Padrão: #{section.visual_value(field, device)}" %>
+          </div>
+        <% end %>
+        <% { "title_color" => "Cor do título", "body_color" => "Cor do texto", "background_color" => "Cor de fundo" }.each do |field, title| %>
+          <% input_id = "responsive_#{section.id}_#{device}_#{field}" %>
+          <div>
+            <%= label_tag input_id, title %>
+            <%= text_field_tag "section[responsive_settings][#{device}][#{field}]", section.responsive_settings.dig(device, field), id: input_id, placeholder: "Padrão: #{section.visual_value(field, device)}", pattern: "#[0-9a-fA-F]{6}" %>
+          </div>
+        <% end %>
+      </div>
+      <% %w[image banner].each do |media| %>
+        <% attachment = section.public_send(media) %>
+        <% if attachment.attached? %>
+          <%= render "admin/shared/image_cropper", f: f, record: section, attachment: attachment, media: media, device: device,
+                title: media == "image" ? "Enquadramento da fotografia" : "Enquadramento do banner" %>
+        <% end %>
+      <% end %>
+    </details>
+  <% end %>
+</div>

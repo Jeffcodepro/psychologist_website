@@ -88,6 +88,7 @@
           <%= f.file_field(
                 :logo,
                 accept: "image/png,image/jpeg,image/webp",
+                class: "site-identity-file-input",
                 data: {
                   asset_preview_target: "input",
                   action: "change->asset-preview#fileChanged"
@@ -211,7 +212,7 @@
       <div>
         <span class="site-identity-asset__eyebrow">Fotografia</span>
         <h3>Foto profissional</h3>
-        <p>Ajuste a fotografia que será utilizada nas áreas de apresentação.</p>
+        <p>Esta foto aparece ao lado do nome no CMS. Para usá-la em uma seção do site, ative “Usar a foto profissional” na aba Mídia do bloco.</p>
       </div>
 
       <div class="site-identity-asset__specs">
@@ -290,6 +291,7 @@
           <%= f.file_field(
                 :profile_image,
                 accept: "image/png,image/jpeg,image/webp",
+                class: "site-identity-file-input",
                 data: {
                   asset_preview_target: "input",
                   action: "change->asset-preview#fileChanged"

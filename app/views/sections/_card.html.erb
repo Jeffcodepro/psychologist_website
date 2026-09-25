@@ -1,59 +1,11 @@
-<article
-  class="
-    psychology-card
-    <%= "psychology-card--with-image" if item.image.attached? %>
-  "
-  data-card-id="<%= item.id %>"
->
-
+<article class="psychology-card compact-card <%= 'compact-card--with-image' if item.image.attached? %>" data-card-id="<%= item.id %>" style="<%= card_image_style(item) %>; <%= media_adjustment_style(item) %>">
   <% if item.image.attached? %>
-
-    <div class="psychology-card__media">
-
-      <%= image_tag(
-            item.image,
-            alt: item.localized_title.presence || "Card",
-            class: "psychology-card__image",
-            loading: "lazy"
-          ) %>
-
-    </div>
-
+    <div class="compact-card__media"><div class="compact-card__image-frame" data-shape="<%= item.image_shape %>">
+      <%= image_tag item.image, alt: item.localized_title, class: "psychology-card__image compact-card__image", loading: "lazy" %>
+    </div></div>
   <% end %>
-
-
-  <div class="psychology-card__content">
-
-    <span
-      class="psychology-card__number"
-      aria-hidden="true"
-    >
-      <%= format(
-            "%02d",
-            index + 1
-          ) %>
-    </span>
-
-
-    <% if item.localized_title.present? %>
-
-      <h3 class="psychology-card__title">
-        <%= item.localized_title %>
-      </h3>
-
-    <% end %>
-
-
-    <% if item.localized_body.present? %>
-
-      <div class="psychology-card__body">
-        <%= simple_format(
-              item.localized_body
-            ) %>
-      </div>
-
-    <% end %>
-
+  <div class="compact-card__content" tabindex="0" role="region" aria-label="<%= item.localized_title %>">
+    <h3 class="compact-card__title"><%= item.localized_title %></h3>
+    <% if item.localized_body.present? %><div class="compact-card__body"><%= simple_format(item.localized_body) %></div><% end %>
   </div>
-
 </article>

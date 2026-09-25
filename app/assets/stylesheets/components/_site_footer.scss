@@ -513,3 +513,46 @@
     }
   }
 }
+
+// Compact columns and usable touch targets across screen sizes.
+.site-footer {
+  padding: 48px 0 22px;
+  border-radius: 0;
+  &__top { grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.8fr) minmax(0, 1fr); gap: 36px; padding-bottom: 30px; }
+  &__top--without-contact { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); }
+  &__brand, &__group { min-width: 0; }
+  &__logo { height: 54px; margin-bottom: 14px; }
+  &__brand-name { font-size: 28px; line-height: 1.2; }
+  &__brand-subtitle { font-size: 10px; letter-spacing: 0.08em; }
+  &__description { margin-top: 16px; font-size: 15px; line-height: 1.6; max-width: 350px; }
+  &__cta { margin-top: 20px; font-size: 14px; min-height: 46px; }
+  &__group-title { font-size: 12px; margin-bottom: 12px; }
+  &__links { gap: 3px; }
+  &__links a { font-size: 14px; min-height: 40px; display: inline-flex; align-items: center; overflow-wrap: anywhere; max-width: 100%; }
+  &__middle { gap: 16px; padding: 14px 0; }
+  &__professional { font-size: 12px; }
+  &__language { font-size: 13px; display: inline-flex; min-width: 40px; min-height: 44px; align-items: center; justify-content: center; }
+  &__bottom { font-size: 12px; color: #aab9b2; padding-top: 16px; }
+}
+@media (max-width: 900px) {
+  .site-footer {
+    &__top { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 26px; }
+    &__brand { grid-column: 1 / -1; max-width: none; }
+    &__top--without-contact .site-footer__brand { grid-column: auto; }
+  }
+}
+@media (max-width: 600px) {
+  .site-footer {
+    padding-top: 32px;
+    &__top, &__top--without-contact { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; }
+    &__brand { grid-column: auto; }
+    &__description { max-width: none; }
+    &__cta { width: 100%; }
+    &__group { padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.12); }
+    &__links a { min-height: 44px; }
+    &__middle { flex-direction: row; align-items: center; }
+    &__professional { flex-direction: column; align-items: flex-start; gap: 4px; }
+    &__dot { display: none; }
+    &__bottom { flex-wrap: wrap; gap: 4px; }
+  }
+}

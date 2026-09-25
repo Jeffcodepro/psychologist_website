@@ -68,32 +68,11 @@
       Mídia
     </button>
 
-    <% if section.section_type == "cards" %>
-      <button
-        type="button"
-        class="preview-editor__tab"
-        data-preview-editor-tabs-target="tab"
-        data-tab="items"
-        data-action="click->preview-editor-tabs#select"
-      >
-        Cards
-        <span class="preview-editor__tab-count">
-          <%= section.section_items.count %>
-        </span>
-      </button>
-    <% elsif section.section_type == "faq" %>
-      <button
-        type="button"
-        class="preview-editor__tab"
-        data-preview-editor-tabs-target="tab"
-        data-tab="items"
-        data-action="click->preview-editor-tabs#select"
-      >
-        Perguntas
-        <span class="preview-editor__tab-count">
-          <%= section.section_items.count %>
-        </span>
-      </button>
+    <% if section.persisted? %>
+      <button type="button" class="preview-editor__tab" data-preview-editor-tabs-target="tab" data-tab="items" data-action="preview-editor-tabs#select">Cards <span><%= section.section_items.cards.count %></span></button>
+      <% if %w[faq gallery].include?(section.section_type) %>
+        <button type="button" class="preview-editor__tab" data-preview-editor-tabs-target="tab" data-tab="special_items" data-action="preview-editor-tabs#select"><%= section.section_type == "faq" ? "Perguntas" : "Galeria" %></button>
+      <% end %>
     <% end %>
 
     <button
@@ -137,6 +116,7 @@
         class="preview-editor__panel"
         data-preview-editor-tabs-target="panel"
         data-panel="appearance"
+        data-controller="device-appearance"
         hidden
       >
         <div class="preview-editor__panel-heading">
@@ -155,33 +135,31 @@
           </div>
         </div>
 
+      <%= render "admin/sections/device_selector" %>
+      <div data-device-appearance-target="panel" data-device="desktop">
         <%= render(
               "admin/sections/composition_settings",
               f: f,
               section: section
             ) %>
 
-        <div class="preview-editor__settings-grid">
+
+
+      <div class="preview-editor__settings-grid">
           <div class="preview-editor__settings-card">
             <h4>Título</h4>
 
-            <%= f.input(
-                  :title_font_family,
-                  collection: Section::FONT_FAMILIES.map {
-                    |font| [font.humanize, font]
-                  },
-                  label: "Fonte"
-                ) %>
+            <%= render "admin/sections/font_picker", f: f, field: :title_font_family, label: "Fonte" %>
 
             <div class="preview-editor__two-columns">
               <%= f.input(
                     :title_font_size_desktop,
-                    label: "Desktop"
+                    label: "Desktop (px)"
                   ) %>
 
               <%= f.input(
                     :title_font_size_mobile,
-                    label: "Mobile"
+                    label: "Mobile padrão (px)"
                   ) %>
             </div>
           </div>
@@ -189,28 +167,24 @@
           <div class="preview-editor__settings-card">
             <h4>Texto</h4>
 
-            <%= f.input(
-                  :body_font_family,
-                  collection: Section::FONT_FAMILIES.map {
-                    |font| [font.humanize, font]
-                  },
-                  label: "Fonte"
-                ) %>
+            <%= render "admin/sections/font_picker", f: f, field: :body_font_family, label: "Fonte" %>
 
             <div class="preview-editor__two-columns">
               <%= f.input(
                     :body_font_size_desktop,
-                    label: "Desktop"
+                    label: "Desktop (px)"
                   ) %>
 
               <%= f.input(
                     :body_font_size_mobile,
-                    label: "Mobile"
+                    label: "Mobile padrão (px)"
                   ) %>
             </div>
           </div>
         </div>
-      </section>
+            </div>
+      <%= render "admin/sections/responsive_settings", f: f, section: section %>
+    </section>
 
       <section
         class="preview-editor__panel"
@@ -243,56 +217,16 @@
             ) %>
       </section>
 
-      <% if %w[cards faq].include?(section.section_type) %>
-        <section
-          class="preview-editor__panel"
-          data-preview-editor-tabs-target="panel"
-          data-panel="items"
-          hidden
-        >
-          <% if section.section_type == "cards" %>
-            <%= render(
-                  "admin/page_previews/cards_settings",
-                  f: f,
-                  section: section
-                ) %>
-          <% else %>
-            <div class="preview-editor__panel-heading">
-              <span class="preview-editor__panel-eyebrow">
-                FAQ
-              </span>
-
-              <h3>
-                Perguntas frequentes
-              </h3>
-            </div>
-
-            <div class="preview-editor__items-list">
-              <% section.section_items.ordered.each_with_index do |item, index| %>
-                <div class="preview-editor__item-row">
-                  <span>
-                    <%= format("%02d", index + 1) %>
-                  </span>
-
-                  <strong>
-                    <%= item.title %>
-                  </strong>
-                </div>
-              <% end %>
-            </div>
-
-            <%= link_to(
-                  "Gerenciar perguntas",
-                  admin_page_section_section_items_path(
-                    @page,
-                    section
-                  ),
-                  class: "admin-button-secondary",
-                  target: "_top"
-                ) %>
-          <% end %>
+    <% if section.persisted? %>
+      <section class="preview-editor__panel" data-preview-editor-tabs-target="panel" data-panel="items" hidden>
+        <%= render "admin/page_previews/cards_settings", f: f, section: section %>
+      </section>
+      <% if %w[faq gallery].include?(section.section_type) %>
+        <section class="preview-editor__panel" data-preview-editor-tabs-target="panel" data-panel="special_items" hidden>
+          <%= render "admin/sections/special_items", section: section %>
         </section>
       <% end %>
+    <% end %>
 
       <section
         class="preview-editor__panel"

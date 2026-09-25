@@ -1,0 +1,8 @@
+<details class="media-library__slide" data-media-library-target="slide" <%= 'open' if f.object.new_record? %>>
+  <summary><%= role == "banner" ? "Banner adicional" : "Fotografia adicional" %><% if f.object.image.attached? %> · <%= f.object.image.filename %><% end %></summary>
+  <%= f.hidden_field :role %>
+  <%= f.hidden_field :_destroy, value: false, data: { destroy_slide: true } %>
+  <%= f.input :position, label: "Ordem na sequência", input_html: { min: 0 } %>
+  <%= render "admin/shared/image_cropper", f: f, record: f.object, kind: role, shape: (role == "banner" ? "rectangle" : f.object.section&.image_shape || f.object.image_shape), title: "Enquadramento e ajustes" %>
+  <button type="button" class="admin-button-quiet" data-action="media-library#remove">Remover da sequência</button>
+</details>

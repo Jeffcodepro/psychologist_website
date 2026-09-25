@@ -1,0 +1,9 @@
+<div class="element-drop-zones" data-visual-drag-target="zones" hidden>
+  <span class="element-drop-zones__hint" data-visual-drag-target="hint">Solte na posição desejada</span>
+  <% { "top" => "Acima", "left" => "Esquerda", "center" => "Centro", "right" => "Direita", "bottom" => "Abaixo" }.each do |position, label| %>
+    <button type="button" class="element-drop-zone element-drop-zone--<%= position %>" data-visual-drag-target="zone" data-position="<%= position %>" data-action="visual-drag#choose"><%= label %></button>
+  <% end %>
+  <button type="button" class="element-drop-zones__cancel" data-action="visual-drag#cancel">Cancelar</button>
+</div>
+<span class="element-drag-ghost" data-visual-drag-target="ghost" hidden></span>
+<span class="element-drag-status" data-visual-drag-target="status" role="status"></span>

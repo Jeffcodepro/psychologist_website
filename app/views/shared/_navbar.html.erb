@@ -180,12 +180,10 @@
             ) %>
       </div>
 
-      <% if whatsapp_number.present? %>
+      <% if current_page.present? %>
         <%= link_to(
               appointment_label,
-              "https://wa.me/#{whatsapp_number}",
-              target: "_blank",
-              rel: "noopener",
+              "#agendamento",
               class: "site-navbar__cta"
             ) %>
       <% end %>
@@ -281,12 +279,10 @@
             ) %>
       </div>
 
-      <% if whatsapp_number.present? %>
+      <% if current_page.present? %>
         <%= link_to(
               appointment_label,
-              "https://wa.me/#{whatsapp_number}",
-              target: "_blank",
-              rel: "noopener",
+              "#agendamento",
               class: "site-navbar__mobile-cta"
             ) %>
       <% end %>

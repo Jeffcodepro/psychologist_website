@@ -1,0 +1,17 @@
+<% items = section.section_items.cards.visible.ordered %>
+<% if items.any? %>
+  <div class="card-collection card-collection--<%= section.cards_orientation %> card-collection--<%= section.cards_alignment %>"
+       style="--cards-desktop: <%= section.cards_columns_desktop %>; --cards-tablet: <%= section.cards_columns_tablet %>; --cards-mobile: <%= section.cards_columns_mobile %>">
+    <% if section.cards_carousel? %>
+      <div class="compact-carousel" data-controller="cards-carousel" data-cards-carousel-autoplay-value="<%= section.cards_autoplay? %>" data-cards-carousel-delay-value="<%= section.cards_autoplay_seconds * 1000 %>">
+        <button type="button" class="compact-carousel__arrow" aria-label="Card anterior" data-action="cards-carousel#previous">←</button>
+        <div class="compact-carousel__viewport" data-cards-carousel-target="viewport" data-action="mouseenter->cards-carousel#pause mouseleave->cards-carousel#resume focusin->cards-carousel#pause focusout->cards-carousel#resume">
+          <div class="compact-carousel__track" data-cards-carousel-target="track"><%= render partial: "sections/card", collection: items, as: :item %></div>
+        </div>
+        <button type="button" class="compact-carousel__arrow" aria-label="Próximo card" data-action="cards-carousel#next">→</button>
+      </div>
+    <% else %>
+      <div class="card-collection__grid"><%= render partial: "sections/card", collection: items, as: :item %></div>
+    <% end %>
+  </div>
+<% end %>

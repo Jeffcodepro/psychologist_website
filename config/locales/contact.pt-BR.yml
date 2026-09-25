@@ -1,0 +1,8 @@
+pt-BR:
+  activerecord:
+    attributes:
+      contact_request:
+        full_name: Nome completo
+        phone: Telefone
+        email: E-mail
+        message: Mensagem

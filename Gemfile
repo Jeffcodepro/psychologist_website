@@ -69,6 +69,8 @@ group :development do
 end
 
 group :test do
+  # Rails 7.1's test runner uses the Minitest 5 API.
+  gem "minitest", "~> 5.26"
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
   gem "selenium-webdriver"

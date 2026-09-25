@@ -19,7 +19,7 @@ export default class extends Controller {
     "carouselGroup",
     "carouselMessage",
 
-    "preview"
+    "preview", "deviceButton", "deviceLabel"
   ]
 
   static values = {
@@ -28,9 +28,17 @@ export default class extends Controller {
 
 
   connect() {
+    this.previewDevice = "desktop"
     this.refresh()
   }
 
+
+  chooseDevice(event) {
+    this.previewDevice = event.currentTarget.dataset.device
+    this.deviceButtonTargets.forEach(button => button.setAttribute("aria-pressed", String(button.dataset.device === this.previewDevice)))
+    this.deviceLabelTarget.textContent = { desktop: "Desktop", tablet: "Tablet", mobile: "Mobile" }[this.previewDevice]
+    this.refresh()
+  }
 
   selectHorizontal() {
     this.orientationValueTarget.value =
@@ -126,7 +134,7 @@ export default class extends Controller {
 
     if (this.hasColumnsGroupTarget) {
       this.columnsGroupTarget.hidden =
-        !horizontal
+        !horizontal || carousel
     }
 
 
@@ -185,13 +193,7 @@ export default class extends Controller {
     )
 
 
-    const columns =
-      this.hasDesktopColumnsTarget ?
-        Number(
-          this.desktopColumnsTarget.value
-        ) :
-        3
-
+    const columns = carousel ? ({ desktop: 3, tablet: 2, mobile: 1 }[this.previewDevice || "desktop"]) : { desktop: this.desktopValue(), tablet: this.tabletValue(), mobile: this.mobileValue() }[this.previewDevice || "desktop"]
 
     preview.style.setProperty(
       "--cards-preview-columns",
@@ -201,85 +203,14 @@ export default class extends Controller {
 
 
   updateRealPreview(orientation) {
-    const section =
-      this.findCardsSection()
-
-    if (!section) {
-      return
-    }
-
-
-    section.classList.remove(
-      "cards-section--horizontal",
-      "cards-section--vertical"
-    )
-
-
-    section.classList.add(
-      `cards-section--${orientation}`
-    )
-
-
-    this.updateColumnClass(
-      section,
-      "desktop",
-      this.desktopValue()
-    )
-
-
-    this.updateColumnClass(
-      section,
-      "tablet",
-      this.tabletValue()
-    )
-
-
-    this.updateColumnClass(
-      section,
-      "mobile",
-      this.mobileValue()
-    )
-
-
-    const grid =
-      section.querySelector(
-        ".cards-section__grid"
-      )
-
-    const list =
-      section.querySelector(
-        ".cards-section__list"
-      )
-
-
-    if (
-      orientation === "vertical" &&
-      grid
-    ) {
-      grid.classList.remove(
-        "cards-section__grid"
-      )
-
-      grid.classList.add(
-        "cards-section__list"
-      )
-    }
-
-
-    if (
-      orientation === "horizontal" &&
-      list
-    ) {
-      list.classList.remove(
-        "cards-section__list"
-      )
-
-      list.classList.add(
-        "cards-section__grid"
-      )
-    }
+    const section = this.findCardsSection()
+    if (!section) return
+    section.classList.remove("card-collection--horizontal", "card-collection--vertical")
+    section.classList.add(`card-collection--${orientation}`)
+    section.style.setProperty("--cards-desktop", this.desktopValue())
+    section.style.setProperty("--cards-tablet", this.tabletValue())
+    section.style.setProperty("--cards-mobile", this.mobileValue())
   }
-
 
   findCardsSection() {
     if (!this.hasSectionIdValue) {
@@ -296,7 +227,7 @@ export default class extends Controller {
     }
 
     return wrapper.querySelector(
-      ".cards-section"
+      ".card-collection"
     )
   }
 

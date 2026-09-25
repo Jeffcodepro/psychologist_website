@@ -20,6 +20,9 @@ export default class extends Controller {
 
   connect() {
     this.timer = null
+    this.resizeObserver = new ResizeObserver(() => this.fitCards())
+    this.resizeObserver.observe(this.viewportTarget)
+    this.fitCards()
 
     this.handleVisibilityChange =
       this.handleVisibilityChange.bind(this)
@@ -33,12 +36,22 @@ export default class extends Controller {
   }
 
   disconnect() {
+    this.resizeObserver?.disconnect()
     this.stopAutoplay()
 
     document.removeEventListener(
       "visibilitychange",
       this.handleVisibilityChange
     )
+  }
+
+  fitCards() {
+    const width = this.viewportTarget.clientWidth
+    this.element.style.setProperty("--fitted-cards", Math.max(1, Math.min(this.trackTarget.children.length, Math.floor((width + 20) / 300))))
+    requestAnimationFrame(() => {
+      const fits = this.viewportTarget.scrollWidth <= this.viewportTarget.clientWidth + 2
+      this.element.querySelectorAll(".compact-carousel__arrow").forEach(button => { button.hidden = fits })
+    })
   }
 
   next() {
@@ -164,7 +177,7 @@ export default class extends Controller {
   }
 
   startAutoplay() {
-    if (!this.autoplayValue) {
+    if (!this.autoplayValue || matchMedia("(prefers-reduced-motion: reduce)").matches || this.element.matches(":hover, :focus-within")) {
       return
     }
 

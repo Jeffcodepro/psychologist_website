@@ -64,6 +64,7 @@ class Admin::SiteSettingsController < Admin::BaseController
         # CONTACT
         # --------------------------------------------
 
+        :demo_contacts,
         :email,
         :phone,
         :whatsapp,

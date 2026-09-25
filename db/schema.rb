@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_09_24_182000) do
+ActiveRecord::Schema[7.1].define(version: 2026_09_25_180000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -40,6 +40,17 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_24_182000) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "contact_requests", force: :cascade do |t|
+    t.string "full_name", null: false
+    t.string "phone", null: false
+    t.string "email", null: false
+    t.text "message", null: false
+    t.string "source_path"
+    t.datetime "read_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "pages", force: :cascade do |t|
@@ -73,7 +84,27 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_24_182000) do
     t.datetime "updated_at", null: false
     t.string "title_en"
     t.text "body_en"
+    t.integer "image_position_x", default: 50, null: false
+    t.integer "image_position_y", default: 50, null: false
+    t.decimal "image_zoom", precision: 4, scale: 2, default: "1.0", null: false
+    t.string "image_shape", default: "rectangle", null: false
+    t.jsonb "media_adjustments", default: {}, null: false
+    t.string "item_kind", default: "card", null: false
     t.index ["section_id"], name: "index_section_items_on_section_id"
+  end
+
+  create_table "section_slides", force: :cascade do |t|
+    t.bigint "section_id", null: false
+    t.string "role", default: "image", null: false
+    t.integer "position", default: 0, null: false
+    t.integer "image_position_x", default: 50, null: false
+    t.integer "image_position_y", default: 50, null: false
+    t.decimal "image_zoom", precision: 4, scale: 2, default: "1.0", null: false
+    t.string "image_shape", default: "rounded", null: false
+    t.jsonb "media_adjustments", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["section_id"], name: "index_section_slides_on_section_id"
   end
 
   create_table "sections", force: :cascade do |t|
@@ -125,6 +156,15 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_24_182000) do
     t.string "accent_color"
     t.string "background_color"
     t.string "overlay_color"
+    t.jsonb "responsive_settings", default: {}, null: false
+    t.string "cards_placement", default: "after", null: false
+    t.string "cards_alignment", default: "center", null: false
+    t.integer "media_interval_seconds", default: 5, null: false
+    t.boolean "use_profile_image", default: false, null: false
+    t.jsonb "media_adjustments", default: {}, null: false
+    t.string "text_order", default: "title_first", null: false
+    t.string "title_alignment"
+    t.string "body_alignment"
     t.index ["page_id", "publication_state", "anchor"], name: "index_sections_on_page_state_anchor", unique: true, where: "(anchor IS NOT NULL)"
     t.index ["page_id", "publication_state", "position"], name: "index_sections_on_page_state_position"
     t.index ["page_id"], name: "index_sections_on_page_id"
@@ -156,6 +196,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_24_182000) do
     t.float "profile_image_zoom", default: 1.0, null: false
     t.integer "profile_image_position_x", default: 50, null: false
     t.integer "profile_image_position_y", default: 50, null: false
+    t.boolean "demo_contacts", default: false, null: false
   end
 
   create_table "users", force: :cascade do |t|
@@ -173,5 +214,6 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_24_182000) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "section_items", "sections"
+  add_foreign_key "section_slides", "sections"
   add_foreign_key "sections", "pages"
 end

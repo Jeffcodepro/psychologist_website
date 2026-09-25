@@ -10,8 +10,13 @@
     </p>
   </div>
 
-  <% if %w[hero text_image].include?(section.section_type) %>
-    <div class="section-setting-group">
+
+    <div class="admin-section-editor__input-grid">
+    <%= f.input :text_order, collection: [["Título acima do parágrafo", "title_first"], ["Parágrafo acima do título", "body_first"]], label: "Ordem do texto", include_blank: false %>
+    <%= f.input :title_alignment, collection: [["Esquerda", "left"], ["Centro", "center"], ["Direita", "right"]], label: "Alinhamento do título", include_blank: "Usar alinhamento da seção" %>
+    <%= f.input :body_alignment, collection: [["Esquerda", "left"], ["Centro", "center"], ["Direita", "right"]], label: "Alinhamento do parágrafo", include_blank: "Usar alinhamento da seção" %>
+  </div>
+  <div class="section-setting-group">
       <div class="section-setting-group__heading">
         <strong>Posição da imagem</strong>
         <span>Escolha a relação entre texto e fotografia.</span>
@@ -110,7 +115,6 @@
         <% end %>
       </div>
     </div>
-  <% end %>
 
   <div class="section-setting-group">
     <div class="section-setting-group__heading">

@@ -11,8 +11,17 @@ export default class extends Controller {
     updateUrl: String
   }
 
+  async selectImageLayout(event) {
+    if (await this.save({ media_layout: event.target.value })) this.announce("Posição da imagem salva nesta tela")
+  }
+
+  selectBannerLayout(event) { this.applyBannerLayout(event.target.value) }
+
   connect() {
     this.dragType = null
+    this.onDevice = () => this.syncSelections()
+    document.addEventListener("cms:editing-device", this.onDevice)
+    this.syncSelections()
 
     this.pointerMove = this.pointerMove.bind(this)
     this.pointerUp = this.pointerUp.bind(this)
@@ -28,7 +37,13 @@ export default class extends Controller {
     )
   }
 
+  syncSelections() {
+    const device = document.documentElement.dataset.editingDevice || (innerWidth <= 600 ? "mobile" : innerWidth <= 1024 ? "tablet" : "desktop")
+    this.element.querySelectorAll("[data-layout-values]").forEach(select => { select.value = JSON.parse(select.dataset.layoutValues)[device] })
+  }
+
   disconnect() {
+    document.removeEventListener("cms:editing-device", this.onDevice)
     document.removeEventListener(
       "pointermove",
       this.pointerMove
@@ -159,98 +174,18 @@ export default class extends Controller {
     this.finishDrag()
   }
 
-  applyBannerLayout(position) {
-    if (
-      ![
-        "top",
-        "background",
-        "bottom"
-      ].includes(position)
-    ) {
-      return
-    }
-
-    const frame =
-      this.sectionFrame()
-
-    if (!frame) return
-
-    frame.classList.remove(
-      "section-frame--top",
-      "section-frame--background",
-      "section-frame--bottom"
-    )
-
-    frame.classList.add(
-      `section-frame--${position}`
-    )
-
-    this.save({
-      banner_layout: position
-    })
-
-    const message = {
-      top: "Imagem movida para cima",
-      background: "Imagem aplicada como fundo",
-      bottom: "Imagem movida para baixo"
-    }[position]
-
-    this.announce(message)
+  async applyBannerLayout(position) {
+    if (!["top", "background", "bottom"].includes(position)) return
+    if (await this.save({ banner_layout: position })) this.announce("Banner atualizado nesta tela")
   }
 
-  applyContentLayout(position) {
-    const section =
-      this.contentSection()
-
-    if (!section) return
-
-    let layout
-
-    if (this.dragType === "media") {
-      layout = {
-        left: "text_right",
-        right: "text_left",
-        top: "media_top",
-        bottom: "media_bottom"
-      }[position]
-    }
-
-    if (this.dragType === "content") {
-      layout = {
-        left: "text_left",
-        right: "text_right",
-        top: "media_bottom",
-        bottom: "media_top"
-      }[position]
-    }
-
-    if (!layout) return
-
-    const prefix =
-      section.classList.contains(
-        "hero-section"
-      ) ?
-        "hero-section" :
-        "text-image-section"
-
-    section.classList.remove(
-      `${prefix}--text_left`,
-      `${prefix}--text_right`,
-      `${prefix}--media_top`,
-      `${prefix}--media_bottom`
-    )
-
-    section.classList.add(
-      `${prefix}--${layout}`
-    )
-
-    this.save({
-      media_layout: layout
-    })
-
-    this.announce(
-      "Composição atualizada"
-    )
+  async applyContentLayout(position) {
+    if (!this.contentSection()) return
+    const layouts = this.dragType === "media" ?
+      { left: "text_right", right: "text_left", top: "media_top", bottom: "media_bottom" } :
+      { left: "text_left", right: "text_right", top: "media_bottom", bottom: "media_top" }
+    const layout = layouts[position]
+    if (layout && await this.save({ media_layout: layout })) this.announce("Composição atualizada nesta tela")
   }
 
   sectionFrame() {
@@ -274,7 +209,7 @@ export default class extends Controller {
     if (!frame) return null
 
     return frame.querySelector(
-      ".hero-section, .text-image-section"
+      ".flexible-section, .hero-section, .text-image-section"
     )
   }
 
@@ -284,10 +219,13 @@ export default class extends Controller {
     const formData =
       new FormData()
 
+    const device = document.documentElement.dataset.editingDevice ||
+      (window.innerWidth <= 600 ? "mobile" : window.innerWidth <= 1024 ? "tablet" : "desktop")
+
     Object.entries(fields).forEach(
       ([key, value]) => {
         formData.append(
-          `section[${key}]`,
+          device === "desktop" ? `section[${key}]` : `section[responsive_settings][${device}][${key}]`,
           value
         )
       }
@@ -316,14 +254,28 @@ export default class extends Controller {
       const data =
         await response.json()
 
-      if (!data.success) {
-        throw new Error()
-      }
+      if (!data.success) throw new Error()
+      const frame = this.sectionFrame()
+      frame.style.cssText = data.style_variables
+      frame.querySelectorAll("[data-layout-values]").forEach(select => {
+        const key = select.dataset.action.includes("selectImageLayout") ? "media_layout" : "banner_layout"
+        if (fields[key]) {
+          const values = JSON.parse(select.dataset.layoutValues)
+          values[device] = fields[key]
+          select.dataset.layoutValues = JSON.stringify(values)
+        }
+      })
+      frame.dataset.bannerTablet = data.banner_tablet
+      frame.dataset.bannerMobile = data.banner_mobile
+      frame.classList.remove("section-frame--top", "section-frame--background", "section-frame--bottom")
+      frame.classList.add(`section-frame--${data.banner_layout}`)
+      return true
     } catch (_error) {
       this.announce(
         "Não foi possível salvar",
         true
       )
+      return false
     }
   }
 

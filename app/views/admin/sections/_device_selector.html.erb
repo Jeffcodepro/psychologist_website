@@ -1,0 +1,6 @@
+<div class="device-appearance__selector" role="group" aria-label="Tela que deseja editar">
+  <% { "desktop" => "Desktop", "tablet" => "Tablet", "mobile" => "Mobile" }.each do |device, label| %>
+    <button type="button" data-device="<%= device %>" data-device-appearance-target="button" data-action="device-appearance#choose" aria-pressed="<%= device == 'desktop' %>"><%= label %></button>
+  <% end %>
+</div>
+<p class="device-appearance__notice" data-device-appearance-target="notice" aria-live="polite"></p>

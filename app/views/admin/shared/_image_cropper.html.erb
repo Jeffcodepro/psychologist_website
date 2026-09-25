@@ -1,0 +1,91 @@
+<%
+  media = local_assigns.fetch(:media, "image")
+  kind = local_assigns.fetch(:kind, media)
+  device = local_assigns[:device]
+  attachment = local_assigns.fetch(:attachment) { record.public_send(media) }
+  is_card = record.is_a?(SectionItem)
+  shape = kind == "banner" ? "rectangle" : (device ? record.visual_value("image_shape", device) : record.image_shape)
+  shape = local_assigns.fetch(:shape, shape) || "rounded"
+  scope = device ? "section[responsive_settings][#{device}]" : f.object_name
+  crop_value = ->(field) { device ? record.visual_value(field, device) : record.public_send(field) }
+  input_value = ->(field) { device ? record.responsive_settings.dig(device, field) : record.public_send(field) }
+  input_id = "crop_#{f.object_name}_#{record.id || 'new'}_#{device || 'desktop'}_#{media}"
+%>
+<article class="image-cropper" data-controller="image-cropper"
+         data-image-cropper-shape-value="<%= shape %>"
+         data-image-cropper-adjustments-value="<%= MediaAdjustable::ADJUSTMENTS.keys.to_h { |key| [key, record.media_adjustment(media, key)] }.to_json %>"
+         data-image-cropper-base-shape-value="<%= record.image_shape %>"
+         data-image-cropper-shape-field-value="<%= scope %>[image_shape]"
+         data-image-cropper-kind-value="<%= is_card ? 'card' : kind %>"
+         data-image-cropper-x-value="<%= record.public_send("#{media}_position_x") %>"
+         data-image-cropper-y-value="<%= record.public_send("#{media}_position_y") %>"
+         data-image-cropper-zoom-value="<%= record.public_send("#{media}_zoom") %>">
+  <header class="image-cropper__header">
+    <h3><%= title %></h3>
+    <% if media == "banner" %><p>O recorte do banner se adapta à largura da tela. Quando usado como fundo, também acompanha a altura do conteúdo.</p><% end %>
+    <p><%= device ? "O enquadramento é exclusivo desta tela. A imagem original é compartilhada." : "Escolha a foto, arraste para posicionar e ajuste o zoom. A área da moldura mostra o recorte que será exibido." %></p>
+  </header>
+  <div class="image-cropper__workspace">
+    <div>
+      <div class="image-cropper__stage">
+        <div class="image-cropper__frame" data-image-cropper-target="frame"
+             data-action="pointerdown->image-cropper#start pointermove->image-cropper#move pointerup->image-cropper#stop pointercancel->image-cropper#stop">
+          <%= image_tag(attachment.attached? ? url_for(attachment) : "", alt: "Prévia do enquadramento", class: attachment.attached? ? "" : "is-hidden", draggable: false, data: { image_cropper_target: "image", action: "load->image-cropper#loaded" }) %>
+          <div class="image-cropper__empty <%= 'is-hidden' if attachment.attached? %>" data-image-cropper-target="empty">Selecione uma imagem para começar</div>
+          <div class="image-cropper__grid" aria-hidden="true"></div>
+        </div>
+      </div>
+      <p class="image-cropper__dimensions" data-image-cropper-target="dimensions" aria-live="polite">JPG, PNG ou WebP · <%= kind == "banner" ? "sugestão: 1920 × 760 px" : (is_card ? "sugestão: 1200 × 750 px" : "sugestão: 1200 × 1500 px") %></p>
+      <% unless device %>
+        <button type="button" class="admin-button-secondary" data-action="image-cropper#choose"><%= attachment.attached? ? "Trocar imagem" : "Escolher imagem" %></button>
+        <%= f.file_field media, id: "#{input_id}_file", accept: "image/png,image/jpeg,image/webp", hidden: true, tabindex: -1, data: { image_cropper_target: "file", action: "change->image-cropper#fileChanged" } %>
+      <% end %>
+    </div>
+    <div class="image-cropper__tools">
+      <% if is_card %>
+        <%= f.label :image_shape, "Formato da imagem" %>
+        <%= f.select :image_shape, SectionsHelper::SHAPE_OPTIONS, {}, data: { image_cropper_target: "shape", action: "change->image-cropper#shapeChanged" } %>
+      <% end %>
+      <% [["zoom", "Zoom", 1, 3, 0.01], ["position_x", "Posição horizontal", 0, 100, 1], ["position_y", "Posição vertical", 0, 100, 1]].each do |suffix, label, min, max, step| %>
+        <% field = "#{media}_#{suffix}"; target = { "zoom" => "zoom", "position_x" => "x", "position_y" => "y" }.fetch(suffix) %>
+        <label for="<%= input_id %>_<%= suffix %>"><%= label %> <output data-image-cropper-target="<%= target %>Label"></output></label>
+        <input type="range" id="<%= input_id %>_<%= suffix %>" min="<%= min %>" max="<%= max %>" step="<%= step %>" value="<%= crop_value.call(field) %>" data-image-cropper-target="<%= target %>" data-action="input->image-cropper#changed">
+        <%= hidden_field_tag "#{scope}[#{field}]", input_value.call(field), id: "#{input_id}_stored_#{suffix}", data: { image_cropper_target: "#{target}Field" } %>
+      <% end %>
+      <% unless device %>
+        <details class="image-cropper__adjustments" open>
+          <summary>Girar e espelhar</summary>
+          <label for="<%= input_id %>_rotation">Rotação</label>
+          <%= range_field_tag "#{scope}[media_adjustments][#{media}][rotation]", record.media_adjustment(media, "rotation"), min: -180, max: 180, step: 1, id: "#{input_id}_rotation", data: { image_cropper_target: "adjustment", adjustment: "rotation", action: "input->image-cropper#render" } %>
+          <div class="image-cropper__flip-buttons">
+            <% { "flip_x" => "Espelhar horizontal", "flip_y" => "Espelhar vertical" }.each do |key, label| %>
+              <%= hidden_field_tag "#{scope}[media_adjustments][#{media}][#{key}]", record.media_adjustment(media, key), id: "#{input_id}_#{key}", data: { image_cropper_target: "adjustment", adjustment: key } %>
+              <button type="button" class="admin-button-secondary" data-flip="<%= key %>" data-action="image-cropper#flip" aria-pressed="<%= record.media_adjustment(media, key).to_i == -1 %>"><%= label %></button>
+            <% end %>
+          </div>
+          <small>Após girar, ajuste o zoom para preencher a moldura.</small>
+        </details>
+        <details class="image-cropper__adjustments">
+          <summary>Filtros e ajustes de cor</summary>
+          <div class="image-cropper__flip-buttons">
+            <button type="button" class="admin-button-secondary" data-action="image-cropper#filter" data-filter="natural">Original</button>
+            <button type="button" class="admin-button-secondary" data-action="image-cropper#filter" data-filter="mono">Preto e branco</button>
+            <button type="button" class="admin-button-secondary" data-action="image-cropper#filter" data-filter="soft">Suave</button>
+          </div>
+          <% { "brightness" => "Brilho", "contrast" => "Contraste", "saturation" => "Saturação" }.each do |key, label| %>
+            <label for="<%= input_id %>_<%= key %>"><%= label %></label>
+            <%= range_field_tag "#{scope}[media_adjustments][#{media}][#{key}]", record.media_adjustment(media, key), min: 0, max: 200, id: "#{input_id}_#{key}", data: { image_cropper_target: "adjustment", adjustment: key, action: "input->image-cropper#render" } %>
+          <% end %>
+        </details>
+      <% end %>
+      <button type="button" class="admin-button-secondary" data-action="image-cropper#reset">Centralizar e redefinir zoom</button>
+      <% if device %>
+        <button type="button" class="admin-button-quiet" data-action="image-cropper#inherit">Usar enquadramento do desktop</button>
+      <% elsif is_card && attachment.attached? %>
+        <%= f.input :remove_image, as: :boolean, label: "Remover imagem ao salvar" %>
+      <% end %>
+      <small>O recorte será salvo junto com as alterações do formulário.</small>
+      <p class="image-cropper__error" data-image-cropper-target="error" role="alert"></p>
+    </div>
+  </div>
+</article>

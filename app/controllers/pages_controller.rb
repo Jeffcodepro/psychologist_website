@@ -3,10 +3,8 @@ class PagesController < ApplicationController
   before_action :set_navigation_pages
 
   def home
-    @page = Page.find_by!(
-      slug: "home",
-      published: true
-    )
+    @page = Page.find_by(slug: "home", published: true) || Page.published.ordered.first
+    raise ActiveRecord::RecordNotFound unless @page
 
     load_sections
   end

@@ -1,6 +1,8 @@
 class Page < ApplicationRecord
   has_many :sections, dependent: :destroy
 
+  before_validation :generate_slug, on: :create
+
   validates :name, presence: true
   validates :slug, presence: true, uniqueness: true
   validates :slug,
@@ -65,6 +67,10 @@ class Page < ApplicationRecord
     else
       seo_description.presence || description
     end
+  end
+
+  def generate_slug
+    self.slug = name.to_s.parameterize if slug.blank?
   end
 
   def home?

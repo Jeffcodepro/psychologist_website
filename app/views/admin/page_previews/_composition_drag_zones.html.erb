@@ -1,0 +1,102 @@
+<% if local_assigns[:layout] %>
+  <div
+    class="preview-layout-zones"
+    data-preview-composition-target="layoutZones"
+    hidden
+  >
+    <button
+      type="button"
+      class="preview-layout-zone preview-layout-zone--top"
+      data-layout-position="top"
+      data-action="click->preview-composition#chooseLayout"
+    >
+      <span>↑</span>
+      <strong>Acima</strong>
+    </button>
+
+    <button
+      type="button"
+      class="preview-layout-zone preview-layout-zone--left"
+      data-layout-position="left"
+      data-action="click->preview-composition#chooseLayout"
+    >
+      <span>←</span>
+      <strong>Esquerda</strong>
+    </button>
+
+    <button
+      type="button"
+      class="preview-layout-zone preview-layout-zone--right"
+      data-layout-position="right"
+      data-action="click->preview-composition#chooseLayout"
+    >
+      <span>→</span>
+      <strong>Direita</strong>
+    </button>
+
+    <button
+      type="button"
+      class="preview-layout-zone preview-layout-zone--bottom"
+      data-layout-position="bottom"
+      data-action="click->preview-composition#chooseLayout"
+    >
+      <span>↓</span>
+      <strong>Abaixo</strong>
+    </button>
+  </div>
+<% end %>
+
+<% if local_assigns[:banner] %>
+  <div
+    class="preview-banner-zones"
+    data-preview-composition-target="bannerZones"
+    hidden
+  >
+    <button
+      type="button"
+      class="preview-banner-zone preview-banner-zone--top"
+      data-banner-position="top"
+      data-action="click->preview-composition#chooseBanner"
+    >
+      <span class="preview-banner-zone__icon">↑</span>
+
+      <div>
+        <strong>Faixa acima</strong>
+        <small>Sem conteúdo sobre a imagem</small>
+      </div>
+    </button>
+
+    <button
+      type="button"
+      class="preview-banner-zone preview-banner-zone--background"
+      data-banner-position="background"
+      data-action="click->preview-composition#chooseBanner"
+    >
+      <span class="preview-banner-zone__icon">▣</span>
+
+      <div>
+        <strong>Usar como fundo</strong>
+        <small>Conteúdo sobre a imagem</small>
+      </div>
+    </button>
+
+    <button
+      type="button"
+      class="preview-banner-zone preview-banner-zone--bottom"
+      data-banner-position="bottom"
+      data-action="click->preview-composition#chooseBanner"
+    >
+      <span class="preview-banner-zone__icon">↓</span>
+
+      <div>
+        <strong>Faixa abaixo</strong>
+        <small>Imagem depois do conteúdo</small>
+      </div>
+    </button>
+  </div>
+<% end %>
+
+<div
+  class="preview-composition-status"
+  data-preview-composition-target="status"
+></div>

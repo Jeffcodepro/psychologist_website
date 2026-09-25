@@ -1,0 +1,235 @@
+<div class="admin-overview">
+
+  <!-- ==================================================
+       HEADER
+  =================================================== -->
+
+  <header class="admin-page-heading">
+
+    <div>
+
+      <span class="admin-page-eyebrow">
+        Painel administrativo
+      </span>
+
+      <h1>
+        Visão geral
+      </h1>
+
+      <p>
+        Acompanhe o conteúdo, publicação e configuração do site.
+      </p>
+
+    </div>
+
+  </header>
+
+
+  <!-- ==================================================
+       STATS
+  =================================================== -->
+
+  <div class="admin-stats-grid">
+
+    <article class="admin-stat-card">
+
+      <span class="admin-stat-card__label">
+        Páginas
+      </span>
+
+      <strong>
+        <%= @pages.count %>
+      </strong>
+
+      <span>
+        páginas cadastradas
+      </span>
+
+    </article>
+
+
+    <article class="admin-stat-card">
+
+      <span class="admin-stat-card__label">
+        Rascunho
+      </span>
+
+      <strong>
+        <%= @draft_sections_count %>
+      </strong>
+
+      <span>
+        seções em edição
+      </span>
+
+    </article>
+
+
+    <article class="admin-stat-card">
+
+      <span class="admin-stat-card__label">
+        Publicado
+      </span>
+
+      <strong>
+        <%= @published_sections_count %>
+      </strong>
+
+      <span>
+        seções publicadas
+      </span>
+
+    </article>
+
+
+    <article class="admin-stat-card">
+
+      <span class="admin-stat-card__label">
+        SEO
+      </span>
+
+      <% if @seo_configured %>
+
+        <strong class="admin-stat-card__status-success">
+          Configurado
+        </strong>
+
+        <span>
+          título e descrição definidos
+        </span>
+
+      <% else %>
+
+        <strong class="admin-stat-card__status-warning">
+          Pendente
+        </strong>
+
+        <span>
+          complete as informações de SEO
+        </span>
+
+      <% end %>
+
+    </article>
+
+  </div>
+
+
+  <!-- ==================================================
+       QUICK ACTIONS
+  =================================================== -->
+
+  <div class="admin-overview-grid">
+
+    <% if @home_page.present? %>
+
+      <article class="admin-overview-card">
+
+        <span class="admin-overview-card__eyebrow">
+          Página principal
+        </span>
+
+        <h2>
+          Home
+        </h2>
+
+        <p>
+          Edite os textos, imagens, cards
+          e organização da página principal.
+        </p>
+
+
+        <div class="admin-overview-card__actions">
+
+          <%= link_to(
+                "Editar conteúdo",
+                admin_page_sections_path(
+                  @home_page
+                ),
+                class:
+                  "admin-button admin-button--primary"
+              ) %>
+
+
+          <%= link_to(
+                "Pré-visualizar",
+                admin_page_preview_path(
+                  @home_page
+                ),
+                class:
+                  "admin-button-secondary"
+              ) %>
+
+        </div>
+
+      </article>
+
+    <% end %>
+
+
+    <article class="admin-overview-card">
+
+      <span class="admin-overview-card__eyebrow">
+        Busca e compartilhamento
+      </span>
+
+      <h2>
+        SEO
+      </h2>
+
+      <p>
+        Configure como o site aparece no Google
+        e quando seus links são compartilhados.
+      </p>
+
+
+      <div class="admin-overview-card__actions">
+
+        <%= link_to(
+              @seo_configured ?
+                "Revisar SEO" :
+                "Configurar SEO",
+              edit_admin_site_setting_path(
+                anchor: "seo"
+              ),
+              class:
+                "admin-button-secondary"
+            ) %>
+
+      </div>
+
+    </article>
+
+
+    <article class="admin-overview-card">
+
+      <span class="admin-overview-card__eyebrow">
+        Site
+      </span>
+
+      <h2>
+        Configurações
+      </h2>
+
+      <p>
+        Dados profissionais, contato,
+        redes sociais e identidade visual.
+      </p>
+
+
+      <div class="admin-overview-card__actions">
+
+        <%= link_to(
+              "Abrir configurações",
+              edit_admin_site_setting_path,
+              class:
+                "admin-button-secondary"
+            ) %>
+
+      </div>
+
+    </article>
+
+  </div>
+
+</div>

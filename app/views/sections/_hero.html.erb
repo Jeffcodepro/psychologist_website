@@ -1,0 +1,131 @@
+<%
+  preview_mode =
+    request.path.include?("/admin/pages/") &&
+    request.path.include?("/preview/frame")
+
+  profile_image =
+    if section.image.attached?
+      section.image
+    elsif @site_setting&.profile_image&.attached?
+      @site_setting.profile_image
+    end
+
+  whatsapp_number =
+    @site_setting&.whatsapp.to_s.gsub(/\D/, "")
+
+  appointment_label =
+    I18n.locale == :en ?
+      "Book a session" :
+      "Agendar atendimento"
+
+  image_x = section.effective_image_position_x
+  image_y = section.effective_image_position_y
+  image_zoom = section.effective_image_zoom
+
+  media_layout = section.effective_media_layout
+  media_size = section.effective_media_size
+  image_shape = section.effective_image_shape
+%>
+
+<section
+  class="
+    hero-section
+    hero-section--<%= media_layout %>
+    hero-section--media-<%= media_size %>
+    <%= "hero-section--with-profile" if profile_image.present? %>
+  "
+  id="<%= section.anchor if section.anchor.present? %>"
+  data-section-id="<%= section.id %>"
+>
+  <div class="container hero-section__container">
+    <div class="hero-section__layout">
+      <div class="hero-section__copy">
+        <% if preview_mode && profile_image.present? %>
+          <button
+            type="button"
+            class="preview-element-handle preview-element-handle--content"
+            data-action="pointerdown->preview-composition#startContentDrag"
+          >
+            <span class="preview-element-handle__grip">⠿</span>
+            <span>Mover conteúdo</span>
+          </button>
+        <% end %>
+
+        <span class="hero-section__eyebrow">
+          <%= I18n.locale == :en ?
+                "Understand. Reframe. Develop." :
+                "Compreender. Ressignificar. Desenvolver." %>
+        </span>
+
+        <% if section.localized_title.present? %>
+          <h1
+            class="hero-section__title"
+            style="
+              font-size: <%= section.title_font_size_desktop %>px;
+              text-align: <%= section.text_alignment %>;
+            "
+          >
+            <%= section.localized_title %>
+          </h1>
+        <% end %>
+
+        <% if section.localized_body.present? %>
+          <div
+            class="hero-section__body"
+            style="
+              font-size: <%= section.body_font_size_desktop %>px;
+              text-align: <%= section.text_alignment %>;
+            "
+          >
+            <%= simple_format(section.localized_body) %>
+          </div>
+        <% end %>
+
+        <% if whatsapp_number.present? %>
+          <div class="hero-section__actions">
+            <%= link_to(
+                  appointment_label,
+                  "https://wa.me/#{whatsapp_number}",
+                  target: "_blank",
+                  rel: "noopener",
+                  class: "hero-section__primary-action"
+                ) %>
+          </div>
+        <% end %>
+      </div>
+
+      <% if profile_image.present? %>
+        <div class="hero-section__profile">
+          <div
+            class="
+              hero-section__profile-frame
+              hero-section__profile-frame--<%= image_shape %>
+            "
+          >
+            <%= image_tag(
+                  profile_image,
+                  alt: @site_setting&.professional_name.presence || "Rosemary Dias",
+                  class: "hero-section__profile-image",
+                  style: "
+                    object-position: #{image_x}% #{image_y}%;
+                    transform: scale(#{image_zoom});
+                    transform-origin: #{image_x}% #{image_y}%;
+                  "
+                ) %>
+
+            <% if preview_mode %>
+              <button
+                type="button"
+                class="preview-element-handle preview-element-handle--image"
+                data-action="pointerdown->preview-composition#startMediaDrag"
+              >
+                <span class="preview-element-handle__grip">⠿</span>
+                <span>Mover imagem</span>
+              </button>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>

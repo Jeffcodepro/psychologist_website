@@ -1,0 +1,59 @@
+<article
+  class="
+    psychology-card
+    <%= "psychology-card--with-image" if item.image.attached? %>
+  "
+  data-card-id="<%= item.id %>"
+>
+
+  <% if item.image.attached? %>
+
+    <div class="psychology-card__media">
+
+      <%= image_tag(
+            item.image,
+            alt: item.localized_title.presence || "Card",
+            class: "psychology-card__image",
+            loading: "lazy"
+          ) %>
+
+    </div>
+
+  <% end %>
+
+
+  <div class="psychology-card__content">
+
+    <span
+      class="psychology-card__number"
+      aria-hidden="true"
+    >
+      <%= format(
+            "%02d",
+            index + 1
+          ) %>
+    </span>
+
+
+    <% if item.localized_title.present? %>
+
+      <h3 class="psychology-card__title">
+        <%= item.localized_title %>
+      </h3>
+
+    <% end %>
+
+
+    <% if item.localized_body.present? %>
+
+      <div class="psychology-card__body">
+        <%= simple_format(
+              item.localized_body
+            ) %>
+      </div>
+
+    <% end %>
+
+  </div>
+
+</article>

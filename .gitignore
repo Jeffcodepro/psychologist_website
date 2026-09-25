@@ -39,3 +39,16 @@
 # Ignore Mac and Linux file system files
 *.swp
 .DS_Store
+
+# Secrets locais
+.env
+.env.*
+!.env.example
+config/master.key
+config/credentials/*.key
+
+# Arquivos locais
+.DS_Store
+log/*
+tmp/*
+storage/*

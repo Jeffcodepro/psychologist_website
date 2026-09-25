@@ -1,0 +1,25 @@
+<section class="site-section text-image-section">
+  <div class="container">
+    <div class="text-image-content">
+
+      <div class="text-image-copy">
+        <% if section.localized_title.present? %>
+          <h2 class="section-heading"><%= section.localized_title %></h2>
+        <% end %>
+
+        <% if section.localized_body.present? %>
+          <%= simple_format(section.localized_body) %>
+        <% end %>
+      </div>
+
+      <% if section.image.attached? %>
+        <div class="text-image-media">
+          <%= image_tag section.image,
+                        alt: section.localized_title,
+                        class: "img-fluid" %>
+        </div>
+      <% end %>
+
+    </div>
+  </div>
+</section>

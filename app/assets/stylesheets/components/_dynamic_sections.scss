@@ -1,0 +1,70 @@
+.dynamic-section {
+  --section-title-font: "Playfair Display", serif;
+  --section-body-font: "DM Sans", sans-serif;
+
+  --section-title-size-desktop: 48px;
+  --section-title-size-mobile: 34px;
+
+  --section-body-size-desktop: 18px;
+  --section-body-size-mobile: 16px;
+
+  --section-text-align: left;
+
+
+  .section-heading {
+    margin-top: 0;
+
+    font-family:
+      var(--section-title-font);
+
+    font-size:
+      var(--section-title-size-desktop);
+
+    text-align:
+      var(--section-text-align);
+  }
+
+
+  .section-body {
+    font-family:
+      var(--section-body-font);
+
+    font-size:
+      var(--section-body-size-desktop);
+
+    text-align:
+      var(--section-text-align);
+
+    p {
+      font: inherit;
+
+      text-align: inherit;
+    }
+  }
+
+
+  &--light {
+    color: #ffffff;
+
+    .section-heading,
+    .section-body,
+    .section-body p {
+      color: #ffffff;
+    }
+  }
+}
+
+
+@media (max-width: 768px) {
+  .dynamic-section {
+    .section-heading {
+      font-size:
+        var(--section-title-size-mobile);
+    }
+
+    .section-body {
+      font-size:
+        var(--section-body-size-mobile);
+    }
+  }
+}

@@ -1,0 +1,191 @@
+<div
+  class="admin-form-card"
+  data-controller="translation"
+  data-translation-url-value="<%= admin_translation_path %>"
+>
+
+  <%= simple_form_for(
+        [
+          :admin,
+          @page,
+          @section,
+          @section_item
+        ]
+      ) do |f| %>
+
+
+    <div class="admin-form-group">
+
+      <h2>
+        Conteúdo em português
+      </h2>
+
+
+      <%= f.input :title,
+                  label: "Título",
+                  input_html: {
+                    data: {
+                      translation_target:
+                        "titlePt"
+                    }
+                  } %>
+
+
+      <%= f.input :body,
+                  as: :text,
+                  label: "Texto",
+                  input_html: {
+                    rows: 6,
+                    data: {
+                      translation_target:
+                        "bodyPt"
+                    }
+                  } %>
+
+    </div>
+
+
+    <div class="admin-form-group">
+
+      <div class="admin-form-group__header">
+
+        <div>
+
+          <h2>
+            Versão em inglês
+          </h2>
+
+          <p>
+            Você pode gerar a tradução automaticamente.
+          </p>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="admin-button-secondary"
+          data-translation-target="button"
+          data-action="click->translation#translate"
+        >
+          Traduzir com IA
+        </button>
+
+      </div>
+
+
+      <%= f.input :title_en,
+                  label: "Título em inglês",
+                  input_html: {
+                    data: {
+                      translation_target:
+                        "titleEn"
+                    }
+                  } %>
+
+
+      <%= f.input :body_en,
+                  as: :text,
+                  label: "Texto em inglês",
+                  input_html: {
+                    rows: 6,
+                    data: {
+                      translation_target:
+                        "bodyEn"
+                    }
+                  } %>
+
+    </div>
+
+
+    <div
+      class="admin-form-group"
+      data-controller="asset-preview"
+    >
+
+      <h2>
+        Imagem
+      </h2>
+
+      <p class="preview-editor-help">
+        Opcional. Se não houver imagem, o card será exibido somente com texto.
+      </p>
+
+
+      <div class="admin-asset-preview admin-asset-preview--banner">
+
+        <img
+          src="<%= url_for(@section_item.image) if @section_item.image.attached? %>"
+          alt=""
+          class="admin-asset-preview__image <%= "is-hidden" unless @section_item.image.attached? %>"
+          data-asset-preview-target="preview"
+        >
+
+        <div
+          class="admin-asset-preview__empty <%= "is-hidden" if @section_item.image.attached? %>"
+          data-asset-preview-target="empty"
+        >
+          Prévia da imagem
+        </div>
+
+      </div>
+
+
+      <%= f.input :image,
+                  as: :file,
+                  label: "Escolher imagem",
+                  input_html: {
+                    accept: "image/*",
+                    data: {
+                      asset_preview_target: "input",
+                      action:
+                        "change->asset-preview#change"
+                    }
+                  } %>
+
+    </div>
+
+
+    <div class="admin-form-group">
+
+      <h2>
+        Exibição
+      </h2>
+
+
+      <%= f.input :position,
+                  as: :integer,
+                  label: "Ordem" %>
+
+
+      <%= f.input :visible,
+                  as: :boolean,
+                  label: "Exibir este card" %>
+
+    </div>
+
+
+    <div class="admin-form-actions">
+
+      <%= link_to(
+            "Cancelar",
+            admin_page_section_section_items_path(
+              @page,
+              @section
+            ),
+            class: "admin-button-secondary"
+          ) %>
+
+
+      <%= f.button :submit,
+                   @section_item.persisted? ?
+                     "Salvar card" :
+                     "Criar card",
+                   class:
+                     "admin-button admin-button--primary" %>
+
+    </div>
+
+  <% end %>
+
+</div>

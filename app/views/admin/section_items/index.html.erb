@@ -1,0 +1,185 @@
+<div class="admin-page-header">
+
+  <div>
+
+    <span class="admin-page-header__eyebrow">
+      Cards
+    </span>
+
+    <h1>
+      <%= @section.title.presence ||
+            "Gerenciar cards" %>
+    </h1>
+
+    <p>
+      Edite os conteúdos individuais desta seção.
+    </p>
+
+  </div>
+
+
+  <div class="admin-page-header__actions">
+
+    <%= link_to(
+          "← Voltar",
+          admin_page_sections_path(@page),
+          class: "admin-button-secondary"
+        ) %>
+
+    <%= link_to(
+          "+ Novo card",
+          new_admin_page_section_section_item_path(
+            @page,
+            @section
+          ),
+          class:
+            "admin-button admin-button--primary"
+        ) %>
+
+  </div>
+
+</div>
+
+
+<div class="admin-card-manager">
+
+  <% if @section_items.any? %>
+
+    <% @section_items.each_with_index do |item, index| %>
+
+      <article class="admin-card-item">
+
+        <div class="admin-card-item__position">
+          <%= format(
+                "%02d",
+                index + 1
+              ) %>
+        </div>
+
+
+        <% if item.image.attached? %>
+
+          <div class="admin-card-item__image">
+
+            <%= image_tag(
+                  item.image,
+                  alt: item.title
+                ) %>
+
+          </div>
+
+        <% end %>
+
+
+        <div class="admin-card-item__content">
+
+          <div class="admin-card-item__status">
+
+            <% if item.visible? %>
+
+              <span class="admin-status admin-status--success">
+                Visível
+              </span>
+
+            <% else %>
+
+              <span class="admin-status">
+                Oculto
+              </span>
+
+            <% end %>
+
+
+            <% if item.title_en.present? %>
+
+              <span class="admin-status admin-status--language">
+                EN
+              </span>
+
+            <% end %>
+
+          </div>
+
+
+          <h2>
+            <%= item.title %>
+          </h2>
+
+
+          <% if item.body.present? %>
+
+            <p>
+              <%= truncate(
+                    item.body,
+                    length: 180
+                  ) %>
+            </p>
+
+          <% end %>
+
+        </div>
+
+
+        <div class="admin-card-item__actions">
+
+          <%= link_to(
+                "Editar",
+                edit_admin_page_section_section_item_path(
+                  @page,
+                  @section,
+                  item
+                ),
+                class: "admin-button-secondary"
+              ) %>
+
+
+          <%= button_to(
+                "Excluir",
+                admin_page_section_section_item_path(
+                  @page,
+                  @section,
+                  item
+                ),
+                method: :delete,
+                class: "admin-button-danger",
+                form: {
+                  data: {
+                    turbo_confirm:
+                      "Tem certeza que deseja excluir este card?"
+                  }
+                }
+              ) %>
+
+        </div>
+
+      </article>
+
+    <% end %>
+
+  <% else %>
+
+    <div class="admin-empty-state">
+
+      <h2>
+        Nenhum card criado
+      </h2>
+
+      <p>
+        Adicione o primeiro card desta seção.
+      </p>
+
+      <%= link_to(
+            "Criar primeiro card",
+            new_admin_page_section_section_item_path(
+              @page,
+              @section
+            ),
+            class:
+              "admin-button admin-button--primary"
+          ) %>
+
+    </div>
+
+  <% end %>
+
+</div>

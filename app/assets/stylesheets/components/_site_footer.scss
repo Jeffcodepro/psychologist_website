@@ -1,0 +1,515 @@
+// ==================================================
+// SITE FOOTER
+// ==================================================
+
+.site-footer {
+  width: 100%;
+
+  padding: 58px 0 24px;
+
+  background: #22302c;
+
+  color: #f7f4ef;
+
+
+  // ------------------------------------------------
+  // TOP GRID
+  // ------------------------------------------------
+
+  &__top {
+    display: grid;
+
+    grid-template-columns:
+      minmax(320px, 1.4fr)
+      minmax(180px, 0.7fr)
+      minmax(220px, 0.8fr);
+
+    gap: 58px;
+
+    align-items: start;
+
+    padding-bottom: 38px;
+  }
+
+
+  // ------------------------------------------------
+  // BRAND
+  // ------------------------------------------------
+
+  &__brand {
+    max-width: 390px;
+  }
+
+
+  &__logo {
+    width: auto;
+    height: 54px;
+
+    max-width: 220px;
+
+    display: block;
+
+    margin-bottom: 18px;
+
+    object-fit: contain;
+    object-position: left center;
+  }
+
+
+  &__brand-name {
+    display: block;
+
+    font-family: $headers-font;
+
+    font-size: 2rem;
+    font-weight: 500;
+
+    line-height: 1;
+
+    color: #ffffff;
+  }
+
+
+  &__brand-subtitle {
+    display: block;
+
+    margin-top: 11px;
+
+    font-family: $body-font;
+
+    font-size: 0.62rem;
+    font-weight: 600;
+
+    line-height: 1.4;
+
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+
+    color: #b5c9c1;
+  }
+
+
+  &__description {
+    max-width: 390px;
+
+    margin: 24px 0 0;
+
+    font-family: $body-font;
+
+    font-size: 0.82rem;
+
+    line-height: 1.7;
+
+    color: rgba(247, 244, 239, 0.75);
+  }
+
+
+  // ------------------------------------------------
+  // CTA
+  // ------------------------------------------------
+
+  &__cta {
+    min-height: 47px;
+
+    margin-top: 25px;
+
+    padding: 0 22px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 100px;
+
+    background: #f7f4ef;
+
+    color: #22302c;
+
+    font-family: $body-font;
+
+    font-size: 0.73rem;
+    font-weight: 600;
+
+    text-decoration: none;
+
+    transition:
+      background 0.2s ease,
+      transform 0.2s ease;
+
+
+    &:hover {
+      background: #ffffff;
+
+      color: #22302c;
+
+      transform: translateY(-2px);
+    }
+  }
+
+
+  // ------------------------------------------------
+  // GROUPS
+  // ------------------------------------------------
+
+  &__group {
+    padding-top: 4px;
+  }
+
+
+  &__group-title {
+    display: block;
+
+    margin-bottom: 18px;
+
+    font-family: $body-font;
+
+    font-size: 0.61rem;
+    font-weight: 600;
+
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+
+    color: #9eb7ae;
+  }
+
+
+  &__links {
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 13px;
+  }
+
+
+  &__links a,
+  &__contact-link {
+    color: rgba(247, 244, 239, 0.8);
+
+    font-family: $body-font;
+
+    font-size: 0.76rem;
+    font-weight: 400;
+
+    line-height: 1.4;
+
+    text-decoration: none;
+
+    transition:
+      color 0.2s ease,
+      transform 0.2s ease;
+
+
+    &:hover {
+      color: #ffffff;
+
+      transform: translateX(3px);
+    }
+  }
+
+
+  // ------------------------------------------------
+  // SOCIAL LINKS
+  // ------------------------------------------------
+
+  &__social-link {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+    gap: 8px;
+
+
+    span:last-child {
+      color: #9eb7ae;
+
+      transition:
+        transform 0.2s ease;
+    }
+
+
+    &:hover {
+      span:last-child {
+        transform:
+          translate(
+            2px,
+            -2px
+          );
+      }
+    }
+  }
+
+
+  // ------------------------------------------------
+  // MIDDLE ROW
+  // ------------------------------------------------
+
+  &__middle {
+    min-height: 58px;
+
+    padding: 17px 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 30px;
+
+    border-top:
+      1px solid rgba(247, 244, 239, 0.11);
+
+    border-bottom:
+      1px solid rgba(247, 244, 239, 0.11);
+  }
+
+
+  &__professional {
+    display: flex;
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap: 9px;
+
+    font-family: $body-font;
+
+    font-size: 0.65rem;
+
+    color: rgba(247, 244, 239, 0.62);
+
+
+    strong {
+      color: rgba(247, 244, 239, 0.9);
+
+      font-weight: 600;
+    }
+  }
+
+
+  &__dot {
+    width: 3px;
+    height: 3px;
+
+    display: block;
+
+    border-radius: 50%;
+
+    background: #9eb7ae;
+  }
+
+
+  // ------------------------------------------------
+  // LANGUAGES
+  // ------------------------------------------------
+
+  &__languages {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+
+    > span {
+      color: rgba(247, 244, 239, 0.3);
+    }
+  }
+
+
+  &__language {
+    color: rgba(247, 244, 239, 0.52);
+
+    font-family: $body-font;
+
+    font-size: 0.65rem;
+    font-weight: 600;
+
+    text-decoration: none;
+
+    transition:
+      color 0.2s ease;
+
+
+    &:hover {
+      color: #ffffff;
+    }
+
+
+    &.is-active {
+      color: #ffffff;
+    }
+  }
+
+
+  // ------------------------------------------------
+  // BOTTOM
+  // ------------------------------------------------
+
+  &__bottom {
+    padding-top: 20px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 6px;
+
+    font-family: $body-font;
+
+    font-size: 0.58rem;
+
+    color: rgba(247, 244, 239, 0.43);
+  }
+}
+
+
+// ==================================================
+// TABLET
+// ==================================================
+
+@media (max-width: 960px) {
+  .site-footer {
+    padding-top: 52px;
+
+
+    &__top {
+      grid-template-columns:
+        minmax(280px, 1.2fr)
+        minmax(160px, 0.7fr)
+        minmax(180px, 0.8fr);
+
+      gap: 35px;
+    }
+  }
+}
+
+
+// ==================================================
+// MOBILE
+// ==================================================
+
+@media (max-width: 768px) {
+  .site-footer {
+    padding: 48px 0 22px;
+
+
+    &__top {
+      grid-template-columns:
+        1fr
+        1fr;
+
+      gap: 34px 26px;
+
+      padding-bottom: 32px;
+    }
+
+
+    &__brand {
+      grid-column: 1 / -1;
+
+      max-width: none;
+    }
+
+
+    &__brand-name {
+      font-size: 1.7rem;
+    }
+
+
+    &__description {
+      max-width: 430px;
+    }
+
+
+    &__middle {
+      align-items: flex-start;
+
+      flex-direction: column;
+
+      gap: 14px;
+
+      padding: 18px 0;
+    }
+
+
+    &__bottom {
+      flex-wrap: wrap;
+    }
+  }
+}
+
+
+// ==================================================
+// SMALL MOBILE
+// ==================================================
+
+@media (max-width: 480px) {
+  .site-footer {
+    &__top {
+      display: flex;
+
+      flex-direction: column;
+
+      gap: 30px;
+    }
+
+
+    &__brand {
+      padding-bottom: 2px;
+    }
+
+
+    &__brand-name {
+      font-size: 1.55rem;
+    }
+
+
+    &__description {
+      margin-top: 19px;
+    }
+
+
+    &__cta {
+      width: 100%;
+
+      margin-top: 22px;
+    }
+
+
+    &__group {
+      width: 100%;
+
+      padding-top: 0;
+    }
+
+
+    &__links {
+      gap: 11px;
+    }
+
+
+    &__professional {
+      align-items: flex-start;
+
+      flex-direction: column;
+
+      gap: 4px;
+    }
+
+
+    &__dot {
+      display: none;
+    }
+
+
+    &__bottom {
+      align-items: flex-start;
+
+      flex-direction: column;
+
+      gap: 3px;
+    }
+  }
+}

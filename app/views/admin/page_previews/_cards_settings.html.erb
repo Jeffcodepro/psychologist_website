@@ -1,0 +1,573 @@
+<section
+  class="preview-editor-group cards-settings"
+  data-controller="cards-settings"
+  data-cards-settings-section-id-value="<%= section.id %>"
+>
+
+  <!-- ==================================================
+       HEADER
+  =================================================== -->
+
+  <header class="cards-settings__header">
+
+    <div>
+      <span class="preview-editor-group__eyebrow">
+        Apresentação
+      </span>
+
+      <h3>
+        Layout dos cards
+      </h3>
+
+      <p>
+        Configure a organização, responsividade
+        e comportamento desta seção.
+      </p>
+    </div>
+
+  </header>
+
+
+  <!-- ==================================================
+       VALOR REAL SALVO NO RAILS
+  =================================================== -->
+
+  <%= f.hidden_field(
+        :cards_orientation,
+        value: section.cards_orientation.presence || "horizontal",
+        data: {
+          cards_settings_target: "orientationValue"
+        }
+      ) %>
+
+
+  <div class="cards-settings__workspace">
+
+    <!-- ==================================================
+         CONTROLES
+    =================================================== -->
+
+    <div class="cards-settings__controls">
+
+      <!-- ================================================
+           FORMATO
+      ================================================= -->
+
+      <div class="cards-settings__group">
+
+        <div class="cards-settings__group-heading">
+
+          <span class="cards-settings__group-number">
+            01
+          </span>
+
+          <div>
+            <strong>
+              Formato
+            </strong>
+
+            <small>
+              Como os cards serão organizados.
+            </small>
+          </div>
+
+        </div>
+
+
+        <div class="cards-layout-selector">
+
+          <!-- HORIZONTAL -->
+
+          <button
+            type="button"
+            class="
+              cards-layout-choice
+              <%= "is-selected" if section.cards_orientation != "vertical" %>
+            "
+            data-cards-settings-target="horizontalOption"
+            data-action="click->cards-settings#selectHorizontal"
+          >
+
+            <span class="cards-layout-choice__preview cards-layout-choice__preview--horizontal">
+
+              <span></span>
+              <span></span>
+              <span></span>
+
+            </span>
+
+
+            <span class="cards-layout-choice__copy">
+
+              <strong>
+                Horizontal
+              </strong>
+
+              <small>
+                Cards lado a lado
+              </small>
+
+            </span>
+
+
+            <span class="cards-layout-choice__check">
+              ✓
+            </span>
+
+          </button>
+
+
+          <!-- VERTICAL -->
+
+          <button
+            type="button"
+            class="
+              cards-layout-choice
+              <%= "is-selected" if section.cards_orientation == "vertical" %>
+            "
+            data-cards-settings-target="verticalOption"
+            data-action="click->cards-settings#selectVertical"
+          >
+
+            <span class="cards-layout-choice__preview cards-layout-choice__preview--vertical">
+
+              <span></span>
+              <span></span>
+              <span></span>
+
+            </span>
+
+
+            <span class="cards-layout-choice__copy">
+
+              <strong>
+                Vertical
+              </strong>
+
+              <small>
+                Cards largos empilhados
+              </small>
+
+            </span>
+
+
+            <span class="cards-layout-choice__check">
+              ✓
+            </span>
+
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <!-- ================================================
+           COMPORTAMENTO
+      ================================================= -->
+
+      <div
+        class="cards-settings__group"
+        data-cards-settings-target="wrapGroup"
+      >
+
+        <div class="cards-settings__group-heading">
+
+          <span class="cards-settings__group-number">
+            02
+          </span>
+
+          <div>
+            <strong>
+              Comportamento
+            </strong>
+
+            <small>
+              Controle a quebra ou o carrossel.
+            </small>
+          </div>
+
+        </div>
+
+
+        <div class="cards-setting-row">
+
+          <div class="cards-setting-row__copy">
+
+            <strong>
+              Quebrar em novas linhas
+            </strong>
+
+            <span>
+              Os próximos cards continuam
+              em uma nova linha.
+            </span>
+
+          </div>
+
+
+          <label class="admin-switch">
+
+            <%= f.check_box(
+                  :cards_wrap,
+                  {
+                    class: "admin-switch__input",
+                    data: {
+                      cards_settings_target: "wrap",
+                      action: "change->cards-settings#refresh"
+                    }
+                  },
+                  "1",
+                  "0"
+                ) %>
+
+            <span class="admin-switch__slider"></span>
+
+          </label>
+
+        </div>
+
+
+        <div
+          class="cards-carousel-notice"
+          data-cards-settings-target="carouselMessage"
+          hidden
+        >
+
+          <span class="cards-carousel-notice__icon">
+            ↔
+          </span>
+
+          <div>
+
+            <strong>
+              Modo carrossel
+            </strong>
+
+            <p>
+              Os cards ficarão em uma única linha,
+              com setas laterais e avanço automático.
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- ================================================
+           RESPONSIVIDADE
+      ================================================= -->
+
+      <div
+        class="cards-settings__group"
+        data-cards-settings-target="columnsGroup"
+      >
+
+        <div class="cards-settings__group-heading">
+
+          <span class="cards-settings__group-number">
+            03
+          </span>
+
+          <div>
+
+            <strong>
+              Quantidade visível
+            </strong>
+
+            <small
+              data-cards-settings-target="columnsDescription"
+            >
+              Quantos cards aparecem em cada linha.
+            </small>
+
+          </div>
+
+        </div>
+
+
+        <div class="cards-device-grid">
+
+          <!-- DESKTOP -->
+
+          <div class="cards-device-setting">
+
+            <div class="cards-device-setting__top">
+
+              <span class="cards-device-setting__device">
+                Desktop
+              </span>
+
+              <span class="cards-device-setting__shape cards-device-setting__shape--desktop"></span>
+
+            </div>
+
+
+            <%= f.select(
+                  :cards_columns_desktop,
+                  [
+                    ["1 card", 1],
+                    ["2 cards", 2],
+                    ["3 cards", 3],
+                    ["4 cards", 4]
+                  ],
+                  {},
+                  {
+                    class: "cards-device-setting__select",
+                    data: {
+                      cards_settings_target: "desktopColumns",
+                      action: "change->cards-settings#refresh"
+                    }
+                  }
+                ) %>
+
+          </div>
+
+
+          <!-- TABLET -->
+
+          <div class="cards-device-setting">
+
+            <div class="cards-device-setting__top">
+
+              <span class="cards-device-setting__device">
+                Tablet
+              </span>
+
+              <span class="cards-device-setting__shape cards-device-setting__shape--tablet"></span>
+
+            </div>
+
+
+            <%= f.select(
+                  :cards_columns_tablet,
+                  [
+                    ["1 card", 1],
+                    ["2 cards", 2],
+                    ["3 cards", 3]
+                  ],
+                  {},
+                  {
+                    class: "cards-device-setting__select",
+                    data: {
+                      cards_settings_target: "tabletColumns",
+                      action: "change->cards-settings#refresh"
+                    }
+                  }
+                ) %>
+
+          </div>
+
+
+          <!-- MOBILE -->
+
+          <div class="cards-device-setting">
+
+            <div class="cards-device-setting__top">
+
+              <span class="cards-device-setting__device">
+                Mobile
+              </span>
+
+              <span class="cards-device-setting__shape cards-device-setting__shape--mobile"></span>
+
+            </div>
+
+
+            <%= f.select(
+                  :cards_columns_mobile,
+                  [
+                    ["1 card", 1],
+                    ["2 cards", 2]
+                  ],
+                  {},
+                  {
+                    class: "cards-device-setting__select",
+                    data: {
+                      cards_settings_target: "mobileColumns",
+                      action: "change->cards-settings#refresh"
+                    }
+                  }
+                ) %>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- ================================================
+           CARROSSEL
+      ================================================= -->
+
+      <div
+        class="cards-settings__group"
+        data-cards-settings-target="carouselGroup"
+        hidden
+      >
+
+        <div class="cards-settings__group-heading">
+
+          <span class="cards-settings__group-number">
+            04
+          </span>
+
+          <div>
+            <strong>
+              Carrossel
+            </strong>
+
+            <small>
+              Configure o avanço automático.
+            </small>
+          </div>
+
+        </div>
+
+
+        <div class="cards-setting-row">
+
+          <div class="cards-setting-row__copy">
+
+            <strong>
+              Avançar automaticamente
+            </strong>
+
+            <span>
+              Move para os próximos cards
+              sem interação do visitante.
+            </span>
+
+          </div>
+
+
+          <label class="admin-switch">
+
+            <%= f.check_box(
+                  :cards_autoplay,
+                  {
+                    class: "admin-switch__input"
+                  },
+                  "1",
+                  "0"
+                ) %>
+
+            <span class="admin-switch__slider"></span>
+
+          </label>
+
+        </div>
+
+
+        <div class="cards-autoplay-time">
+
+          <div>
+
+            <strong>
+              Intervalo
+            </strong>
+
+            <span>
+              Tempo entre cada avanço.
+            </span>
+
+          </div>
+
+
+          <div class="cards-autoplay-time__input">
+
+            <%= f.number_field(
+                  :cards_autoplay_seconds,
+                  min: 2,
+                  max: 30,
+                  step: 1
+                ) %>
+
+            <span>
+              s
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- ==================================================
+         PREVIEW
+    =================================================== -->
+
+    <aside class="cards-settings__preview-column">
+
+      <div class="cards-settings-preview">
+
+        <div class="cards-settings-preview__header">
+
+          <div>
+            <span>
+              Prévia
+            </span>
+
+            <strong>
+              Resultado aproximado
+            </strong>
+          </div>
+
+
+          <span class="cards-settings-preview__badge">
+            Desktop
+          </span>
+
+        </div>
+
+
+        <div
+          class="cards-layout-preview"
+          data-cards-settings-target="preview"
+        >
+
+          <% 4.times do |index| %>
+
+            <article class="cards-layout-preview__card">
+
+              <div class="cards-layout-preview__image"></div>
+
+
+              <div class="cards-layout-preview__content">
+
+                <small>
+                  <%= format("%02d", index + 1) %>
+                </small>
+
+                <strong></strong>
+
+                <span></span>
+                <span></span>
+
+              </div>
+
+            </article>
+
+          <% end %>
+
+        </div>
+
+
+        <p class="cards-settings-preview__help">
+          A aparência final também depende do conteúdo
+          e das imagens cadastradas em cada card.
+        </p>
+
+      </div>
+
+    </aside>
+
+  </div>
+
+</section>

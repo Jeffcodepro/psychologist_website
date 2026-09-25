@@ -1,0 +1,341 @@
+.admin-site-map,
+.admin-section-map {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-site-page,
+.admin-section-node {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+  padding: 18px;
+  border: 1px solid #e1e6e3;
+  border-radius: 12px;
+  background: #ffffff;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.admin-site-page:hover,
+.admin-section-node:hover {
+  border-color: #ccd6d1;
+  box-shadow: 0 9px 24px rgba(36, 49, 46, 0.05);
+  transform: translateY(-1px);
+}
+
+.admin-section-node--hero {
+  border-color: rgba(79, 111, 101, 0.22);
+  background:
+    linear-gradient(
+      135deg,
+      rgba(79, 111, 101, 0.035),
+      #ffffff 60%
+    );
+}
+
+.admin-site-page__order,
+.admin-section-node__index {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  background: rgba(79, 111, 101, 0.08);
+  color: $primary;
+  font-size: 0.56rem;
+  font-weight: 700;
+}
+
+.admin-site-page__heading,
+.admin-section-node__heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.admin-site-page__type,
+.admin-section-node__type {
+  display: block;
+  margin-bottom: 3px;
+  color: $primary;
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.admin-site-page h2,
+.admin-section-node h2 {
+  margin: 0;
+  color: #293631;
+  font-family: $headers-font;
+  font-size: 1.18rem;
+  font-weight: 500;
+}
+
+.admin-site-page__url {
+  display: block;
+  margin-top: 3px;
+  color: #98a19d;
+  font-size: 0.54rem;
+}
+
+.admin-site-page__description,
+.admin-section-node__preview {
+  max-width: 760px;
+  margin: 10px 0 0;
+  color: #78847f;
+  font-size: 0.62rem;
+  line-height: 1.55;
+}
+
+.admin-site-page__badges,
+.admin-section-node__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.admin-site-page__badge,
+.admin-section-node__badge {
+  min-height: 22px;
+  padding: 0 8px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 20px;
+  background: #f1f3f1;
+  color: #74807a;
+  font-size: 0.5rem;
+  font-weight: 650;
+}
+
+.admin-section-node__badge--visible {
+  background: rgba(50, 130, 89, 0.08);
+  color: #47795b;
+}
+
+.admin-section-node__badge--media {
+  background: rgba(79, 111, 101, 0.1);
+  color: $primary;
+}
+
+.admin-section-node__badge--optional {
+  background: rgba(151, 128, 80, 0.08);
+  color: #8a7549;
+}
+
+.admin-site-page__metrics {
+  margin-top: 14px;
+  display: flex;
+  gap: 26px;
+}
+
+.admin-site-page__metrics div {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.admin-site-page__metrics strong {
+  color: #35433e;
+  font-size: 0.72rem;
+}
+
+.admin-site-page__metrics span {
+  color: #929c97;
+  font-size: 0.51rem;
+}
+
+.admin-site-page__actions,
+.admin-section-node__actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.admin-section-node__hero-info {
+  max-width: 720px;
+  margin-top: 11px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 9px;
+  background: rgba(79, 111, 101, 0.055);
+}
+
+.admin-section-node__hero-icon {
+  width: 29px;
+  height: 29px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 7px;
+  background: #ffffff;
+  color: $primary;
+  font-size: 0.7rem;
+}
+
+.admin-section-node__hero-info > div:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.admin-section-node__hero-info strong {
+  color: #42514b;
+  font-size: 0.59rem;
+}
+
+.admin-section-node__hero-info span {
+  color: #81908a;
+  font-size: 0.53rem;
+  line-height: 1.45;
+}
+
+.admin-page-builder__header {
+  margin-bottom: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+}
+
+.admin-page-builder__header h1 {
+  margin: 4px 0 0;
+  color: #24322d;
+  font-family: $headers-font;
+  font-size: 2.6rem;
+  font-weight: 500;
+}
+
+.admin-page-builder__header p {
+  max-width: 650px;
+  margin: 8px 0 0;
+  color: #78847f;
+  font-size: 0.66rem;
+  line-height: 1.55;
+}
+
+.admin-page-builder__header-actions {
+  display: flex;
+  gap: 7px;
+}
+
+.admin-page-builder__notice {
+  margin-bottom: 13px;
+  padding: 12px 14px;
+  display: flex;
+  gap: 10px;
+  border: 1px solid rgba(79, 111, 101, 0.14);
+  border-radius: 10px;
+  background: rgba(79, 111, 101, 0.045);
+}
+
+.admin-page-builder__notice-icon {
+  width: 25px;
+  height: 25px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: $primary;
+  color: #ffffff;
+  font-size: 0.56rem;
+  font-weight: 700;
+}
+
+.admin-page-builder__notice strong {
+  color: #405049;
+  font-size: 0.61rem;
+}
+
+.admin-page-builder__notice p {
+  margin: 2px 0 0;
+  color: #7e8984;
+  font-size: 0.55rem;
+}
+
+.admin-section-node__meta {
+  margin-top: 9px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  color: #98a19d;
+  font-size: 0.51rem;
+}
+
+.admin-section-node__meta strong {
+  color: #68756f;
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .admin-site-page,
+  .admin-section-node {
+    grid-template-columns: 38px minmax(0, 1fr);
+  }
+
+  .admin-site-page__actions,
+  .admin-section-node__actions {
+    grid-column: 2;
+    justify-content: flex-start;
+  }
+
+  .admin-page-builder__header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 600px) {
+  .admin-site-page,
+  .admin-section-node {
+    grid-template-columns: 1fr;
+    padding: 15px;
+  }
+
+  .admin-site-page__heading,
+  .admin-section-node__heading {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .admin-site-page__actions,
+  .admin-section-node__actions {
+    grid-column: auto;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-site-page__actions a,
+  .admin-section-node__actions a {
+    width: 100%;
+  }
+
+  .admin-section-node__hero-info {
+    align-items: flex-start;
+  }
+
+  .admin-page-builder__header h1 {
+    font-size: 2.15rem;
+  }
+
+  .admin-page-builder__header-actions {
+    flex-direction: column;
+  }
+
+  .admin-page-builder__header-actions a {
+    width: 100%;
+  }
+}

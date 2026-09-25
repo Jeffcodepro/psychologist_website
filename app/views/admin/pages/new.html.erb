@@ -1,0 +1,25 @@
+<div class="admin-page-settings">
+  <div class="admin-breadcrumb">
+    <%= link_to "Páginas", admin_pages_path %>
+    <span>/</span>
+    <strong>Nova página</strong>
+  </div>
+
+  <header class="admin-page-heading">
+    <div>
+      <span class="admin-page-eyebrow">
+        Estrutura do site
+      </span>
+
+      <h1>
+        Nova página
+      </h1>
+
+      <p>
+        Crie uma nova página pública e depois adicione seus blocos de conteúdo.
+      </p>
+    </div>
+  </header>
+
+  <%= render "form", page: @page %>
+</div>

@@ -1,0 +1,216 @@
+<div class="admin-settings-page">
+  <header class="admin-page-heading">
+    <div>
+      <span class="admin-page-eyebrow">Site</span>
+      <h1>Configurações gerais</h1>
+      <p>Gerencie dados profissionais, contatos, identidade visual, redes sociais e SEO.</p>
+    </div>
+  </header>
+
+  <%= simple_form_for(
+        @site_setting,
+        url: admin_site_setting_path,
+        method: :patch,
+        html: {
+          class: "admin-settings-form"
+        }
+      ) do |f| %>
+
+    <section class="admin-settings-section">
+      <header class="admin-settings-section__header">
+        <span class="admin-settings-section__number">01</span>
+        <div>
+          <h2>Informações profissionais</h2>
+          <p>Dados utilizados para identificar a profissional no site.</p>
+        </div>
+      </header>
+
+      <div class="admin-form-grid admin-form-grid--2">
+        <%= f.input(
+              :professional_name,
+              label: "Nome profissional"
+            ) %>
+
+        <%= f.input(
+              :crp,
+              label: "CRP",
+              placeholder: "Ex.: CRP 06/000000"
+            ) %>
+      </div>
+    </section>
+
+    <section class="admin-settings-section">
+      <header class="admin-settings-section__header">
+        <span class="admin-settings-section__number">02</span>
+        <div>
+          <h2>Contato</h2>
+          <p>Informações utilizadas em botões e áreas de contato.</p>
+        </div>
+      </header>
+
+      <div class="admin-form-grid admin-form-grid--2">
+        <%= f.input(
+              :email,
+              label: "E-mail"
+            ) %>
+
+        <%= f.input(
+              :phone,
+              label: "Telefone"
+            ) %>
+
+        <%= f.input(
+              :whatsapp,
+              label: "WhatsApp",
+              hint: "Inclua DDI e DDD."
+            ) %>
+      </div>
+    </section>
+
+    <section class="admin-settings-section">
+      <header class="admin-settings-section__header">
+        <span class="admin-settings-section__number">03</span>
+        <div>
+          <h2>Redes sociais</h2>
+          <p>Preencha apenas as redes que devem ser exibidas no site.</p>
+        </div>
+      </header>
+
+      <div class="admin-form-grid admin-form-grid--2">
+        <%= f.input(
+              :instagram,
+              label: "Instagram"
+            ) %>
+
+        <%= f.input(
+              :linkedin,
+              label: "LinkedIn"
+            ) %>
+
+        <% if @site_setting.respond_to?(:facebook) %>
+          <%= f.input(
+                :facebook,
+                label: "Facebook"
+              ) %>
+        <% end %>
+
+        <% if @site_setting.respond_to?(:youtube) %>
+          <%= f.input(
+                :youtube,
+                label: "YouTube"
+              ) %>
+        <% end %>
+
+        <% if @site_setting.respond_to?(:tiktok) %>
+          <%= f.input(
+                :tiktok,
+                label: "TikTok"
+              ) %>
+        <% end %>
+
+        <% if @site_setting.respond_to?(:threads) %>
+          <%= f.input(
+                :threads,
+                label: "Threads"
+              ) %>
+        <% end %>
+
+        <% if @site_setting.respond_to?(:x_twitter) %>
+          <%= f.input(
+                :x_twitter,
+                label: "X / Twitter"
+              ) %>
+        <% end %>
+      </div>
+    </section>
+
+    <section class="admin-settings-section">
+      <header class="admin-settings-section__header">
+        <span class="admin-settings-section__number">04</span>
+        <div>
+          <h2>Identidade visual</h2>
+          <p>Configure a logo e a fotografia profissional utilizadas no site.</p>
+        </div>
+      </header>
+
+      <%= render(
+            "admin/site_settings/identity_visual",
+            f: f,
+            site_setting: @site_setting
+          ) %>
+
+      <div class="admin-settings-footer-copy">
+        <div class="admin-settings-footer-copy__heading">
+          <span>Rodapé</span>
+          <h3>Texto institucional</h3>
+          <p>Mensagem exibida na parte inferior do site.</p>
+        </div>
+
+        <div class="admin-form-grid admin-form-grid--2">
+          <%= f.input(
+                :footer_text,
+                as: :text,
+                label: "Português",
+                input_html: {
+                  rows: 4
+                }
+              ) %>
+
+          <%= f.input(
+                :footer_text_en,
+                as: :text,
+                label: "Inglês",
+                input_html: {
+                  rows: 4
+                }
+              ) %>
+        </div>
+      </div>
+    </section>
+
+    <% if @site_setting.respond_to?(:seo_title) %>
+      <section class="admin-settings-section" id="seo">
+        <header class="admin-settings-section__header">
+          <span class="admin-settings-section__number">05</span>
+          <div>
+            <h2>SEO e compartilhamento</h2>
+            <p>Como o site aparece nos buscadores e redes sociais.</p>
+          </div>
+        </header>
+
+        <%= f.input(
+              :seo_title,
+              label: "Título SEO"
+            ) %>
+
+        <%= f.input(
+              :seo_description,
+              as: :text,
+              label: "Descrição SEO",
+              input_html: {
+                rows: 4
+              }
+            ) %>
+
+        <%= f.input(
+              :seo_keywords,
+              label: "Palavras-chave"
+            ) %>
+      </section>
+    <% end %>
+
+    <div class="admin-settings-actions">
+      <%= link_to(
+            "Cancelar",
+            admin_root_path,
+            class: "admin-button-secondary"
+          ) %>
+
+      <%= f.button(
+            :submit,
+            "Salvar configurações",
+            class: "admin-button admin-button--primary"
+          ) %>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,206 @@
+<div class="admin-page-builder">
+  <div class="admin-breadcrumb">
+    <%= link_to "Páginas", admin_pages_path %>
+    <span>/</span>
+    <strong><%= @page.name %></strong>
+  </div>
+
+  <header class="admin-page-builder__header">
+    <div>
+      <span class="admin-page-eyebrow">
+        Estrutura da página
+      </span>
+
+      <h1>
+        <%= @page.name %>
+      </h1>
+
+      <% if @page.description.present? %>
+        <p>
+          <%= @page.description %>
+        </p>
+      <% end %>
+    </div>
+
+    <div class="admin-page-builder__header-actions">
+      <%= link_to(
+            "Pré-visualizar",
+            admin_page_preview_path(@page),
+            class: "admin-button-secondary"
+          ) %>
+
+      <%= link_to(
+            "Adicionar bloco",
+            new_admin_page_section_path(@page),
+            class: "admin-button admin-button--primary"
+          ) %>
+    </div>
+  </header>
+
+  <div class="admin-page-builder__notice">
+    <span class="admin-page-builder__notice-icon">
+      i
+    </span>
+
+    <div>
+      <strong>
+        Esta página é construída por blocos.
+      </strong>
+
+      <p>
+        Abra qualquer bloco para alterar conteúdo, imagens, aparência e configurações.
+      </p>
+    </div>
+  </div>
+
+  <div class="admin-section-map">
+    <% @sections.each_with_index do |section, index| %>
+      <article
+        class="
+          admin-section-node
+          <%= "admin-section-node--hero" if section.section_type == "hero" %>
+        "
+      >
+        <div class="admin-section-node__index">
+          <%= format("%02d", index + 1) %>
+        </div>
+
+        <div class="admin-section-node__content">
+          <div class="admin-section-node__heading">
+            <div>
+              <span class="admin-section-node__type">
+                <%= section.editor_type_label %>
+              </span>
+
+              <h2>
+                <%= section.title.presence || section.editor_type_label %>
+              </h2>
+            </div>
+
+            <div class="admin-section-node__badges">
+              <% if section.visible? %>
+                <span class="admin-section-node__badge admin-section-node__badge--visible">
+                  Visível
+                </span>
+              <% else %>
+                <span class="admin-section-node__badge">
+                  Oculto
+                </span>
+              <% end %>
+
+              <% if section.section_type == "hero" %>
+                <% if section.banner.attached? %>
+                  <span class="admin-section-node__badge admin-section-node__badge--media">
+                    Banner adicionado
+                  </span>
+                <% else %>
+                  <span class="admin-section-node__badge admin-section-node__badge--optional">
+                    Sem banner · opcional
+                  </span>
+                <% end %>
+              <% end %>
+
+              <% if section.section_type == "cards" %>
+                <span class="admin-section-node__badge">
+                  <%= section.section_items.count %>
+                  cards
+                </span>
+              <% end %>
+
+              <% if section.section_type == "faq" %>
+                <span class="admin-section-node__badge">
+                  <%= section.section_items.count %>
+                  perguntas
+                </span>
+              <% end %>
+            </div>
+          </div>
+
+          <% if section.section_type == "hero" %>
+            <div class="admin-section-node__hero-info">
+              <div class="admin-section-node__hero-icon">
+                ▣
+              </div>
+
+              <div>
+                <% if section.banner.attached? %>
+                  <strong>
+                    Banner do Hero configurado
+                  </strong>
+
+                  <span>
+                    Você pode trocar, reposicionar ou remover a imagem na aba Mídia.
+                  </span>
+                <% else %>
+                  <strong>
+                    Banner opcional
+                  </strong>
+
+                  <span>
+                    Abra o bloco e acesse Mídia caso queira adicionar uma imagem de destaque.
+                  </span>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+
+          <% if section.body.present? %>
+            <p class="admin-section-node__preview">
+              <%= truncate(
+                    strip_tags(section.body),
+                    length: 150
+                  ) %>
+            </p>
+          <% end %>
+
+          <div class="admin-section-node__meta">
+            <span>
+              Tipo:
+              <strong><%= section.editor_type_label %></strong>
+            </span>
+
+            <% if section.anchor.present? %>
+              <span>
+                ID:
+                <strong><%= section.anchor %></strong>
+              </span>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="admin-section-node__actions">
+          <%= link_to(
+                "Editar bloco",
+                edit_admin_page_section_path(
+                  @page,
+                  section
+                ),
+                class: "admin-button-secondary"
+              ) %>
+        </div>
+      </article>
+    <% end %>
+
+    <% if @sections.empty? %>
+      <div class="admin-empty-state">
+        <span class="admin-empty-state__icon">
+          +
+        </span>
+
+        <h2>
+          Esta página ainda não possui blocos
+        </h2>
+
+        <p>
+          Adicione o primeiro bloco de conteúdo.
+        </p>
+
+        <%= link_to(
+              "Adicionar bloco",
+              new_admin_page_section_path(@page),
+              class: "admin-button admin-button--primary"
+            ) %>
+      </div>
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,121 @@
+<div class="admin-site-structure">
+  <header class="admin-page-heading">
+    <div>
+      <span class="admin-page-eyebrow">
+        Estrutura do site
+      </span>
+
+      <h1>
+        Páginas
+      </h1>
+
+      <p>
+        Cada item abaixo representa uma página real do site.
+        Entre em uma página para organizar e editar seus blocos de conteúdo.
+      </p>
+    </div>
+
+    <%= link_to(
+          new_admin_page_path,
+          class: "admin-button admin-button--primary"
+        ) do %>
+      <span>+</span>
+      Nova página
+    <% end %>
+  </header>
+
+  <div class="admin-site-map">
+    <% @pages.each_with_index do |page, index| %>
+      <article class="admin-site-page">
+        <div class="admin-site-page__order">
+          <%= format("%02d", index + 1) %>
+        </div>
+
+        <div class="admin-site-page__main">
+          <div class="admin-site-page__heading">
+            <div>
+              <span class="admin-site-page__type">
+                <%= page.home? ? "Página inicial" : "Página interna" %>
+              </span>
+
+              <h2>
+                <%= page.name %>
+              </h2>
+
+              <span class="admin-site-page__url">
+                <%= page.home? ? "/" : "/#{page.slug}" %>
+              </span>
+            </div>
+
+            <div class="admin-site-page__badges">
+              <% if page.published? %>
+                <span class="admin-status-pill admin-status-pill--published">
+                  Publicada
+                </span>
+              <% else %>
+                <span class="admin-status-pill admin-status-pill--draft">
+                  Rascunho
+                </span>
+              <% end %>
+
+              <% if page.show_in_nav? %>
+                <span class="admin-site-page__badge">
+                  Navbar
+                </span>
+              <% end %>
+            </div>
+          </div>
+
+          <% if page.description.present? %>
+            <p class="admin-site-page__description">
+              <%= page.description %>
+            </p>
+          <% end %>
+
+          <div class="admin-site-page__metrics">
+            <div>
+              <strong>
+                <%= page.sections.draft.count %>
+              </strong>
+              <span>blocos no rascunho</span>
+            </div>
+
+            <div>
+              <strong>
+                <%= page.sections.published.count %>
+              </strong>
+              <span>blocos publicados</span>
+            </div>
+
+            <div>
+              <strong>
+                <%= page.seo_configured? ? "OK" : "—" %>
+              </strong>
+              <span>SEO</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-site-page__actions">
+          <%= link_to(
+                "Editar estrutura",
+                admin_page_sections_path(page),
+                class: "admin-button admin-button--primary"
+              ) %>
+
+          <%= link_to(
+                "Pré-visualizar",
+                admin_page_preview_path(page),
+                class: "admin-button-secondary"
+              ) %>
+
+          <%= link_to(
+                "Configurar página",
+                edit_admin_page_path(page),
+                class: "admin-button-quiet"
+              ) %>
+        </div>
+      </article>
+    <% end %>
+  </div>
+</div>

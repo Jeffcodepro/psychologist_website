@@ -1,0 +1,135 @@
+<%
+  items = section
+    .section_items
+    .visible
+    .ordered
+
+  orientation =
+    section.cards_orientation.presence || "horizontal"
+
+  carousel =
+    section.cards_carousel?
+
+  desktop_columns =
+    section.cards_columns_desktop.presence || 3
+
+  tablet_columns =
+    section.cards_columns_tablet.presence || 2
+
+  mobile_columns =
+    section.cards_columns_mobile.presence || 1
+
+  autoplay_seconds =
+    section.cards_autoplay_seconds.presence || 5
+
+  alignment =
+    section.text_alignment.presence || "left"
+%>
+
+<section
+  class="
+    cards-section
+    cards-section--<%= orientation %>
+    cards-section--desktop-<%= desktop_columns %>
+    cards-section--tablet-<%= tablet_columns %>
+    cards-section--mobile-<%= mobile_columns %>
+    <%= "cards-section--carousel" if carousel %>
+  "
+  id="<%= section.anchor if section.anchor.present? %>"
+>
+  <div class="container cards-section__container">
+    <% if section.localized_title.present? || section.localized_body.present? %>
+      <header
+        class="
+          cards-section__header
+          section-alignment--<%= alignment %>
+        "
+      >
+        <% if section.localized_title.present? %>
+          <h2 class="section-heading cards-section__title">
+            <%= section.localized_title %>
+          </h2>
+        <% end %>
+
+        <% if section.localized_body.present? %>
+          <div class="section-body cards-section__intro">
+            <%= simple_format(section.localized_body) %>
+          </div>
+        <% end %>
+      </header>
+    <% end %>
+
+    <% if items.any? && carousel %>
+      <div
+        class="cards-carousel"
+        data-controller="cards-carousel"
+        data-cards-carousel-autoplay-value="<%= section.cards_autoplay? %>"
+        data-cards-carousel-delay-value="<%= autoplay_seconds.to_i * 1000 %>"
+      >
+        <button
+          type="button"
+          class="cards-carousel__arrow cards-carousel__arrow--previous"
+          aria-label="Card anterior"
+          data-action="click->cards-carousel#previous"
+        >
+          <span aria-hidden="true">←</span>
+        </button>
+
+        <div
+          class="cards-carousel__viewport"
+          data-cards-carousel-target="viewport"
+          data-action="
+            mouseenter->cards-carousel#pause
+            mouseleave->cards-carousel#resume
+            focusin->cards-carousel#pause
+            focusout->cards-carousel#resume
+          "
+        >
+          <div
+            class="cards-carousel__track"
+            data-cards-carousel-target="track"
+          >
+            <% items.each_with_index do |item, index| %>
+              <%= render(
+                    "sections/card",
+                    item: item,
+                    index: index
+                  ) %>
+            <% end %>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          class="cards-carousel__arrow cards-carousel__arrow--next"
+          aria-label="Próximo card"
+          data-action="click->cards-carousel#next"
+        >
+          <span aria-hidden="true">→</span>
+        </button>
+      </div>
+
+    <% elsif items.any? && orientation == "horizontal" %>
+      <div class="cards-section__grid">
+        <% items.each_with_index do |item, index| %>
+          <%= render(
+                "sections/card",
+                item: item,
+                index: index
+              ) %>
+        <% end %>
+      </div>
+
+    <% elsif items.any? %>
+      <div class="cards-section__list">
+        <% items.each_with_index do |item, index| %>
+          <%= render(
+                "sections/card",
+                item: item,
+                index: index
+              ) %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</section>

@@ -1,0 +1,384 @@
+<%
+  editing = section.persisted?
+
+  form_id =
+    editing ?
+      "section-form-#{section.id}" :
+      "section-form-new"
+%>
+
+<div
+  class="admin-section-editor"
+  data-controller="section-form-tabs section-composition translation"
+  data-translation-url-value="<%= admin_translation_path %>"
+>
+  <div class="admin-breadcrumb">
+    <%= link_to "Páginas", admin_pages_path %>
+
+    <span>/</span>
+
+    <%= link_to(
+          @page.name,
+          admin_page_sections_path(@page)
+        ) %>
+
+    <span>/</span>
+
+    <strong>
+      <%= editing ? "Editar bloco" : "Novo bloco" %>
+    </strong>
+  </div>
+
+  <header class="admin-section-editor__heading">
+    <div>
+      <span class="admin-page-eyebrow">
+        <%= editing ? section.editor_type_label : "Novo bloco" %>
+      </span>
+
+      <h1>
+        <%= editing ? section.title.presence || "Editar bloco" : "Adicionar bloco" %>
+      </h1>
+
+      <p>
+        Personalize conteúdo, aparência, mídia e comportamento.
+      </p>
+    </div>
+
+    <% if editing %>
+      <span class="admin-section-editor__draft">
+        Rascunho
+      </span>
+    <% end %>
+  </header>
+
+  <nav class="admin-section-editor__tabs">
+    <button
+      type="button"
+      class="admin-section-editor__tab is-active"
+      data-section-form-tabs-target="tab"
+      data-tab="content"
+      data-action="click->section-form-tabs#select"
+    >
+      Conteúdo
+    </button>
+
+    <button
+      type="button"
+      class="admin-section-editor__tab"
+      data-section-form-tabs-target="tab"
+      data-tab="appearance"
+      data-action="click->section-form-tabs#select"
+    >
+      Aparência
+    </button>
+
+    <button
+      type="button"
+      class="admin-section-editor__tab"
+      data-section-form-tabs-target="tab"
+      data-tab="media"
+      data-action="click->section-form-tabs#select"
+    >
+      Mídia
+    </button>
+
+    <% if editing && section.section_type == "cards" %>
+      <button
+        type="button"
+        class="admin-section-editor__tab"
+        data-section-form-tabs-target="tab"
+        data-tab="items"
+        data-action="click->section-form-tabs#select"
+      >
+        Cards
+
+        <span>
+          <%= section.section_items.count %>
+        </span>
+      </button>
+    <% elsif editing && section.section_type == "faq" %>
+      <button
+        type="button"
+        class="admin-section-editor__tab"
+        data-section-form-tabs-target="tab"
+        data-tab="items"
+        data-action="click->section-form-tabs#select"
+      >
+        Perguntas
+
+        <span>
+          <%= section.section_items.count %>
+        </span>
+      </button>
+    <% end %>
+
+    <button
+      type="button"
+      class="admin-section-editor__tab"
+      data-section-form-tabs-target="tab"
+      data-tab="settings"
+      data-action="click->section-form-tabs#select"
+    >
+      Configurações
+    </button>
+  </nav>
+
+  <%= simple_form_for(
+        [:admin, @page, section],
+        html: {
+          id: form_id,
+          class: "admin-section-editor__form"
+        }
+      ) do |f| %>
+
+    <section
+      class="admin-section-editor__panel is-active"
+      data-section-form-tabs-target="panel"
+      data-panel="content"
+    >
+      <%= render(
+            "admin/sections/content_fields",
+            f: f,
+            section: section
+          ) %>
+    </section>
+
+    <section
+      class="admin-section-editor__panel"
+      data-section-form-tabs-target="panel"
+      data-panel="appearance"
+      hidden
+    >
+      <div class="admin-section-editor__panel-heading">
+        <span>Aparência</span>
+
+        <h2>Composição e estilo</h2>
+
+        <p>
+          Configure estrutura, cores, tipografia e proporções.
+        </p>
+      </div>
+
+      <%= render(
+            "admin/sections/composition_settings",
+            f: f,
+            section: section
+          ) %>
+
+      <div class="admin-section-editor__content-grid">
+        <article class="admin-section-editor__card">
+          <h3>Título</h3>
+
+          <%= f.input(
+                :title_font_family,
+                collection: Section::FONT_FAMILIES.map {
+                  |font| [font.humanize, font]
+                },
+                label: "Fonte"
+              ) %>
+
+          <div class="admin-section-editor__input-grid">
+            <%= f.input(
+                  :title_font_size_desktop,
+                  label: "Desktop"
+                ) %>
+
+            <%= f.input(
+                  :title_font_size_mobile,
+                  label: "Mobile"
+                ) %>
+          </div>
+        </article>
+
+        <article class="admin-section-editor__card">
+          <h3>Texto</h3>
+
+          <%= f.input(
+                :body_font_family,
+                collection: Section::FONT_FAMILIES.map {
+                  |font| [font.humanize, font]
+                },
+                label: "Fonte"
+              ) %>
+
+          <div class="admin-section-editor__input-grid">
+            <%= f.input(
+                  :body_font_size_desktop,
+                  label: "Desktop"
+                ) %>
+
+            <%= f.input(
+                  :body_font_size_mobile,
+                  label: "Mobile"
+                ) %>
+          </div>
+        </article>
+      </div>
+
+      <div class="admin-section-editor__content-grid">
+        <article class="admin-section-editor__card">
+          <%= f.input(
+                :text_alignment,
+                collection: [
+                  ["Esquerda", "left"],
+                  ["Centralizado", "center"],
+                  ["Direita", "right"]
+                ],
+                label: "Alinhamento dos textos"
+              ) %>
+        </article>
+
+        <article class="admin-section-editor__card">
+          <%= f.input(
+                :text_theme,
+                collection: [
+                  ["Escuro", "dark"],
+                  ["Claro", "light"]
+                ],
+                label: "Tema do texto"
+              ) %>
+        </article>
+      </div>
+
+      <% if section.section_type == "hero" %>
+        <article class="admin-section-editor__card">
+          <%= f.input(
+                :content_vertical_position,
+                collection: [
+                  ["Topo", "top"],
+                  ["Centro", "center"],
+                  ["Base", "bottom"]
+                ],
+                label: "Posição vertical do conteúdo"
+              ) %>
+        </article>
+      <% end %>
+    </section>
+
+    <section
+      class="admin-section-editor__panel"
+      data-section-form-tabs-target="panel"
+      data-panel="media"
+      hidden
+    >
+      <div class="admin-section-editor__panel-heading">
+        <span>Mídia</span>
+
+        <h2>Imagens e enquadramento</h2>
+
+        <p>
+          Ajuste imagens, posição, zoom, formato e utilização como fundo.
+        </p>
+      </div>
+
+      <%= render(
+            "admin/sections/media_editor",
+            f: f,
+            section: section,
+            page: @page
+          ) %>
+    </section>
+
+    <% if editing && %w[cards faq].include?(section.section_type) %>
+      <section
+        class="admin-section-editor__panel"
+        data-section-form-tabs-target="panel"
+        data-panel="items"
+        hidden
+      >
+        <% if section.section_type == "cards" %>
+          <%= render(
+                "admin/page_previews/cards_settings",
+                f: f,
+                section: section
+              ) %>
+        <% else %>
+          <div class="admin-section-editor__panel-heading">
+            <span>FAQ</span>
+
+            <h2>Perguntas frequentes</h2>
+          </div>
+
+          <div class="admin-section-items">
+            <% section.section_items.ordered.each_with_index do |item, index| %>
+              <div class="admin-section-items__row">
+                <span>
+                  <%= format("%02d", index + 1) %>
+                </span>
+
+                <strong>
+                  <%= item.title %>
+                </strong>
+              </div>
+            <% end %>
+
+            <%= link_to(
+                  "Gerenciar perguntas",
+                  admin_page_section_section_items_path(
+                    @page,
+                    section
+                  ),
+                  class: "admin-button-secondary"
+                ) %>
+          </div>
+        <% end %>
+      </section>
+    <% end %>
+
+    <section
+      class="admin-section-editor__panel"
+      data-section-form-tabs-target="panel"
+      data-panel="settings"
+      hidden
+    >
+      <%= render(
+            "admin/sections/settings_fields",
+            f: f,
+            section: section
+          ) %>
+    </section>
+  <% end %>
+
+  <footer class="admin-section-editor__actions">
+    <div class="admin-section-editor__actions-left">
+      <% if editing %>
+        <%= link_to(
+              "Excluir bloco",
+              admin_page_section_path(
+                @page,
+                section
+              ),
+              class: "admin-section-editor__delete",
+              data: {
+                turbo_method: :delete,
+                turbo_confirm: "Deseja realmente excluir este bloco?"
+              }
+            ) %>
+      <% end %>
+    </div>
+
+    <div class="admin-section-editor__actions-right">
+      <%= link_to(
+            "Voltar",
+            admin_page_sections_path(@page),
+            class: "admin-button-quiet"
+          ) %>
+
+      <% if editing %>
+        <%= link_to(
+              "Pré-visualizar",
+              admin_page_preview_path(@page),
+              class: "admin-button-secondary"
+            ) %>
+      <% end %>
+
+      <button
+        type="submit"
+        form="<%= form_id %>"
+        class="admin-button admin-button--primary"
+      >
+        <%= editing ? "Salvar alterações" : "Criar bloco" %>
+      </button>
+    </div>
+  </footer>
+</div>

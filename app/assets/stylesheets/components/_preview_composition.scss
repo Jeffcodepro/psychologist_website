@@ -1,0 +1,353 @@
+.section-frame--preview {
+  position: relative;
+}
+
+.preview-element-handle {
+  position: absolute;
+  z-index: 650;
+  min-height: 34px;
+  padding: 0 11px 0 7px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  border-radius: 22px;
+  background: rgba(31, 45, 40, 0.93);
+  box-shadow: 0 7px 20px rgba(20, 31, 27, 0.17);
+  color: #ffffff;
+  font-family: $body-font;
+  font-size: 0.5rem;
+  font-weight: 650;
+  line-height: 1;
+  cursor: grab;
+  pointer-events: auto;
+  user-select: none;
+  backdrop-filter: blur(9px);
+  transition:
+    background 0.16s ease,
+    transform 0.16s ease,
+    box-shadow 0.16s ease;
+
+  &:hover {
+    background: #1f2d28;
+    box-shadow: 0 9px 24px rgba(20, 31, 27, 0.23);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  &__grip {
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.11);
+    font-size: 0.74rem;
+    line-height: 1;
+  }
+
+  &--image {
+    top: 14px;
+    left: 14px;
+  }
+
+  &--content {
+    top: 54px;
+    right: 0;
+    left: auto;
+  }
+}
+
+.section-frame--top {
+  > .preview-element-handle--banner {
+    top: 14px;
+    right: 14px;
+    bottom: auto;
+  }
+}
+
+.section-frame--background {
+  > .preview-element-handle--banner {
+    top: 14px;
+    right: 14px;
+    bottom: auto;
+  }
+}
+
+.section-frame--bottom {
+  > .preview-element-handle--banner {
+    top: auto;
+    right: 14px;
+    bottom: 14px;
+  }
+}
+
+.hero-section__copy,
+.hero-section__profile-frame,
+.text-image-section__content,
+.text-image-section__media-frame {
+  position: relative;
+}
+
+.preview-layout-zones,
+.preview-banner-zones {
+  position: absolute;
+  z-index: 900;
+  inset: 0;
+  background: rgba(25, 37, 33, 0.32);
+  backdrop-filter: blur(3px);
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.preview-layout-zone {
+  position: absolute;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 6px;
+  border: 2px dashed rgba(255, 255, 255, 0.58);
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  font-family: $body-font;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease;
+
+  span {
+    width: 29px;
+    height: 29px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(30, 44, 39, 0.92);
+    font-size: 0.7rem;
+  }
+
+  strong {
+    padding: 5px 9px;
+    border-radius: 20px;
+    background: rgba(30, 44, 39, 0.92);
+    font-size: 0.5rem;
+  }
+
+  &:hover,
+  &.is-hovered {
+    border-color: #ffffff;
+    background: rgba(255, 255, 255, 0.26);
+    transform: scale(1.015);
+  }
+
+  &--top {
+    top: 18px;
+    right: 30%;
+    left: 30%;
+    height: 21%;
+  }
+
+  &--bottom {
+    right: 30%;
+    bottom: 18px;
+    left: 30%;
+    height: 21%;
+  }
+
+  &--left {
+    top: 28%;
+    bottom: 28%;
+    left: 18px;
+    width: 22%;
+  }
+
+  &--right {
+    top: 28%;
+    right: 18px;
+    bottom: 28%;
+    width: 22%;
+  }
+}
+
+.preview-banner-zones {
+  padding: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.preview-banner-zone {
+  width: 220px;
+  min-height: 110px;
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  font-family: $body-font;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease;
+
+  &:hover,
+  &.is-hovered {
+    border-color: #ffffff;
+    background: rgba(255, 255, 255, 0.24);
+    transform: translateY(-2px);
+  }
+
+  &__icon {
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    background: rgba(30, 44, 39, 0.92);
+    font-size: 0.76rem;
+  }
+
+  div {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  strong {
+    font-size: 0.58rem;
+  }
+
+  small {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.46rem;
+    line-height: 1.35;
+  }
+}
+
+.preview-composition-status {
+  position: absolute;
+  z-index: 1000;
+  right: 20px;
+  bottom: 20px;
+  padding: 8px 13px;
+  border-radius: 30px;
+  background: #316d53;
+  box-shadow: 0 8px 22px rgba(19, 31, 27, 0.16);
+  color: #ffffff;
+  font-size: 0.52rem;
+  font-weight: 650;
+  opacity: 0;
+  transform: translateY(7px);
+  pointer-events: none;
+  transition:
+    opacity 0.17s ease,
+    transform 0.17s ease;
+
+  &.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  &.is-error {
+    background: #984b4b;
+  }
+}
+
+.is-composition-dragging {
+  .preview-element-handle {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .preview-element-handle {
+    min-height: 31px;
+    padding-right: 9px;
+
+    &--content {
+      top: 46px;
+      right: 0;
+    }
+  }
+
+  .section-frame--top,
+  .section-frame--background {
+    > .preview-element-handle--banner {
+      top: 10px;
+      right: 10px;
+    }
+  }
+
+  .section-frame--bottom {
+    > .preview-element-handle--banner {
+      right: 10px;
+      bottom: 10px;
+    }
+  }
+
+  .preview-banner-zones {
+    padding: 18px;
+    flex-direction: column;
+  }
+
+  .preview-banner-zone {
+    width: 100%;
+    max-width: 330px;
+    min-height: 76px;
+  }
+}
+
+@media (max-width: 600px) {
+  .preview-element-handle {
+    span:last-child {
+      display: none;
+    }
+
+    &__grip {
+      width: 27px;
+      height: 27px;
+    }
+
+    &--content {
+      top: 42px;
+      right: 0;
+    }
+  }
+
+  .preview-layout-zone {
+    &--top {
+      right: 19%;
+      left: 19%;
+    }
+
+    &--bottom {
+      right: 19%;
+      left: 19%;
+    }
+
+    &--left,
+    &--right {
+      width: 29%;
+    }
+  }
+}

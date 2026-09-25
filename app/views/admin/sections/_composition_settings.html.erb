@@ -1,0 +1,210 @@
+<div
+  class="section-composition-settings"
+  data-section-composition-target="compositionSettings"
+>
+  <div class="section-composition-settings__heading">
+    <span>Composição</span>
+    <h3>Organização da seção</h3>
+    <p>
+      Escolha como texto e imagem serão organizados.
+    </p>
+  </div>
+
+  <% if %w[hero text_image].include?(section.section_type) %>
+    <div class="section-setting-group">
+      <div class="section-setting-group__heading">
+        <strong>Posição da imagem</strong>
+        <span>Escolha a relação entre texto e fotografia.</span>
+      </div>
+
+      <div class="section-choice-grid section-choice-grid--layout">
+        <% [
+          ["text_left", "Texto à esquerda"],
+          ["text_right", "Texto à direita"],
+          ["media_top", "Imagem acima"],
+          ["media_bottom", "Imagem abaixo"]
+        ].each do |value, label| %>
+          <label class="section-choice">
+            <%= f.radio_button(
+                  :media_layout,
+                  value,
+                  class: "section-choice__input",
+                  data: {
+                    action: "change->section-composition#refresh"
+                  }
+                ) %>
+
+            <span class="section-choice__body">
+              <span class="section-layout-preview section-layout-preview--<%= value %>">
+                <i class="section-layout-preview__text"></i>
+                <i class="section-layout-preview__media"></i>
+              </span>
+
+              <strong><%= label %></strong>
+            </span>
+          </label>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="section-setting-group">
+      <div class="section-setting-group__heading">
+        <strong>Formato da imagem</strong>
+        <span>O formato é aplicado também na pré-visualização.</span>
+      </div>
+
+      <div class="section-choice-grid section-choice-grid--shape">
+        <% [
+          ["rectangle", "Retangular"],
+          ["rounded", "Arredondada"],
+          ["square", "Quadrada"],
+          ["circle", "Circular"],
+          ["oval", "Oval"],
+          ["arch", "Arco"]
+        ].each do |value, label| %>
+          <label class="section-choice">
+            <%= f.radio_button(
+                  :image_shape,
+                  value,
+                  class: "section-choice__input",
+                  data: {
+                    action: "change->section-composition#refresh"
+                  }
+                ) %>
+
+            <span class="section-choice__body">
+              <span class="section-shape-preview section-shape-preview--<%= value %>"></span>
+              <strong><%= label %></strong>
+            </span>
+          </label>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="section-setting-group">
+      <div class="section-setting-group__heading">
+        <strong>Tamanho da imagem</strong>
+      </div>
+
+      <div class="section-choice-grid section-choice-grid--size">
+        <% [
+          ["small", "Pequena"],
+          ["medium", "Média"],
+          ["large", "Grande"]
+        ].each do |value, label| %>
+          <label class="section-choice">
+            <%= f.radio_button(
+                  :media_size,
+                  value,
+                  class: "section-choice__input",
+                  data: {
+                    action: "change->section-composition#refresh"
+                  }
+                ) %>
+
+            <span class="section-choice__body section-choice__body--size">
+              <span class="section-size-preview section-size-preview--<%= value %>"></span>
+              <strong><%= label %></strong>
+            </span>
+          </label>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="section-setting-group">
+    <div class="section-setting-group__heading">
+      <strong>Cores da seção</strong>
+      <span>
+        Use as cores da identidade visual ou adapte quando houver uma imagem de fundo.
+      </span>
+    </div>
+
+    <div class="section-color-grid">
+      <label class="section-color-control">
+        <span>Título</span>
+
+        <%= f.color_field(
+              :title_color,
+              value: section.effective_title_color,
+              data: {
+                color_role: "title",
+                action: "input->section-composition#refreshColors"
+              }
+            ) %>
+
+        <strong>
+          <%= section.effective_title_color %>
+        </strong>
+      </label>
+
+      <label class="section-color-control">
+        <span>Texto</span>
+
+        <%= f.color_field(
+              :body_color,
+              value: section.effective_body_color,
+              data: {
+                color_role: "body",
+                action: "input->section-composition#refreshColors"
+              }
+            ) %>
+
+        <strong>
+          <%= section.effective_body_color %>
+        </strong>
+      </label>
+
+      <label class="section-color-control">
+        <span>Destaques</span>
+
+        <%= f.color_field(
+              :accent_color,
+              value: section.effective_accent_color,
+              data: {
+                color_role: "accent",
+                action: "input->section-composition#refreshColors"
+              }
+            ) %>
+
+        <strong>
+          <%= section.effective_accent_color %>
+        </strong>
+      </label>
+
+      <label class="section-color-control">
+        <span>Fundo</span>
+
+        <%= f.color_field(
+              :background_color,
+              value: section.effective_background_color,
+              data: {
+                color_role: "background",
+                action: "input->section-composition#refreshColors"
+              }
+            ) %>
+
+        <strong>
+          <%= section.effective_background_color %>
+        </strong>
+      </label>
+
+      <label class="section-color-control">
+        <span>Overlay</span>
+
+        <%= f.color_field(
+              :overlay_color,
+              value: section.effective_overlay_color,
+              data: {
+                color_role: "overlay",
+                action: "input->section-composition#refreshColors"
+              }
+            ) %>
+
+        <strong>
+          <%= section.effective_overlay_color %>
+        </strong>
+      </label>
+    </div>
+  </div>
+</div>

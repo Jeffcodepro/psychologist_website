@@ -1,0 +1,31 @@
+<div class="admin-page-settings">
+  <div class="admin-breadcrumb">
+    <%= link_to "Páginas", admin_pages_path %>
+    <span>/</span>
+    <strong><%= @page.name %></strong>
+  </div>
+
+  <header class="admin-page-heading">
+    <div>
+      <span class="admin-page-eyebrow">
+        Configuração da página
+      </span>
+
+      <h1>
+        <%= @page.name %>
+      </h1>
+
+      <p>
+        Configure identidade, navegação e SEO desta página.
+      </p>
+    </div>
+
+    <%= link_to(
+          "Editar conteúdo",
+          admin_page_sections_path(@page),
+          class: "admin-button-secondary"
+        ) %>
+  </header>
+
+  <%= render "form", page: @page %>
+</div>

@@ -1,0 +1,261 @@
+<div
+  class="preview-live-editor"
+  data-controller="
+    section-sort
+    field-swap
+    preview-editor
+    preview-field-handles
+  "
+  data-section-sort-url-value="<%= swap_positions_admin_page_sections_path(@page) %>"
+  data-field-swap-url-value="<%= swap_fields_admin_page_sections_path(@page) %>"
+>
+
+  <%= render "shared/navbar" %>
+
+  <main>
+
+    <% @sections.each do |section| %>
+
+      <div
+        class="preview-editable-section"
+        data-section-id="<%= section.id %>"
+        data-action="
+          dragover->section-sort#dragOver
+          drop->section-sort#drop
+        "
+      >
+
+        <!-- ==========================================
+             CONTROLE DA SEÇÃO INTEIRA
+        =========================================== -->
+
+        <div class="preview-editable-section__toolbar">
+
+          <button
+            type="button"
+            draggable="true"
+            class="preview-drag-handle"
+            data-section-id="<%= section.id %>"
+            data-action="
+              dragstart->section-sort#dragStart
+              dragend->section-sort#dragEnd
+            "
+            title="Mover seção inteira"
+          >
+
+            <span class="preview-grip">
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+            </span>
+
+          </button>
+
+          <span class="preview-editable-section__name">
+            <%= section.localized_title.presence || section.section_type.humanize %>
+          </span>
+
+          <button
+            type="button"
+            class="preview-edit-button"
+            data-panel-id="preview-editor-<%= section.id %>"
+            data-action="click->preview-editor#open"
+          >
+            Editar
+          </button>
+
+        </div>
+
+
+        <!-- ==========================================
+             ABAS DOS CAMPOS
+        =========================================== -->
+
+        <div class="preview-field-handle-layer">
+
+          <% if section.localized_title.present? %>
+
+            <button
+              type="button"
+              draggable="true"
+              class="preview-field-tab"
+              data-preview-field-handles-target="handle"
+              data-section-id="<%= section.id %>"
+              data-field="title"
+              data-action="
+                dragstart->field-swap#dragStart
+                dragover->field-swap#dragOver
+                dragleave->field-swap#dragLeave
+                drop->field-swap#drop
+                dragend->field-swap#dragEnd
+              "
+              aria-label="Mover título"
+            >
+
+              <span class="preview-field-tab__symbol">
+                T
+              </span>
+
+              <span class="preview-field-tab__label">
+                Título
+              </span>
+
+            </button>
+
+          <% end %>
+
+
+          <% if section.localized_body.present? %>
+
+            <button
+              type="button"
+              draggable="true"
+              class="preview-field-tab"
+              data-preview-field-handles-target="handle"
+              data-section-id="<%= section.id %>"
+              data-field="body"
+              data-action="
+                dragstart->field-swap#dragStart
+                dragover->field-swap#dragOver
+                dragleave->field-swap#dragLeave
+                drop->field-swap#drop
+                dragend->field-swap#dragEnd
+              "
+              aria-label="Mover texto"
+            >
+
+              <span class="preview-field-tab__symbol">
+                ¶
+              </span>
+
+              <span class="preview-field-tab__label">
+                Texto
+              </span>
+
+            </button>
+
+          <% end %>
+
+
+          <% if section.image.attached? %>
+
+            <button
+              type="button"
+              draggable="true"
+              class="preview-field-tab"
+              data-preview-field-handles-target="handle"
+              data-section-id="<%= section.id %>"
+              data-field="image"
+              data-action="
+                dragstart->field-swap#dragStart
+                dragover->field-swap#dragOver
+                dragleave->field-swap#dragLeave
+                drop->field-swap#drop
+                dragend->field-swap#dragEnd
+              "
+              aria-label="Mover imagem"
+            >
+
+              <span class="preview-field-tab__symbol">
+                ▧
+              </span>
+
+              <span class="preview-field-tab__label">
+                Imagem
+              </span>
+
+            </button>
+
+          <% end %>
+
+
+          <% if section.banner.attached? %>
+
+            <button
+              type="button"
+              draggable="true"
+              class="preview-field-tab"
+              data-preview-field-handles-target="handle"
+              data-section-id="<%= section.id %>"
+              data-field="banner"
+              data-action="
+                dragstart->field-swap#dragStart
+                dragover->field-swap#dragOver
+                dragleave->field-swap#dragLeave
+                drop->field-swap#drop
+                dragend->field-swap#dragEnd
+              "
+              aria-label="Mover banner"
+            >
+
+              <span class="preview-field-tab__symbol">
+                ▣
+              </span>
+
+              <span class="preview-field-tab__label">
+                Banner
+              </span>
+
+            </button>
+
+          <% end %>
+
+        </div>
+
+
+        <!-- ==========================================
+             SEÇÃO REAL
+        =========================================== -->
+
+        <div
+          class="preview-section-content"
+          <% if section.anchor.present? %>
+            id="<%= section.anchor %>"
+          <% end %>
+        >
+          <%= render "shared/section_render",
+                    section: section %>
+        </div>
+
+      </div>
+
+    <% end %>
+
+  </main>
+
+
+  <%= render "shared/footer" %>
+
+
+  <!-- ==========================================
+       DRAWER
+  =========================================== -->
+
+  <div
+    class="preview-editor-backdrop"
+    data-preview-editor-target="backdrop"
+    data-action="click->preview-editor#close"
+    hidden
+  ></div>
+
+
+  <% @sections.each do |section| %>
+
+    <aside
+      id="preview-editor-<%= section.id %>"
+      class="preview-editor-drawer"
+      data-preview-editor-target="panel"
+      hidden
+    >
+
+      <%= render "section_editor",
+                 section: section %>
+
+    </aside>
+
+  <% end %>
+
+</div>

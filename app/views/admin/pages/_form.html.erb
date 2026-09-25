@@ -1,0 +1,166 @@
+<%= simple_form_for(
+      [:admin, page],
+      html: {
+        class: "admin-page-form"
+      }
+    ) do |f| %>
+
+  <section class="admin-settings-section">
+    <header class="admin-settings-section__header">
+      <span class="admin-settings-section__number">
+        01
+      </span>
+
+      <div>
+        <h2>
+          Identificação
+        </h2>
+
+        <p>
+          Nome, endereço e descrição da página.
+        </p>
+      </div>
+    </header>
+
+    <div class="admin-form-grid admin-form-grid--2">
+      <%= f.input(
+            :name,
+            label: "Nome da página"
+          ) %>
+
+      <%= f.input(
+            :slug,
+            label: "URL",
+            hint: "Ex.: psicoterapia ou desenvolvimento-humano"
+          ) %>
+    </div>
+
+    <div class="admin-form-grid admin-form-grid--2">
+      <%= f.input(
+            :description,
+            as: :text,
+            label: "Descrição administrativa",
+            input_html: {
+              rows: 4
+            }
+          ) %>
+
+      <%= f.input(
+            :description_en,
+            as: :text,
+            label: "Descrição em inglês",
+            input_html: {
+              rows: 4
+            }
+          ) %>
+    </div>
+  </section>
+
+  <section class="admin-settings-section">
+    <header class="admin-settings-section__header">
+      <span class="admin-settings-section__number">
+        02
+      </span>
+
+      <div>
+        <h2>
+          Navbar
+        </h2>
+
+        <p>
+          Controle como esta página aparece na navegação principal.
+        </p>
+      </div>
+    </header>
+
+    <div class="admin-form-grid admin-form-grid--2">
+      <%= f.input(
+            :nav_label,
+            label: "Nome na navbar"
+          ) %>
+
+      <%= f.input(
+            :nav_label_en,
+            label: "Nome na navbar em inglês"
+          ) %>
+
+      <%= f.input(
+            :position,
+            label: "Posição"
+          ) %>
+
+      <%= f.input(
+            :show_in_nav,
+            as: :boolean,
+            label: "Exibir na navbar"
+          ) %>
+    </div>
+  </section>
+
+  <section class="admin-settings-section">
+    <header class="admin-settings-section__header">
+      <span class="admin-settings-section__number">
+        03
+      </span>
+
+      <div>
+        <h2>
+          SEO
+        </h2>
+
+        <p>
+          Como esta página aparece nos mecanismos de busca.
+        </p>
+      </div>
+    </header>
+
+    <div class="admin-form-grid admin-form-grid--2">
+      <%= f.input(
+            :seo_title,
+            label: "Título SEO",
+            hint: "Recomendado: até 60 caracteres."
+          ) %>
+
+      <%= f.input(
+            :seo_title_en,
+            label: "Título SEO em inglês",
+            hint: "Recomendado: até 60 caracteres."
+          ) %>
+    </div>
+
+    <div class="admin-form-grid admin-form-grid--2">
+      <%= f.input(
+            :seo_description,
+            as: :text,
+            label: "Descrição SEO",
+            hint: "Recomendado: até 160 caracteres.",
+            input_html: {
+              rows: 4
+            }
+          ) %>
+
+      <%= f.input(
+            :seo_description_en,
+            as: :text,
+            label: "Descrição SEO em inglês",
+            input_html: {
+              rows: 4
+            }
+          ) %>
+    </div>
+  </section>
+
+  <div class="admin-settings-actions">
+    <%= link_to(
+          "Cancelar",
+          admin_pages_path,
+          class: "admin-button-secondary"
+        ) %>
+
+    <%= f.button(
+          :submit,
+          "Salvar página",
+          class: "admin-button admin-button--primary"
+        ) %>
+  </div>
+<% end %>

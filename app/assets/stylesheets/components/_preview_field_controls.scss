@@ -1,0 +1,114 @@
+// --------------------------------------------------
+// PREVIEW FIELD HANDLES
+// --------------------------------------------------
+
+.preview-field-handle {
+  position: relative;
+
+  transition:
+    background 0.2s ease,
+    opacity 0.2s ease,
+    transform 0.2s ease;
+
+
+  &:hover {
+    background:
+      rgba(255, 255, 255, 0.18);
+
+    transform: translateY(-1px);
+  }
+
+
+  &.is-empty {
+    opacity: 0.42;
+
+
+    &::after {
+      content: "";
+
+      position: absolute;
+
+      top: 3px;
+      right: 3px;
+
+      width: 5px;
+      height: 5px;
+
+      border-radius: 50%;
+
+      background: #c8a96a;
+    }
+  }
+
+
+  &.is-dragging {
+    opacity: 0.3;
+
+    cursor: grabbing;
+  }
+
+
+  &.is-field-target {
+    background: $primary;
+
+    color: #ffffff;
+
+    box-shadow:
+      0 0 0 2px
+      rgba(255, 255, 255, 0.25);
+  }
+}
+
+
+// --------------------------------------------------
+// DANGER AREA
+// --------------------------------------------------
+
+.preview-editor-danger__grid {
+  margin: 15px 0;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 8px;
+
+
+  form {
+    margin: 0;
+  }
+
+
+  .admin-danger-button {
+    width: 100%;
+
+    min-height: 38px;
+  }
+}
+
+
+.preview-editor-empty {
+  padding: 11px 13px;
+
+  border: 1px dashed #d9ddd6;
+  border-radius: 7px;
+
+  background: #f8f9f7;
+
+  color: $text-secondary;
+
+  font-size: 0.7rem;
+}
+
+
+.preview-editor-is-open {
+  overflow: hidden;
+}
+
+
+@media (max-width: 600px) {
+  .preview-editor-danger__grid {
+    grid-template-columns: 1fr;
+  }
+}

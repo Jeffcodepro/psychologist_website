@@ -1,0 +1,407 @@
+<div class="site-identity-editor">
+  <article
+    class="site-identity-asset"
+    data-controller="asset-preview"
+  >
+    <header class="site-identity-asset__header">
+      <div>
+        <span class="site-identity-asset__eyebrow">Logo principal</span>
+        <h3>Logo da navbar</h3>
+        <p>Ajuste visualmente como a marca será exibida no cabeçalho do site.</p>
+      </div>
+
+      <div class="site-identity-asset__specs">
+        <span>1200 × 320 recomendado</span>
+        <span>PNG, JPG ou WebP</span>
+        <span>Máx. 10 MB</span>
+      </div>
+    </header>
+
+    <div class="site-identity-asset__workspace">
+      <div class="site-identity-asset__preview-column">
+        <span class="site-identity-asset__label">Prévia real da navbar</span>
+
+        <div class="site-navbar-preview">
+          <div class="site-navbar-preview__brand">
+            <div
+              class="site-navbar-preview__logo-frame"
+              data-asset-preview-target="canvas"
+              data-action="
+                pointerdown->asset-preview#startPosition
+                pointermove->asset-preview#movePosition
+                pointerup->asset-preview#endPosition
+                pointercancel->asset-preview#endPosition
+              "
+            >
+              <% if site_setting.logo.attached? %>
+                <%= image_tag(
+                      site_setting.logo,
+                      alt: "",
+                      class: "site-navbar-preview__logo",
+                      data: {
+                        asset_preview_target: "image"
+                      }
+                    ) %>
+              <% else %>
+                <img
+                  alt=""
+                  class="site-navbar-preview__logo is-hidden"
+                  data-asset-preview-target="image"
+                >
+
+                <div
+                  class="site-identity-empty"
+                  data-asset-preview-target="empty"
+                >
+                  <strong>Nenhuma logo</strong>
+                  <span>Selecione uma imagem</span>
+                </div>
+              <% end %>
+
+              <span
+                class="site-identity-focus"
+                data-asset-preview-target="focus"
+              ></span>
+
+              <% if site_setting.logo.attached? %>
+                <span class="site-identity-drag-hint">
+                  Arraste para reposicionar
+                </span>
+              <% end %>
+            </div>
+          </div>
+
+          <div class="site-navbar-preview__links">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+
+          <div class="site-navbar-preview__button"></div>
+        </div>
+
+        <label class="site-identity-picker">
+          <span>
+            <%= site_setting.logo.attached? ? "Trocar logo" : "Selecionar logo" %>
+          </span>
+
+          <%= f.file_field(
+                :logo,
+                accept: "image/png,image/jpeg,image/webp",
+                data: {
+                  asset_preview_target: "input",
+                  action: "change->asset-preview#fileChanged"
+                }
+              ) %>
+        </label>
+      </div>
+
+      <aside class="site-identity-controls">
+        <div class="site-identity-control">
+          <div class="site-identity-control__header">
+            <div>
+              <strong>Zoom</strong>
+              <span>Aproxime ou afaste a marca.</span>
+            </div>
+
+            <strong data-asset-preview-target="zoomLabel"></strong>
+          </div>
+
+          <div class="site-identity-stepper">
+            <button
+              type="button"
+              aria-label="Diminuir zoom"
+              data-action="click->asset-preview#zoomOut"
+            >
+              −
+            </button>
+
+            <span>Tamanho</span>
+
+            <button
+              type="button"
+              aria-label="Aumentar zoom"
+              data-action="click->asset-preview#zoomIn"
+            >
+              +
+            </button>
+          </div>
+        </div>
+
+        <div class="site-identity-control">
+          <div class="site-identity-control__header">
+            <div>
+              <strong>Enquadramento</strong>
+              <span>Arraste a logo ou utilize um atalho.</span>
+            </div>
+
+            <strong data-asset-preview-target="positionLabel"></strong>
+          </div>
+
+          <div class="site-identity-presets">
+            <button
+              type="button"
+              data-x="25"
+              data-y="50"
+              data-action="click->asset-preview#setPreset"
+            >
+              Esquerda
+            </button>
+
+            <button
+              type="button"
+              data-x="50"
+              data-y="50"
+              data-action="click->asset-preview#setPreset"
+            >
+              Centro
+            </button>
+
+            <button
+              type="button"
+              data-x="75"
+              data-y="50"
+              data-action="click->asset-preview#setPreset"
+            >
+              Direita
+            </button>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          class="site-identity-reset"
+          data-action="click->asset-preview#reset"
+        >
+          Restaurar enquadramento
+        </button>
+      </aside>
+    </div>
+
+    <%= f.hidden_field(
+          :logo_zoom,
+          value: site_setting.effective_logo_zoom,
+          data: {
+            asset_preview_target: "zoom"
+          }
+        ) %>
+
+    <%= f.hidden_field(
+          :logo_position_x,
+          value: site_setting.effective_logo_position_x,
+          data: {
+            asset_preview_target: "x"
+          }
+        ) %>
+
+    <%= f.hidden_field(
+          :logo_position_y,
+          value: site_setting.effective_logo_position_y,
+          data: {
+            asset_preview_target: "y"
+          }
+        ) %>
+  </article>
+
+  <article
+    class="site-identity-asset"
+    data-controller="asset-preview"
+  >
+    <header class="site-identity-asset__header">
+      <div>
+        <span class="site-identity-asset__eyebrow">Fotografia</span>
+        <h3>Foto profissional</h3>
+        <p>Ajuste a fotografia que será utilizada nas áreas de apresentação.</p>
+      </div>
+
+      <div class="site-identity-asset__specs">
+        <span>1200 × 1500 recomendado</span>
+        <span>Proporção 4:5</span>
+        <span>PNG, JPG ou WebP</span>
+      </div>
+    </header>
+
+    <div class="site-identity-asset__workspace">
+      <div class="site-identity-asset__preview-column">
+        <span class="site-identity-asset__label">Prévia da fotografia</span>
+
+        <div class="site-profile-preview">
+          <div
+            class="site-profile-preview__image-frame"
+            data-asset-preview-target="canvas"
+            data-action="
+              pointerdown->asset-preview#startPosition
+              pointermove->asset-preview#movePosition
+              pointerup->asset-preview#endPosition
+              pointercancel->asset-preview#endPosition
+            "
+          >
+            <% if site_setting.profile_image.attached? %>
+              <%= image_tag(
+                    site_setting.profile_image,
+                    alt: "",
+                    class: "site-profile-preview__image",
+                    data: {
+                      asset_preview_target: "image"
+                    }
+                  ) %>
+            <% else %>
+              <img
+                alt=""
+                class="site-profile-preview__image is-hidden"
+                data-asset-preview-target="image"
+              >
+
+              <div
+                class="site-identity-empty"
+                data-asset-preview-target="empty"
+              >
+                <strong>Nenhuma fotografia</strong>
+                <span>Selecione uma imagem</span>
+              </div>
+            <% end %>
+
+            <span
+              class="site-identity-focus"
+              data-asset-preview-target="focus"
+            ></span>
+
+            <% if site_setting.profile_image.attached? %>
+              <span class="site-identity-drag-hint">
+                Arraste para reposicionar
+              </span>
+            <% end %>
+          </div>
+
+          <div class="site-profile-preview__content">
+            <span class="site-profile-preview__eyebrow"></span>
+            <span class="site-profile-preview__title"></span>
+            <span class="site-profile-preview__title site-profile-preview__title--short"></span>
+            <span class="site-profile-preview__text"></span>
+            <span class="site-profile-preview__text site-profile-preview__text--short"></span>
+          </div>
+        </div>
+
+        <label class="site-identity-picker">
+          <span>
+            <%= site_setting.profile_image.attached? ? "Trocar fotografia" : "Selecionar fotografia" %>
+          </span>
+
+          <%= f.file_field(
+                :profile_image,
+                accept: "image/png,image/jpeg,image/webp",
+                data: {
+                  asset_preview_target: "input",
+                  action: "change->asset-preview#fileChanged"
+                }
+              ) %>
+        </label>
+      </div>
+
+      <aside class="site-identity-controls">
+        <div class="site-identity-control">
+          <div class="site-identity-control__header">
+            <div>
+              <strong>Zoom</strong>
+              <span>Ajuste o enquadramento da fotografia.</span>
+            </div>
+
+            <strong data-asset-preview-target="zoomLabel"></strong>
+          </div>
+
+          <div class="site-identity-stepper">
+            <button
+              type="button"
+              aria-label="Diminuir zoom"
+              data-action="click->asset-preview#zoomOut"
+            >
+              −
+            </button>
+
+            <span>Enquadramento</span>
+
+            <button
+              type="button"
+              aria-label="Aumentar zoom"
+              data-action="click->asset-preview#zoomIn"
+            >
+              +
+            </button>
+          </div>
+        </div>
+
+        <div class="site-identity-control">
+          <div class="site-identity-control__header">
+            <div>
+              <strong>Ponto de foco</strong>
+              <span>Arraste diretamente sobre a fotografia.</span>
+            </div>
+
+            <strong data-asset-preview-target="positionLabel"></strong>
+          </div>
+
+          <div class="site-identity-presets">
+            <button
+              type="button"
+              data-x="50"
+              data-y="30"
+              data-action="click->asset-preview#setPreset"
+            >
+              Superior
+            </button>
+
+            <button
+              type="button"
+              data-x="50"
+              data-y="50"
+              data-action="click->asset-preview#setPreset"
+            >
+              Centro
+            </button>
+
+            <button
+              type="button"
+              data-x="50"
+              data-y="70"
+              data-action="click->asset-preview#setPreset"
+            >
+              Inferior
+            </button>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          class="site-identity-reset"
+          data-action="click->asset-preview#reset"
+        >
+          Restaurar enquadramento
+        </button>
+      </aside>
+    </div>
+
+    <%= f.hidden_field(
+          :profile_image_zoom,
+          value: site_setting.effective_profile_image_zoom,
+          data: {
+            asset_preview_target: "zoom"
+          }
+        ) %>
+
+    <%= f.hidden_field(
+          :profile_image_position_x,
+          value: site_setting.effective_profile_image_position_x,
+          data: {
+            asset_preview_target: "x"
+          }
+        ) %>
+
+    <%= f.hidden_field(
+          :profile_image_position_y,
+          value: site_setting.effective_profile_image_position_y,
+          data: {
+            asset_preview_target: "y"
+          }
+        ) %>
+  </article>
+</div>

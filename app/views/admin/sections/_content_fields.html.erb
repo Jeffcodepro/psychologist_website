@@ -1,0 +1,93 @@
+<div class="section-content-editor">
+  <header class="section-content-editor__header">
+    <div class="section-content-editor__intro">
+      <span class="section-editor-eyebrow">Conteúdo</span>
+
+      <h2>Textos do bloco</h2>
+
+      <p>
+        Edite o conteúdo em português e mantenha a versão em inglês sincronizada.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="section-translate-button"
+      data-action="click->translation#translate"
+      data-translation-target="button"
+    >
+      <span class="section-translate-button__icon">A</span>
+
+      <span class="section-translate-button__copy">
+        <strong>Gerar versão em inglês</strong>
+        <small>Traduz título e conteúdo automaticamente</small>
+      </span>
+    </button>
+  </header>
+
+  <div
+    class="section-translation-feedback"
+    data-translation-target="status"
+    hidden
+  ></div>
+
+  <div class="section-language-grid">
+    <article class="section-language-card">
+      <header class="section-language-card__header">
+        <span class="section-language-card__badge">
+          PT
+        </span>
+
+        <div>
+          <strong>Português</strong>
+          <small>Conteúdo principal</small>
+        </div>
+      </header>
+
+      <div class="section-language-card__fields">
+        <%= f.input(
+              :title,
+              label: "Título"
+            ) %>
+
+        <%= f.input(
+              :body,
+              as: :text,
+              label: "Conteúdo",
+              input_html: {
+                rows: 7
+              }
+            ) %>
+      </div>
+    </article>
+
+    <article class="section-language-card">
+      <header class="section-language-card__header">
+        <span class="section-language-card__badge">
+          EN
+        </span>
+
+        <div>
+          <strong>Inglês</strong>
+          <small>Versão internacional</small>
+        </div>
+      </header>
+
+      <div class="section-language-card__fields">
+        <%= f.input(
+              :title_en,
+              label: "Título em inglês"
+            ) %>
+
+        <%= f.input(
+              :body_en,
+              as: :text,
+              label: "Conteúdo em inglês",
+              input_html: {
+                rows: 7
+              }
+            ) %>
+      </div>
+    </article>
+  </div>
+</div>

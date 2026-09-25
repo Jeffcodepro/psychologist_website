@@ -1,0 +1,819 @@
+// ==================================================
+// CARDS SECTION
+// ==================================================
+
+.cards-section {
+  width: 100%;
+
+  padding: 88px 0;
+
+  background: $background;
+
+
+  // ------------------------------------------------
+  // HEADER
+  // ------------------------------------------------
+
+  &__header {
+    max-width: 760px;
+
+    margin-bottom: 44px;
+  }
+
+
+  &__title {
+    margin: 0;
+
+    font-family:
+      var(--section-title-font);
+
+    font-size:
+      var(--section-title-size-desktop);
+
+    font-weight: 500;
+
+    line-height: 1.08;
+
+    letter-spacing: -0.025em;
+
+    color: $text-primary;
+  }
+
+
+  &__intro {
+    max-width: 660px;
+
+    margin-top: 18px;
+
+    font-family:
+      var(--section-body-font);
+
+    font-size:
+      var(--section-body-size-desktop);
+
+    line-height: 1.7;
+
+    color: $text-secondary;
+
+
+    p {
+      margin: 0;
+    }
+
+
+    p + p {
+      margin-top: 12px;
+    }
+  }
+
+
+  // ------------------------------------------------
+  // GRID HORIZONTAL
+  // ------------------------------------------------
+
+  &__grid {
+    display: grid;
+
+    gap: 20px;
+  }
+
+
+  // ------------------------------------------------
+  // LISTA VERTICAL
+  // ------------------------------------------------
+
+  &__list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 18px;
+  }
+
+
+  // ------------------------------------------------
+  // COLUNAS DESKTOP
+  // ------------------------------------------------
+
+  &--desktop-1 {
+    .cards-section__grid {
+      grid-template-columns:
+        minmax(0, 1fr);
+    }
+  }
+
+
+  &--desktop-2 {
+    .cards-section__grid {
+      grid-template-columns:
+        repeat(
+          2,
+          minmax(0, 1fr)
+        );
+    }
+  }
+
+
+  &--desktop-3 {
+    .cards-section__grid {
+      grid-template-columns:
+        repeat(
+          3,
+          minmax(0, 1fr)
+        );
+    }
+  }
+
+
+  &--desktop-4 {
+    .cards-section__grid {
+      grid-template-columns:
+        repeat(
+          4,
+          minmax(0, 1fr)
+        );
+    }
+  }
+
+
+  // ------------------------------------------------
+  // EMPTY
+  // ------------------------------------------------
+
+  &__empty {
+    padding: 34px;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 6px;
+
+    border:
+      1px dashed
+      rgba(36, 49, 46, 0.18);
+
+    border-radius: 14px;
+
+    color: $text-secondary;
+
+    text-align: center;
+
+
+    strong {
+      color: $text-primary;
+
+      font-size: 0.85rem;
+    }
+
+
+    span {
+      font-size: 0.72rem;
+    }
+  }
+}
+
+
+// ==================================================
+// BASE CARD
+// ==================================================
+
+.psychology-card {
+  position: relative;
+
+  min-width: 0;
+
+  overflow: hidden;
+
+  border:
+    1px solid
+    rgba(36, 49, 46, 0.1);
+
+  border-radius: 18px;
+
+  background:
+    rgba(255, 255, 255, 0.58);
+
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    background 0.25s ease,
+    box-shadow 0.25s ease;
+
+
+  &:hover {
+    border-color:
+      rgba(79, 111, 101, 0.25);
+
+    background:
+      rgba(255, 255, 255, 0.78);
+
+    box-shadow:
+      0 18px 48px
+      rgba(36, 49, 46, 0.07);
+
+    transform:
+      translateY(-4px);
+  }
+
+
+  // ------------------------------------------------
+  // MEDIA
+  // ------------------------------------------------
+
+  &__media {
+    overflow: hidden;
+
+    background: $primary-light;
+  }
+
+
+  &__image {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+
+    transition:
+      transform 0.4s ease;
+  }
+
+
+  &:hover {
+    .psychology-card__image {
+      transform:
+        scale(1.035);
+    }
+  }
+
+
+  // ------------------------------------------------
+  // CONTENT
+  // ------------------------------------------------
+
+  &__content {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+  }
+
+
+  &__number {
+    display: block;
+
+    font-family: $body-font;
+
+    font-size: 0.61rem;
+    font-weight: 600;
+
+    letter-spacing: 0.09em;
+
+    color: $primary;
+  }
+
+
+  &__title {
+    margin: 0;
+
+    font-family: $headers-font;
+
+    font-size: 1.45rem;
+    font-weight: 500;
+
+    line-height: 1.15;
+
+    color: $text-primary;
+  }
+
+
+  &__body {
+    font-family: $body-font;
+
+    font-size: 0.76rem;
+
+    line-height: 1.68;
+
+    color: $text-secondary;
+
+
+    p {
+      margin: 0;
+    }
+
+
+    p + p {
+      margin-top: 10px;
+    }
+  }
+}
+
+
+// ==================================================
+// HORIZONTAL MODE
+// Cards side by side
+// ==================================================
+
+.cards-section--horizontal {
+  .psychology-card {
+    min-height: 330px;
+
+    display: flex;
+    flex-direction: column;
+  }
+
+
+  .psychology-card__media {
+    width: 100%;
+
+    aspect-ratio: 16 / 10;
+  }
+
+
+  .psychology-card__content {
+    flex: 1;
+
+    padding: 27px 28px 30px;
+  }
+
+
+  .psychology-card__number {
+    margin-bottom: 38px;
+  }
+
+
+  .psychology-card__title {
+    margin-top: auto;
+  }
+
+
+  .psychology-card__body {
+    margin-top: 15px;
+  }
+}
+
+
+// ==================================================
+// VERTICAL MODE
+// Wide cards stacked vertically
+// ==================================================
+
+.cards-section--vertical {
+  .cards-section__list {
+    width: 100%;
+  }
+
+
+  .psychology-card {
+    width: 100%;
+
+    min-height: 220px;
+
+    display: block;
+  }
+
+
+  .psychology-card--with-image {
+    display: grid;
+
+    grid-template-columns:
+      minmax(210px, 30%)
+      minmax(0, 1fr);
+  }
+
+
+  .psychology-card__media {
+    width: 100%;
+    height: 100%;
+
+    min-height: 220px;
+  }
+
+
+  .psychology-card__content {
+    min-height: 220px;
+
+    padding: 30px 34px;
+  }
+
+
+  .psychology-card__number {
+    margin-bottom: 28px;
+  }
+
+
+  .psychology-card__title {
+    margin-top: auto;
+
+    font-size: 1.65rem;
+  }
+
+
+  .psychology-card__body {
+    max-width: 760px;
+
+    margin-top: 13px;
+  }
+}
+
+
+// ==================================================
+// CAROUSEL
+// ==================================================
+
+.cards-carousel {
+  position: relative;
+
+  width: 100%;
+
+  padding: 0 54px;
+
+
+  // ------------------------------------------------
+  // VIEWPORT
+  // ------------------------------------------------
+
+  &__viewport {
+    width: 100%;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    scroll-behavior: smooth;
+
+    scroll-snap-type:
+      x mandatory;
+
+    scrollbar-width: none;
+
+    -ms-overflow-style: none;
+
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+
+  // ------------------------------------------------
+  // TRACK
+  // ------------------------------------------------
+
+  &__track {
+    display: flex;
+
+    align-items: stretch;
+
+    gap: 20px;
+  }
+
+
+  .psychology-card {
+    scroll-snap-align: start;
+  }
+
+
+  // ------------------------------------------------
+  // ARROWS
+  // ------------------------------------------------
+
+  &__arrow {
+    position: absolute;
+
+    top: 50%;
+
+    z-index: 20;
+
+    width: 42px;
+    height: 42px;
+
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border:
+      1px solid
+      rgba(36, 49, 46, 0.14);
+
+    border-radius: 50%;
+
+    background: $background;
+
+    color: $text-primary;
+
+    font-size: 1rem;
+
+    cursor: pointer;
+
+    transform:
+      translateY(-50%);
+
+    transition:
+      background 0.2s ease,
+      color 0.2s ease,
+      box-shadow 0.2s ease;
+
+
+    &:hover {
+      background: $primary;
+
+      color: #ffffff;
+
+      box-shadow:
+        0 8px 22px
+        rgba(36, 49, 46, 0.14);
+    }
+
+
+    &--previous {
+      left: 0;
+    }
+
+
+    &--next {
+      right: 0;
+    }
+  }
+}
+
+
+// ==================================================
+// CAROUSEL DESKTOP
+// ==================================================
+
+.cards-section--carousel {
+  &.cards-section--desktop-1 {
+    .psychology-card {
+      flex:
+        0 0 100%;
+    }
+  }
+
+
+  &.cards-section--desktop-2 {
+    .psychology-card {
+      flex:
+        0 0 calc(
+          (100% - 20px) / 2
+        );
+    }
+  }
+
+
+  &.cards-section--desktop-3 {
+    .psychology-card {
+      flex:
+        0 0 calc(
+          (100% - 40px) / 3
+        );
+    }
+  }
+
+
+  &.cards-section--desktop-4 {
+    .psychology-card {
+      flex:
+        0 0 calc(
+          (100% - 60px) / 4
+        );
+    }
+  }
+}
+
+
+// ==================================================
+// TABLET
+// ==================================================
+
+@media (max-width: 960px) {
+  .cards-section {
+    padding: 72px 0;
+
+
+    &--tablet-1 {
+      .cards-section__grid {
+        grid-template-columns:
+          1fr;
+      }
+    }
+
+
+    &--tablet-2 {
+      .cards-section__grid {
+        grid-template-columns:
+          repeat(
+            2,
+            minmax(0, 1fr)
+          );
+      }
+    }
+
+
+    &--tablet-3 {
+      .cards-section__grid {
+        grid-template-columns:
+          repeat(
+            3,
+            minmax(0, 1fr)
+          );
+      }
+    }
+  }
+
+
+  .cards-section--vertical {
+    .psychology-card--with-image {
+      grid-template-columns:
+        minmax(180px, 34%)
+        minmax(0, 1fr);
+    }
+  }
+
+
+  .cards-section--carousel {
+    &.cards-section--tablet-1 {
+      .psychology-card {
+        flex:
+          0 0 100%;
+      }
+    }
+
+
+    &.cards-section--tablet-2 {
+      .psychology-card {
+        flex:
+          0 0 calc(
+            (100% - 20px) / 2
+          );
+      }
+    }
+
+
+    &.cards-section--tablet-3 {
+      .psychology-card {
+        flex:
+          0 0 calc(
+            (100% - 40px) / 3
+          );
+      }
+    }
+  }
+}
+
+
+// ==================================================
+// MOBILE
+// ==================================================
+
+@media (max-width: 680px) {
+  .cards-section {
+    padding: 56px 0;
+
+
+    &__header {
+      margin-bottom: 30px;
+    }
+
+
+    &__title {
+      font-size:
+        var(--section-title-size-mobile);
+    }
+
+
+    &__intro {
+      font-size:
+        var(--section-body-size-mobile);
+    }
+
+
+    &--mobile-1 {
+      .cards-section__grid {
+        grid-template-columns:
+          1fr;
+      }
+    }
+
+
+    &--mobile-2 {
+      .cards-section__grid {
+        grid-template-columns:
+          repeat(
+            2,
+            minmax(0, 1fr)
+          );
+      }
+    }
+  }
+
+
+  // ------------------------------------------------
+  // HORIZONTAL
+  // ------------------------------------------------
+
+  .cards-section--horizontal {
+    .psychology-card {
+      min-height: 285px;
+    }
+
+
+    .psychology-card__content {
+      padding: 23px;
+    }
+
+
+    .psychology-card__number {
+      margin-bottom: 30px;
+    }
+
+
+    .psychology-card__title {
+      font-size: 1.3rem;
+    }
+  }
+
+
+  // ------------------------------------------------
+  // VERTICAL
+  // ------------------------------------------------
+
+  .cards-section--vertical {
+    .psychology-card,
+    .psychology-card--with-image {
+      display: flex;
+
+      flex-direction: column;
+    }
+
+
+    .psychology-card__media {
+      height: auto;
+
+      min-height: 0;
+
+      aspect-ratio: 16 / 9;
+    }
+
+
+    .psychology-card__content {
+      min-height: 190px;
+
+      padding: 24px;
+    }
+
+
+    .psychology-card__number {
+      margin-bottom: 26px;
+    }
+
+
+    .psychology-card__title {
+      font-size: 1.38rem;
+    }
+  }
+
+
+  // ------------------------------------------------
+  // CAROUSEL
+  // ------------------------------------------------
+
+  .cards-carousel {
+    padding: 0 38px;
+
+
+    &__track {
+      gap: 14px;
+    }
+
+
+    &__arrow {
+      width: 32px;
+      height: 32px;
+
+      font-size: 0.78rem;
+    }
+  }
+
+
+  .cards-section--carousel {
+    &.cards-section--mobile-1 {
+      .psychology-card {
+        flex:
+          0 0 100%;
+      }
+    }
+
+
+    &.cards-section--mobile-2 {
+      .psychology-card {
+        flex:
+          0 0 calc(
+            (100% - 14px) / 2
+          );
+      }
+    }
+  }
+}

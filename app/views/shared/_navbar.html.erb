@@ -1,38 +1,295 @@
-<nav class="navbar navbar-expand-sm navbar-light navbar-lewagon">
-  <div class="container-fluid">
-    <%= link_to "#", class: "navbar-brand" do %>
-      <%= image_tag "https://raw.githubusercontent.com/lewagon/fullstack-images/master/uikit/logo.png" %>
+<%
+  professional_name =
+    @site_setting&.professional_name.presence || "Rosemary Dias"
+
+  preview_frame =
+    request.path.include?("/admin/pages/") &&
+    request.path.include?("/preview/frame")
+
+  current_locale = I18n.locale.to_s
+
+  current_page =
+    @page
+
+  navigation_pages =
+    Array(@navigation_pages)
+
+  logo_zoom =
+    if @site_setting&.respond_to?(:effective_logo_zoom)
+      @site_setting.effective_logo_zoom
+    else
+      1.0
+    end
+
+  logo_x =
+    if @site_setting&.respond_to?(:effective_logo_position_x)
+      @site_setting.effective_logo_position_x
+    else
+      50
+    end
+
+  logo_y =
+    if @site_setting&.respond_to?(:effective_logo_position_y)
+      @site_setting.effective_logo_position_y
+    else
+      50
+    end
+
+  whatsapp_number =
+    @site_setting&.whatsapp.to_s.gsub(/\D/, "")
+
+  appointment_label =
+    I18n.locale == :en ?
+      "Book a session" :
+      "Agendar atendimento"
+
+  public_path_for = lambda do |page|
+    if page.home?
+      root_path(locale: current_locale)
+    else
+      public_page_path(
+        slug: page.slug,
+        locale: current_locale
+      )
+    end
+  end
+
+  preview_path_for = lambda do |page|
+    admin_page_preview_path(
+      page,
+      locale: current_locale
+    )
+  end
+
+  brand_page =
+    navigation_pages.find(&:home?)
+
+  brand_path =
+    if preview_frame && brand_page.present?
+      preview_path_for.call(brand_page)
+    else
+      root_path(locale: current_locale)
+    end
+
+  language_path_for = lambda do |locale|
+    if preview_frame
+      admin_page_preview_path(
+        current_page,
+        locale: locale
+      )
+    elsif current_page&.home?
+      root_path(locale: locale)
+    elsif current_page.present?
+      public_page_path(
+        slug: current_page.slug,
+        locale: locale
+      )
+    else
+      root_path(locale: locale)
+    end
+  end
+%>
+
+<header
+  class="site-navbar"
+  data-controller="site-navbar"
+>
+  <div class="container site-navbar__container">
+    <%= link_to(
+          brand_path,
+          class: "site-navbar__brand",
+          target: preview_frame ? "_top" : nil
+        ) do %>
+
+      <% if @site_setting&.logo&.attached? %>
+        <span
+          class="site-navbar__logo-frame"
+          style="
+            --site-logo-zoom: <%= logo_zoom %>;
+            --site-logo-x: <%= logo_x %>%;
+            --site-logo-y: <%= logo_y %>%;
+          "
+        >
+          <%= image_tag(
+                @site_setting.logo,
+                alt: professional_name,
+                class: "site-navbar__logo"
+              ) %>
+        </span>
+      <% else %>
+        <span class="site-navbar__brand-copy">
+          <strong>
+            <%= professional_name %>
+          </strong>
+
+          <small>
+            <%= I18n.locale == :en ?
+                  "Psychology & Human Development" :
+                  "Psicologia & Desenvolvimento Humano" %>
+          </small>
+        </span>
+      <% end %>
     <% end %>
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+    <nav
+      class="site-navbar__navigation"
+      aria-label="Navegação principal"
+    >
+      <% navigation_pages.each do |page| %>
+        <%
+          page_path =
+            if preview_frame
+              preview_path_for.call(page)
+            else
+              public_path_for.call(page)
+            end
+        %>
 
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto">
-        <% if user_signed_in? %>
-          <li class="nav-item active">
-            <%= link_to "Home", "#", class: "nav-link" %>
-          </li>
-          <li class="nav-item">
-            <%= link_to "Messages", "#", class: "nav-link" %>
-          </li>
-          <li class="nav-item dropdown">
-          <a href="#" class="avatar" id="navbarDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <%= image_tag "https://kitt.lewagon.com/placeholder/users/ssaunier", class: "avatar", alt: "dropdown menu" %>
-          </a>
-            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-              <%= link_to "Action", "#", class: "dropdown-item" %>
-              <%= link_to "Another action", "#", class: "dropdown-item" %>
-              <%= link_to "Log out", destroy_user_session_path, data: {turbo_method: :delete}, class: "dropdown-item" %>
-            </div>
-          </li>
-        <% else %>
-          <li class="nav-item">
-            <%= link_to "Login", new_user_session_path, class: "nav-link" %>
-          </li>
-        <% end %>
-      </ul>
+        <%= link_to(
+              page.localized_nav_label,
+              page_path,
+              target: preview_frame ? "_top" : nil,
+              class: [
+                "site-navbar__link",
+                current_page&.id == page.id ? "is-active" : nil
+              ].compact.join(" ")
+            ) %>
+      <% end %>
+    </nav>
+
+    <div class="site-navbar__actions">
+      <div class="site-navbar__languages">
+        <%= link_to(
+              "PT",
+              language_path_for.call("pt-BR"),
+              target: preview_frame ? "_top" : nil,
+              class: [
+                "site-navbar__language",
+                I18n.locale == :"pt-BR" ? "is-active" : nil
+              ].compact.join(" ")
+            ) %>
+
+        <%= link_to(
+              "EN",
+              language_path_for.call("en"),
+              target: preview_frame ? "_top" : nil,
+              class: [
+                "site-navbar__language",
+                I18n.locale == :en ? "is-active" : nil
+              ].compact.join(" ")
+            ) %>
+      </div>
+
+      <% if whatsapp_number.present? %>
+        <%= link_to(
+              appointment_label,
+              "https://wa.me/#{whatsapp_number}",
+              target: "_blank",
+              rel: "noopener",
+              class: "site-navbar__cta"
+            ) %>
+      <% end %>
+
+      <button
+        type="button"
+        class="site-navbar__menu-button"
+        aria-label="Abrir menu"
+        aria-expanded="false"
+        data-site-navbar-target="button"
+        data-action="click->site-navbar#toggle"
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
     </div>
   </div>
-</nav>
+
+  <div
+    class="site-navbar__mobile-backdrop"
+    data-site-navbar-target="backdrop"
+    data-action="click->site-navbar#close"
+    hidden
+  ></div>
+
+  <aside
+    class="site-navbar__mobile-menu"
+    data-site-navbar-target="menu"
+    hidden
+  >
+    <div class="site-navbar__mobile-header">
+      <strong>
+        <%= professional_name %>
+      </strong>
+
+      <button
+        type="button"
+        class="site-navbar__mobile-close"
+        aria-label="Fechar menu"
+        data-action="click->site-navbar#close"
+      >
+        ×
+      </button>
+    </div>
+
+    <nav class="site-navbar__mobile-navigation">
+      <% navigation_pages.each do |page| %>
+        <%
+          page_path =
+            if preview_frame
+              preview_path_for.call(page)
+            else
+              public_path_for.call(page)
+            end
+        %>
+
+        <%= link_to(
+              page.localized_nav_label,
+              page_path,
+              target: preview_frame ? "_top" : nil,
+              class: [
+                "site-navbar__mobile-link",
+                current_page&.id == page.id ? "is-active" : nil
+              ].compact.join(" "),
+              data: {
+                action: "click->site-navbar#close"
+              }
+            ) %>
+      <% end %>
+    </nav>
+
+    <div class="site-navbar__mobile-footer">
+      <div class="site-navbar__mobile-languages">
+        <%= link_to(
+              "PT",
+              language_path_for.call("pt-BR"),
+              target: preview_frame ? "_top" : nil,
+              class: [
+                "site-navbar__language",
+                I18n.locale == :"pt-BR" ? "is-active" : nil
+              ].compact.join(" ")
+            ) %>
+
+        <%= link_to(
+              "EN",
+              language_path_for.call("en"),
+              target: preview_frame ? "_top" : nil,
+              class: [
+                "site-navbar__language",
+                I18n.locale == :en ? "is-active" : nil
+              ].compact.join(" ")
+            ) %>
+      </div>
+
+      <% if whatsapp_number.present? %>
+        <%= link_to(
+              appointment_label,
+              "https://wa.me/#{whatsapp_number}",
+              target: "_blank",
+              rel: "noopener",
+              class: "site-navbar__mobile-cta"
+            ) %>
+      <% end %>
+    </div>
+  </aside>
+</header>

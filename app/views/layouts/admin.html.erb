@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+  <head>
+
+    <title>
+      Rosemary CMS
+    </title>
+
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1"
+    >
+
+
+    <%= csrf_meta_tags %>
+
+    <%= csp_meta_tag %>
+
+
+    <%= stylesheet_link_tag(
+          "application",
+          "data-turbo-track": "reload"
+        ) %>
+
+
+    <%= javascript_importmap_tags %>
+
+  </head>
+
+
+  <body class="admin-body">
+
+    <!-- ==================================================
+         ADMIN NAVBAR
+    =================================================== -->
+
+    <%= render "admin/shared/navbar" %>
+
+
+    <!-- ==================================================
+         ADMIN PAGE
+    =================================================== -->
+
+    <main
+      class="admin-page"
+      data-controller="admin-transition"
+    >
+
+      <div class="admin-page__container">
+
+        <!-- ==============================================
+             FLASH MESSAGES
+        =============================================== -->
+
+        <% if notice.present? %>
+
+          <div
+            class="
+              admin-alert
+              admin-alert--success
+            "
+          >
+
+            <span class="admin-alert__icon">
+              ✓
+            </span>
+
+            <span>
+              <%= notice %>
+            </span>
+
+          </div>
+
+        <% end %>
+
+
+        <% if alert.present? %>
+
+          <div
+            class="
+              admin-alert
+              admin-alert--error
+            "
+          >
+
+            <span class="admin-alert__icon">
+              !
+            </span>
+
+            <span>
+              <%= alert %>
+            </span>
+
+          </div>
+
+        <% end %>
+
+
+        <!-- ==============================================
+             PAGE CONTENT
+        =============================================== -->
+
+        <%= yield %>
+
+      </div>
+
+    </main>
+
+  </body>
+
+</html>

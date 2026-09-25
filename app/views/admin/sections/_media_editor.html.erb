@@ -1,0 +1,564 @@
+<%
+  return_path =
+    local_assigns[:return_to].presence ||
+    (
+      section.persisted? ?
+        edit_admin_page_section_path(page, section) :
+        admin_page_sections_path(page)
+    )
+%>
+
+<article
+  class="admin-media-workspace"
+  data-controller="media-editor"
+  data-media-editor-section-id-value="<%= section.id if section.persisted? %>"
+>
+  <div class="admin-media-workspace__heading">
+    <div>
+      <span>
+        Imagem da seção
+      </span>
+
+      <h3>
+        Banner ou imagem de fundo
+      </h3>
+
+      <p>
+        Opcional · recomendado 1920 × 760 px · JPG, PNG ou WebP
+      </p>
+    </div>
+
+    <% if section.persisted? && section.banner.attached? %>
+      <%= link_to(
+            "Remover",
+            clear_field_admin_page_section_path(
+              page,
+              section,
+              field: "banner",
+              return_to: return_path
+            ),
+            class: "admin-media-workspace__remove",
+            data: {
+              turbo_method: :patch,
+              turbo_confirm: "Remover esta imagem?"
+            }
+          ) %>
+    <% end %>
+  </div>
+
+  <div class="admin-media-layout-selector">
+    <span class="admin-media-layout-selector__label">
+      Como deseja utilizar esta imagem?
+    </span>
+
+    <%= f.hidden_field(
+          :banner_layout,
+          value: section.effective_banner_layout,
+          data: {
+            media_editor_target: "bannerLayout"
+          }
+        ) %>
+
+    <div class="admin-media-layout-selector__options">
+      <button
+        type="button"
+        class="
+          admin-media-layout-option
+          <%= "is-active" if section.effective_banner_layout == "top" %>
+        "
+        data-layout="top"
+        data-media-editor-target="bannerLayoutButton"
+        data-action="click->media-editor#setBannerLayout"
+      >
+        <span class="admin-media-layout-option__preview admin-media-layout-option__preview--top">
+          <i></i>
+          <b></b>
+        </span>
+
+        <strong>
+          Faixa acima
+        </strong>
+
+        <small>
+          A imagem aparece antes do conteúdo
+        </small>
+      </button>
+
+      <button
+        type="button"
+        class="
+          admin-media-layout-option
+          <%= "is-active" if section.effective_banner_layout == "background" %>
+        "
+        data-layout="background"
+        data-media-editor-target="bannerLayoutButton"
+        data-action="click->media-editor#setBannerLayout"
+      >
+        <span class="admin-media-layout-option__preview admin-media-layout-option__preview--background">
+          <i></i>
+          <b></b>
+        </span>
+
+        <strong>
+          Imagem de fundo
+        </strong>
+
+        <small>
+          O conteúdo aparece sobre a imagem
+        </small>
+      </button>
+
+      <button
+        type="button"
+        class="
+          admin-media-layout-option
+          <%= "is-active" if section.effective_banner_layout == "bottom" %>
+        "
+        data-layout="bottom"
+        data-media-editor-target="bannerLayoutButton"
+        data-action="click->media-editor#setBannerLayout"
+      >
+        <span class="admin-media-layout-option__preview admin-media-layout-option__preview--bottom">
+          <i></i>
+          <b></b>
+        </span>
+
+        <strong>
+          Faixa abaixo
+        </strong>
+
+        <small>
+          A imagem aparece depois do conteúdo
+        </small>
+      </button>
+    </div>
+  </div>
+
+  <div class="admin-media-workspace__body">
+    <div class="admin-media-workspace__preview-column">
+      <div
+        class="admin-media-canvas admin-media-canvas--banner"
+        data-media-editor-target="canvas"
+        data-action="
+          pointerdown->media-editor#startPosition
+          pointermove->media-editor#movePosition
+          pointerup->media-editor#endPosition
+          pointercancel->media-editor#endPosition
+        "
+      >
+        <% if section.banner.attached? %>
+          <%= image_tag(
+                section.banner,
+                alt: "",
+                data: {
+                  media_editor_target: "image"
+                }
+              ) %>
+        <% else %>
+          <img
+            alt=""
+            class="is-hidden"
+            data-media-editor-target="image"
+          >
+
+          <div
+            class="admin-media-canvas__empty"
+            data-media-editor-target="empty"
+          >
+            <span>
+              ▣
+            </span>
+
+            <strong>
+              Nenhuma imagem adicionada
+            </strong>
+
+            <small>
+              Clique abaixo para selecionar
+            </small>
+          </div>
+        <% end %>
+
+        <div
+          class="admin-media-canvas__overlay"
+          data-media-editor-target="overlayVisual"
+        ></div>
+
+        <span
+          class="admin-media-canvas__focus"
+          data-media-editor-target="focus"
+        ></span>
+
+        <% if section.banner.attached? %>
+          <div class="admin-media-canvas__instruction">
+            Arraste para mudar o foco
+          </div>
+        <% end %>
+      </div>
+
+      <label class="admin-media-picker">
+        <span>
+          <%= section.banner.attached? ? "Trocar imagem" : "Selecionar imagem" %>
+        </span>
+
+        <%= f.file_field(
+              :banner,
+              accept: "image/png,image/jpeg,image/webp",
+              data: {
+                media_editor_target: "input",
+                action: "change->media-editor#fileChanged"
+              }
+            ) %>
+      </label>
+    </div>
+
+    <div class="admin-media-tools">
+      <div class="admin-media-tools__group">
+        <div class="admin-media-tools__heading">
+          <div>
+            <span class="admin-media-tools__label">
+              Zoom
+            </span>
+
+            <small>
+              Aproxime ou afaste a imagem
+            </small>
+          </div>
+
+          <strong data-media-editor-target="zoomLabel"></strong>
+        </div>
+
+        <div class="admin-media-tools__stepper">
+          <button
+            type="button"
+            aria-label="Diminuir zoom"
+            data-action="click->media-editor#zoomOut"
+          >
+            −
+          </button>
+
+          <div class="admin-media-tools__stepper-center">
+            <span>
+              Enquadramento
+            </span>
+          </div>
+
+          <button
+            type="button"
+            aria-label="Aumentar zoom"
+            data-action="click->media-editor#zoomIn"
+          >
+            +
+          </button>
+        </div>
+      </div>
+
+      <div class="admin-media-tools__group">
+        <div class="admin-media-tools__heading">
+          <div>
+            <span class="admin-media-tools__label">
+              Escurecimento
+            </span>
+
+            <small>
+              Útil quando a imagem é usada como fundo
+            </small>
+          </div>
+
+          <strong data-media-editor-target="overlayLabel"></strong>
+        </div>
+
+        <div class="admin-media-tools__stepper">
+          <button
+            type="button"
+            aria-label="Diminuir escurecimento"
+            data-action="click->media-editor#overlayDown"
+          >
+            −
+          </button>
+
+          <div class="admin-media-tools__stepper-center">
+            <span>
+              Overlay
+            </span>
+          </div>
+
+          <button
+            type="button"
+            aria-label="Aumentar escurecimento"
+            data-action="click->media-editor#overlayUp"
+          >
+            +
+          </button>
+        </div>
+
+        <div class="admin-media-tools__presets">
+          <% [0, 20, 35, 50, 65].each do |value| %>
+            <button
+              type="button"
+              data-overlay="<%= value %>"
+              data-action="click->media-editor#setOverlay"
+            >
+              <%= value %>%
+            </button>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="admin-media-tools__position">
+        <div>
+          <span>
+            Ponto de foco
+          </span>
+
+          <small>
+            Posição atual na imagem
+          </small>
+        </div>
+
+        <strong data-media-editor-target="positionLabel"></strong>
+      </div>
+
+      <button
+        type="button"
+        class="admin-media-tools__reset"
+        data-action="click->media-editor#reset"
+      >
+        Centralizar imagem
+      </button>
+    </div>
+  </div>
+
+  <%= f.hidden_field(
+        :banner_position_x,
+        data: {
+          media_editor_target: "x"
+        }
+      ) %>
+
+  <%= f.hidden_field(
+        :banner_position_y,
+        data: {
+          media_editor_target: "y"
+        }
+      ) %>
+
+  <%= f.hidden_field(
+        :banner_zoom,
+        data: {
+          media_editor_target: "zoom"
+        }
+      ) %>
+
+  <%= f.hidden_field(
+        :banner_overlay,
+        data: {
+          media_editor_target: "overlay"
+        }
+      ) %>
+</article>
+
+<% if %w[hero text_image].include?(section.section_type) %>
+  <article
+    class="admin-media-workspace"
+    data-controller="media-editor"
+    data-media-editor-section-id-value="<%= section.id if section.persisted? %>"
+  >
+    <div class="admin-media-workspace__heading">
+      <div>
+        <span>
+          Imagem do conteúdo
+        </span>
+
+        <h3>
+          Fotografia
+        </h3>
+
+        <p>
+          Opcional · recomendado 1200 × 1500 px · JPG, PNG ou WebP
+        </p>
+      </div>
+
+      <% if section.persisted? && section.image.attached? %>
+        <%= link_to(
+              "Remover",
+              clear_field_admin_page_section_path(
+                page,
+                section,
+                field: "image",
+                return_to: return_path
+              ),
+              class: "admin-media-workspace__remove",
+              data: {
+                turbo_method: :patch,
+                turbo_confirm: "Remover esta fotografia?"
+              }
+            ) %>
+      <% end %>
+    </div>
+
+    <div class="admin-media-workspace__body">
+      <div class="admin-media-workspace__preview-column">
+        <div
+          class="
+            admin-media-canvas
+            admin-media-canvas--portrait
+            admin-media-canvas--shape-<%= section.effective_image_shape %>
+          "
+          data-media-editor-target="canvas"
+          data-section-composition-target="imagePreview"
+          data-action="
+            pointerdown->media-editor#startPosition
+            pointermove->media-editor#movePosition
+            pointerup->media-editor#endPosition
+            pointercancel->media-editor#endPosition
+          "
+        >
+          <% if section.image.attached? %>
+            <%= image_tag(
+                  section.image,
+                  alt: "",
+                  data: {
+                    media_editor_target: "image"
+                  }
+                ) %>
+          <% else %>
+            <img
+              alt=""
+              class="is-hidden"
+              data-media-editor-target="image"
+            >
+
+            <div
+              class="admin-media-canvas__empty"
+              data-media-editor-target="empty"
+            >
+              <span>
+                ▧
+              </span>
+
+              <strong>
+                Nenhuma fotografia
+              </strong>
+
+              <small>
+                Adicione uma fotografia se desejar
+              </small>
+            </div>
+          <% end %>
+
+          <span
+            class="admin-media-canvas__focus"
+            data-media-editor-target="focus"
+          ></span>
+
+          <% if section.image.attached? %>
+            <div class="admin-media-canvas__instruction">
+              Arraste para mudar o foco
+            </div>
+          <% end %>
+        </div>
+
+        <label class="admin-media-picker">
+          <span>
+            <%= section.image.attached? ? "Trocar fotografia" : "Selecionar fotografia" %>
+          </span>
+
+          <%= f.file_field(
+                :image,
+                accept: "image/png,image/jpeg,image/webp",
+                data: {
+                  media_editor_target: "input",
+                  action: "change->media-editor#fileChanged"
+                }
+              ) %>
+        </label>
+      </div>
+
+      <div class="admin-media-tools">
+        <div class="admin-media-tools__group">
+          <div class="admin-media-tools__heading">
+            <div>
+              <span class="admin-media-tools__label">
+                Zoom
+              </span>
+
+              <small>
+                Ajuste o enquadramento
+              </small>
+            </div>
+
+            <strong data-media-editor-target="zoomLabel"></strong>
+          </div>
+
+          <div class="admin-media-tools__stepper">
+            <button
+              type="button"
+              aria-label="Diminuir zoom"
+              data-action="click->media-editor#zoomOut"
+            >
+              −
+            </button>
+
+            <div class="admin-media-tools__stepper-center">
+              <span>
+                Enquadramento
+              </span>
+            </div>
+
+            <button
+              type="button"
+              aria-label="Aumentar zoom"
+              data-action="click->media-editor#zoomIn"
+            >
+              +
+            </button>
+          </div>
+        </div>
+
+        <div class="admin-media-tools__position">
+          <div>
+            <span>
+              Ponto de foco
+            </span>
+
+            <small>
+              Arraste diretamente na fotografia
+            </small>
+          </div>
+
+          <strong data-media-editor-target="positionLabel"></strong>
+        </div>
+
+        <button
+          type="button"
+          class="admin-media-tools__reset"
+          data-action="click->media-editor#reset"
+        >
+          Centralizar fotografia
+        </button>
+      </div>
+    </div>
+
+    <%= f.hidden_field(
+          :image_position_x,
+          data: {
+            media_editor_target: "x"
+          }
+        ) %>
+
+    <%= f.hidden_field(
+          :image_position_y,
+          data: {
+            media_editor_target: "y"
+          }
+        ) %>
+
+    <%= f.hidden_field(
+          :image_zoom,
+          data: {
+            media_editor_target: "zoom"
+          }
+        ) %>
+  </article>
+<% end %>

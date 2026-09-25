@@ -1,0 +1,353 @@
+<%
+  professional_name =
+    @site_setting&.professional_name.presence ||
+      "Rosemary Dias"
+
+  crp =
+    @site_setting&.crp.presence
+
+  email =
+    @site_setting&.email.presence
+
+  phone =
+    @site_setting&.phone.presence
+
+  whatsapp_number =
+    @site_setting&.whatsapp
+      .to_s
+      .gsub(/\D/, "")
+
+  instagram =
+    @site_setting&.instagram.presence
+
+  linkedin =
+    @site_setting&.linkedin.presence
+
+  footer_text =
+    @site_setting&.localized_footer_text.presence
+
+  preview_frame =
+    request.path.include?("/preview/frame")
+
+  pt_path =
+    if preview_frame && defined?(@page) && @page.present?
+      admin_page_preview_frame_path(
+        page_id: @page.id,
+        locale: "pt-BR"
+      )
+    else
+      root_path(locale: "pt-BR")
+    end
+
+  en_path =
+    if preview_frame && defined?(@page) && @page.present?
+      admin_page_preview_frame_path(
+        page_id: @page.id,
+        locale: "en"
+      )
+    else
+      root_path(locale: "en")
+    end
+
+  appointment_label =
+    I18n.locale == :en ?
+      "Book a session" :
+      "Agendar atendimento"
+
+  footer_default_text =
+    I18n.locale == :en ?
+      "Psychology, communication and human development." :
+      "Psicologia, comunicação e desenvolvimento humano."
+%>
+
+<footer
+  class="site-footer"
+  id="contato"
+>
+
+  <div class="container site-footer__container">
+
+    <!-- ==========================================
+         TOP
+    =========================================== -->
+
+    <div class="site-footer__top">
+
+      <!-- BRAND -->
+
+      <div class="site-footer__brand">
+
+        <% if @site_setting&.logo&.attached? %>
+
+          <%= image_tag(
+                @site_setting.logo,
+                alt: professional_name,
+                class: "site-footer__logo"
+              ) %>
+
+        <% else %>
+
+          <span class="site-footer__brand-name">
+            <%= professional_name %>
+          </span>
+
+          <span class="site-footer__brand-subtitle">
+            <%= I18n.locale == :en ?
+                  "Psychology & Human Development" :
+                  "Psicologia & Desenvolvimento Humano" %>
+          </span>
+
+        <% end %>
+
+
+        <p class="site-footer__description">
+          <%= footer_text || footer_default_text %>
+        </p>
+
+
+        <% if whatsapp_number.present? %>
+
+          <%= link_to(
+                appointment_label,
+                "https://wa.me/#{whatsapp_number}",
+                target: "_blank",
+                rel: "noopener",
+                class: "site-footer__cta"
+              ) %>
+
+        <% else %>
+
+          <a
+            href="#contato"
+            class="site-footer__cta"
+          >
+            <%= appointment_label %>
+          </a>
+
+        <% end %>
+
+      </div>
+
+
+      <!-- NAVIGATION -->
+
+      <div class="site-footer__group">
+
+        <span class="site-footer__group-title">
+          <%= I18n.locale == :en ?
+                "Navigation" :
+                "Navegação" %>
+        </span>
+
+        <nav class="site-footer__links">
+
+          <a href="#psicoterapia">
+            <%= I18n.locale == :en ?
+                  "Psychotherapy" :
+                  "Psicoterapia" %>
+          </a>
+
+          <a href="#desenvolvimento-humano">
+            <%= I18n.locale == :en ?
+                  "Human Development" :
+                  "Desenvolvimento Humano" %>
+          </a>
+
+          <a href="#sobre">
+            <%= I18n.locale == :en ?
+                  "About" :
+                  "Sobre" %>
+          </a>
+
+          <a href="#conteudos">
+            <%= I18n.locale == :en ?
+                  "Insights" :
+                  "Conteúdos" %>
+          </a>
+
+        </nav>
+
+      </div>
+
+
+      <!-- CONTACT + SOCIAL -->
+
+      <div class="site-footer__group">
+
+        <span class="site-footer__group-title">
+          <%= I18n.locale == :en ?
+                "Contact" :
+                "Contato" %>
+        </span>
+
+        <div class="site-footer__links">
+
+          <% if email.present? %>
+
+            <%= mail_to(
+                  email,
+                  email,
+                  class: "site-footer__contact-link"
+                ) %>
+
+          <% end %>
+
+
+          <% if phone.present? %>
+
+            <%= link_to(
+                  phone,
+                  "tel:#{phone.gsub(/\D/, '')}",
+                  class: "site-footer__contact-link"
+                ) %>
+
+          <% end %>
+
+
+          <% if whatsapp_number.present? %>
+
+            <%= link_to(
+                  "WhatsApp",
+                  "https://wa.me/#{whatsapp_number}",
+                  target: "_blank",
+                  rel: "noopener",
+                  class: "site-footer__contact-link"
+                ) %>
+
+          <% end %>
+
+
+          <% if instagram.present? %>
+
+            <%= link_to(
+                  instagram,
+                  target: "_blank",
+                  rel: "noopener",
+                  class: "site-footer__social-link"
+                ) do %>
+
+              <span>
+                Instagram
+              </span>
+
+              <span aria-hidden="true">
+                ↗
+              </span>
+
+            <% end %>
+
+          <% end %>
+
+
+          <% if linkedin.present? %>
+
+            <%= link_to(
+                  linkedin,
+                  target: "_blank",
+                  rel: "noopener",
+                  class: "site-footer__social-link"
+                ) do %>
+
+              <span>
+                LinkedIn
+              </span>
+
+              <span aria-hidden="true">
+                ↗
+              </span>
+
+            <% end %>
+
+          <% end %>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         PROFESSIONAL ROW
+    =========================================== -->
+
+    <div class="site-footer__middle">
+
+      <div class="site-footer__professional">
+
+        <strong>
+          <%= professional_name %>
+        </strong>
+
+        <span class="site-footer__dot"></span>
+
+        <span>
+          <%= I18n.locale == :en ?
+                "Psychologist" :
+                "Psicóloga" %>
+        </span>
+
+        <% if crp.present? %>
+
+          <span class="site-footer__dot"></span>
+
+          <span>
+            <%= crp %>
+          </span>
+
+        <% end %>
+
+      </div>
+
+
+      <div class="site-footer__languages">
+
+        <%= link_to(
+              "PT",
+              pt_path,
+              class: [
+                "site-footer__language",
+                ("is-active" if I18n.locale == :"pt-BR")
+              ]
+            ) %>
+
+        <span>
+          /
+        </span>
+
+        <%= link_to(
+              "EN",
+              en_path,
+              class: [
+                "site-footer__language",
+                ("is-active" if I18n.locale == :en)
+              ]
+            ) %>
+
+      </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         BOTTOM
+    =========================================== -->
+
+    <div class="site-footer__bottom">
+
+      <span>
+        © <%= Time.current.year %>
+        <%= professional_name %>.
+      </span>
+
+      <span>
+        <%= I18n.locale == :en ?
+              "All rights reserved." :
+              "Todos os direitos reservados." %>
+      </span>
+
+    </div>
+
+  </div>
+
+</footer>

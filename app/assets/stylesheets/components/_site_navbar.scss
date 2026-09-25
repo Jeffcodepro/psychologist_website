@@ -1,0 +1,642 @@
+// ==================================================
+// SITE NAVBAR
+// ==================================================
+
+.site-navbar {
+  position: sticky;
+
+  top: 0;
+
+  z-index: 10000;
+
+  width: 100%;
+
+  max-width: 100%;
+
+  border-bottom:
+    1px solid
+    rgba(36, 49, 46, 0.08);
+
+  background:
+    rgba(248, 246, 240, 0.98);
+
+  backdrop-filter:
+    blur(15px);
+
+  isolation: isolate;
+
+
+  // ------------------------------------------------
+  // CONTAINER
+  // ------------------------------------------------
+
+  &__container {
+    min-height: 88px;
+
+    display: grid;
+
+    grid-template-columns:
+      minmax(180px, 1fr)
+      auto
+      minmax(250px, 1fr);
+
+    align-items: center;
+
+    gap: 28px;
+  }
+
+
+  // ------------------------------------------------
+  // BRAND
+  // ------------------------------------------------
+
+  &__brand {
+    min-width: 0;
+
+    justify-self: start;
+
+    display: flex;
+    align-items: center;
+
+    color: $text-primary;
+
+    text-decoration: none;
+  }
+
+
+  // ------------------------------------------------
+  // LOGO FRAME
+  // ------------------------------------------------
+
+  &__logo-frame {
+    width: 220px;
+    height: 54px;
+
+    max-width: 100%;
+
+    overflow: hidden;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+
+  &__logo {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: contain;
+
+    object-position:
+      var(--site-logo-x, 50%)
+      var(--site-logo-y, 50%);
+
+    transform:
+      scale(
+        var(--site-logo-zoom, 1)
+      );
+
+    transform-origin:
+      var(--site-logo-x, 50%)
+      var(--site-logo-y, 50%);
+
+    will-change: transform;
+  }
+
+
+  // ------------------------------------------------
+  // TEXT BRAND
+  // ------------------------------------------------
+
+  &__brand-copy {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+
+    strong {
+      font-family: $headers-font;
+
+      font-size: 1.6rem;
+      font-weight: 500;
+
+      line-height: 1.1;
+
+      color: $text-primary;
+    }
+
+
+    small {
+      margin-top: 7px;
+
+      font-family: $body-font;
+
+      font-size: 0.58rem;
+      font-weight: 600;
+
+      letter-spacing: 0.11em;
+
+      text-transform: uppercase;
+
+      color: $primary;
+    }
+  }
+
+
+  // ------------------------------------------------
+  // NAVIGATION
+  // ------------------------------------------------
+
+  &__navigation {
+    justify-self: center;
+
+    display: flex;
+    align-items: center;
+
+    gap: 34px;
+  }
+
+
+  &__link {
+    position: relative;
+
+    padding:
+      32px 0;
+
+    color: $text-primary;
+
+    font-family: $body-font;
+
+    font-size: 0.72rem;
+    font-weight: 600;
+
+    text-decoration: none;
+
+    white-space: nowrap;
+
+    transition:
+      color 0.2s ease;
+
+
+    &::after {
+      content: "";
+
+      position: absolute;
+
+      left: 0;
+      bottom: 24px;
+
+      width: 0;
+      height: 1px;
+
+      background: $primary;
+
+      transition:
+        width 0.2s ease;
+    }
+
+
+    &:hover,
+    &.is-active {
+      color: $primary;
+
+
+      &::after {
+        width: 100%;
+      }
+    }
+  }
+
+
+  // ------------------------------------------------
+  // ACTIONS
+  // ------------------------------------------------
+
+  &__actions {
+    min-width: 0;
+
+    justify-self: end;
+
+    display: flex;
+    align-items: center;
+
+    gap: 16px;
+  }
+
+
+  // ------------------------------------------------
+  // LANGUAGES
+  // ------------------------------------------------
+
+  &__languages {
+    padding: 4px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 2px;
+
+    border:
+      1px solid
+      rgba(36, 49, 46, 0.12);
+
+    border-radius: 100px;
+  }
+
+
+  &__language {
+    min-width: 39px;
+    height: 39px;
+
+    padding:
+      0 10px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 100px;
+
+    color: $text-secondary;
+
+    font-size: 0.63rem;
+    font-weight: 650;
+
+    text-decoration: none;
+
+
+    &.is-active {
+      background: $primary;
+
+      color: #ffffff;
+    }
+  }
+
+
+  // ------------------------------------------------
+  // CTA
+  // ------------------------------------------------
+
+  &__cta {
+    min-height: 48px;
+
+    padding:
+      0 22px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 100px;
+
+    background: $primary;
+
+    color: #ffffff;
+
+    font-size: 0.68rem;
+    font-weight: 650;
+
+    text-decoration: none;
+
+    white-space: nowrap;
+
+    transition:
+      background 0.2s ease,
+      transform 0.2s ease;
+
+
+    &:hover {
+      background: $primary-dark;
+
+      color: #ffffff;
+
+      transform:
+        translateY(-1px);
+    }
+  }
+
+
+  // ------------------------------------------------
+  // MENU BUTTON
+  // ------------------------------------------------
+
+  &__menu-button {
+    width: 42px;
+    height: 42px;
+
+    padding: 0;
+
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    gap: 5px;
+
+    border:
+      1px solid
+      rgba(36, 49, 46, 0.14);
+
+    border-radius: 10px;
+
+    background: transparent;
+
+    cursor: pointer;
+
+
+    span {
+      width: 18px;
+      height: 1px;
+
+      display: block;
+
+      background: $text-primary;
+    }
+  }
+
+
+  // ------------------------------------------------
+  // BACKDROP
+  // ------------------------------------------------
+
+  &__mobile-backdrop {
+    position: fixed;
+
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    z-index: 10001;
+
+    background:
+      rgba(20, 30, 27, 0.36);
+
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+
+  // ------------------------------------------------
+  // MOBILE MENU
+  // ------------------------------------------------
+
+  &__mobile-menu {
+    position: fixed;
+
+    top: 0;
+    right: 0;
+
+    z-index: 10002;
+
+    width: 380px;
+    max-width: 100%;
+
+    min-height: 100dvh;
+
+    padding:
+      22px;
+
+    display: flex;
+    flex-direction: column;
+
+    background: #f8f6f0;
+
+    box-shadow:
+      -20px 0 55px
+      rgba(36, 49, 46, 0.16);
+
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+
+  &__mobile-header {
+    padding-bottom: 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    border-bottom:
+      1px solid
+      rgba(36, 49, 46, 0.1);
+
+
+    strong {
+      color: $text-primary;
+
+      font-size: 0.78rem;
+    }
+  }
+
+
+  &__mobile-close {
+    width: 38px;
+    height: 38px;
+
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border:
+      1px solid
+      rgba(36, 49, 46, 0.12);
+
+    border-radius: 50%;
+
+    background: transparent;
+
+    color: $text-primary;
+
+    font-size: 1rem;
+
+    cursor: pointer;
+  }
+
+
+  &__mobile-navigation {
+    padding:
+      25px 0;
+
+    display: flex;
+    flex-direction: column;
+  }
+
+
+  &__mobile-link {
+    min-height: 53px;
+
+    display: flex;
+    align-items: center;
+
+    border-bottom:
+      1px solid
+      rgba(36, 49, 46, 0.07);
+
+    color: $text-primary;
+
+    font-size: 0.83rem;
+    font-weight: 600;
+
+    text-decoration: none;
+
+
+    &:hover,
+    &.is-active {
+      color: $primary;
+    }
+  }
+
+
+  &__mobile-footer {
+    margin-top: auto;
+
+    padding-top: 20px;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 15px;
+  }
+
+
+  &__mobile-languages {
+    display: flex;
+
+    gap: 5px;
+  }
+
+
+  &__mobile-cta {
+    min-height: 49px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 100px;
+
+    background: $primary;
+
+    color: #ffffff;
+
+    font-size: 0.7rem;
+    font-weight: 650;
+
+    text-decoration: none;
+  }
+}
+
+
+// ==================================================
+// PREVENT SCROLL WHEN MENU OPEN
+// ==================================================
+
+.site-navigation-open {
+  overflow: hidden;
+}
+
+
+// ==================================================
+// TABLET
+// ==================================================
+
+@media (max-width: 1100px) {
+  .site-navbar {
+    &__container {
+      min-height: 76px;
+
+      grid-template-columns:
+        minmax(0, 1fr)
+        auto;
+
+      gap: 18px;
+    }
+
+
+    &__navigation {
+      display: none;
+    }
+
+
+    &__logo-frame {
+      width: 190px;
+      height: 48px;
+    }
+
+
+    &__brand-copy {
+      strong {
+        font-size: 1.4rem;
+      }
+    }
+
+
+    &__languages,
+    &__cta {
+      display: none;
+    }
+
+
+    &__menu-button {
+      display: flex;
+    }
+  }
+}
+
+
+// ==================================================
+// MOBILE
+// ==================================================
+
+@media (max-width: 600px) {
+  .site-navbar {
+    &__container {
+      min-height: 66px;
+
+      gap: 10px;
+    }
+
+
+    &__logo-frame {
+      width: 155px;
+      height: 42px;
+    }
+
+
+    &__brand-copy {
+      strong {
+        font-size: 1.18rem;
+      }
+
+
+      small {
+        margin-top: 4px;
+
+        font-size: 0.46rem;
+
+        letter-spacing: 0.07em;
+      }
+    }
+
+
+    &__mobile-menu {
+      width: 100%;
+      max-width: none;
+    }
+  }
+}

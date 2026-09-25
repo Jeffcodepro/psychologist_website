@@ -1,0 +1,247 @@
+<div
+  class="admin-preview-workspace"
+  data-controller="admin-page-preview"
+  data-admin-page-preview-frame-url-value="<%= admin_page_preview_frame_path(@page) %>"
+>
+
+  <!-- ==================================================
+       BREADCRUMB
+  =================================================== -->
+
+  <div class="admin-breadcrumb">
+
+    <%= link_to(
+          "Páginas",
+          admin_pages_path
+        ) %>
+
+    <span>
+      /
+    </span>
+
+    <span>
+      <%= @page.name %>
+    </span>
+
+    <span>
+      /
+    </span>
+
+    <strong>
+      Pré-visualização
+    </strong>
+
+  </div>
+
+
+  <!-- ==================================================
+       HEADER
+  =================================================== -->
+
+  <header class="admin-preview-header">
+
+    <div class="admin-preview-header__copy">
+
+      <span class="admin-page-eyebrow">
+        Editor visual
+      </span>
+
+      <h1>
+        <%= @page.name %>
+      </h1>
+
+      <p>
+        Revise o rascunho antes de publicar as alterações.
+      </p>
+
+    </div>
+
+
+    <div class="admin-preview-header__actions">
+
+      <%= link_to(
+            "Editar conteúdo",
+            admin_page_sections_path(@page),
+            class: "admin-button-secondary"
+          ) %>
+
+
+      <%= button_to(
+            "Aprovar e publicar",
+            admin_page_publication_path(@page),
+            method: :post,
+            class:
+              "admin-button admin-button--primary",
+            form: {
+              data: {
+                turbo_confirm:
+                  "Publicar todas as alterações atuais?"
+              }
+            }
+          ) %>
+
+    </div>
+
+  </header>
+
+
+  <!-- ==================================================
+       DRAFT STATUS
+  =================================================== -->
+
+  <div class="admin-preview-status">
+
+    <span class="admin-preview-status__dot"></span>
+
+    <div>
+
+      <strong>
+        Você está visualizando o rascunho.
+      </strong>
+
+      <span>
+        O site público não é alterado até você clicar em publicar.
+      </span>
+
+    </div>
+
+  </div>
+
+
+  <!-- ==================================================
+       TOOLBAR
+  =================================================== -->
+
+  <div class="admin-preview-toolbar">
+
+    <!-- DEVICE -->
+
+    <div class="admin-preview-toolbar__group">
+
+      <span class="admin-preview-toolbar__label">
+        Dispositivo
+      </span>
+
+
+      <div class="admin-segmented-control">
+
+        <button
+          type="button"
+          class="admin-segmented-control__button is-active"
+          data-admin-page-preview-target="deviceButton"
+          data-device="desktop"
+          data-action="click->admin-page-preview#changeDevice"
+        >
+          Desktop
+        </button>
+
+
+        <button
+          type="button"
+          class="admin-segmented-control__button"
+          data-admin-page-preview-target="deviceButton"
+          data-device="tablet"
+          data-action="click->admin-page-preview#changeDevice"
+        >
+          Tablet
+        </button>
+
+
+        <button
+          type="button"
+          class="admin-segmented-control__button"
+          data-admin-page-preview-target="deviceButton"
+          data-device="mobile"
+          data-action="click->admin-page-preview#changeDevice"
+        >
+          Mobile
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- LANGUAGE -->
+
+    <div class="admin-preview-toolbar__group">
+
+      <span class="admin-preview-toolbar__label">
+        Idioma
+      </span>
+
+
+      <div class="admin-segmented-control">
+
+        <button
+          type="button"
+          class="admin-segmented-control__button is-active"
+          data-admin-page-preview-target="languageButton"
+          data-locale="pt-BR"
+          data-action="click->admin-page-preview#changeLanguage"
+        >
+          PT
+        </button>
+
+
+        <button
+          type="button"
+          class="admin-segmented-control__button"
+          data-admin-page-preview-target="languageButton"
+          data-locale="en"
+          data-action="click->admin-page-preview#changeLanguage"
+        >
+          EN
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ==================================================
+       PREVIEW CANVAS
+  =================================================== -->
+
+  <div class="admin-preview-stage">
+
+    <div
+      class="
+        admin-preview-device
+        admin-preview-device--desktop
+      "
+      data-admin-page-preview-target="device"
+    >
+
+      <div class="admin-preview-device__bar">
+
+        <div class="admin-preview-device__dots">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+
+        <span class="admin-preview-device__address">
+          Preview do site
+        </span>
+
+      </div>
+
+
+      <iframe
+        src="<%= admin_page_preview_frame_path(
+                   @page,
+                   locale: "pt-BR"
+                 ) %>"
+        class="admin-preview-device__iframe"
+        data-admin-page-preview-target="iframe"
+        title="Pré-visualização de <%= @page.name %>"
+      ></iframe>
+
+    </div>
+
+  </div>
+
+</div>

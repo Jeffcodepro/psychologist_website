@@ -1,0 +1,463 @@
+// --------------------------------------------------
+// FIELD LAYER
+// --------------------------------------------------
+
+.preview-field-handle-layer {
+  position: absolute;
+
+  inset: 0;
+
+  z-index: 450;
+
+  pointer-events: none;
+}
+
+
+// --------------------------------------------------
+// SMALL FIELD HANDLE
+// --------------------------------------------------
+
+.preview-field-tab {
+  position: absolute;
+
+  width: 34px;
+  height: 34px;
+
+  padding: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 0;
+  border-radius: 8px;
+
+  background: #24312e;
+
+  color: #ffffff;
+
+  box-shadow:
+    0 5px 14px
+    rgba(0, 0, 0, 0.16);
+
+  cursor: grab;
+
+  pointer-events: auto;
+
+  user-select: none;
+
+  transition:
+    background 0.18s ease,
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    opacity 0.18s ease;
+
+
+  &:hover,
+  &:focus-visible {
+    background: $primary;
+
+    transform: scale(1.05);
+
+    z-index: 20;
+
+
+    .preview-field-tab__label {
+      opacity: 1;
+
+      visibility: visible;
+
+      transform: translateX(0);
+    }
+  }
+
+
+  &:active {
+    cursor: grabbing;
+  }
+
+
+  &.is-dragging {
+    opacity: 0.3;
+
+    cursor: grabbing;
+  }
+
+
+  &.is-field-target {
+    background: $primary;
+
+    transform: scale(1.12);
+
+    box-shadow:
+      0 0 0 4px
+        rgba(79, 111, 101, 0.2),
+      0 8px 20px
+        rgba(0, 0, 0, 0.18);
+  }
+}
+
+
+.preview-field-tab__symbol {
+  font-family: $body-font;
+
+  font-size: 0.8rem;
+  font-weight: 600;
+
+  line-height: 1;
+}
+
+
+.preview-field-tab__label {
+  position: absolute;
+
+  left: 41px;
+  top: 50%;
+
+  transform:
+    translate(
+      -4px,
+      -50%
+    );
+
+  padding: 6px 9px;
+
+  border-radius: 6px;
+
+  background: #24312e;
+
+  color: #ffffff;
+
+  box-shadow:
+    0 4px 12px
+      rgba(0, 0, 0, 0.16);
+
+  font-size: 0.62rem;
+  font-weight: 500;
+
+  line-height: 1;
+
+  white-space: nowrap;
+
+  opacity: 0;
+
+  visibility: hidden;
+
+  pointer-events: none;
+
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+}
+
+
+// --------------------------------------------------
+// SECTION TOOLBAR
+// --------------------------------------------------
+
+.preview-editable-section__toolbar {
+  pointer-events: auto;
+}
+
+
+.preview-drag-handle {
+  width: 42px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: 0;
+
+  cursor: grab;
+
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+
+.preview-grip {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, 4px);
+
+  gap: 3px;
+
+
+  span {
+    width: 4px;
+    height: 4px;
+
+    display: block;
+
+    border-radius: 50%;
+
+    background:
+      rgba(255, 255, 255, 0.9);
+  }
+}
+
+
+// --------------------------------------------------
+// DROP STATES
+// --------------------------------------------------
+
+.preview-editable-section {
+  &.is-dragging {
+    opacity: 0.35;
+  }
+
+
+  &.is-drop-target {
+    border-color: $primary;
+
+    box-shadow:
+      inset 0 0 0 2px
+      rgba(79, 111, 101, 0.2);
+  }
+}
+
+
+.preview-field-is-dragging {
+  cursor: grabbing;
+
+
+  .preview-field-tab {
+    opacity: 0.72;
+
+
+    &.is-dragging {
+      opacity: 0.25;
+    }
+
+
+    &.is-field-target {
+      opacity: 1;
+    }
+  }
+}
+
+
+// --------------------------------------------------
+// LANGUAGE SWITCHER
+// --------------------------------------------------
+
+.admin-preview-language {
+  padding: 4px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 3px;
+
+  border: 1px solid #dfe2dc;
+  border-radius: 9px;
+
+  background: #ffffff;
+}
+
+
+.admin-preview-language__link {
+  min-width: 44px;
+  height: 38px;
+
+  padding: 0 11px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 6px;
+
+  color: $text-secondary;
+
+  font-size: 0.72rem;
+  font-weight: 600;
+
+  text-decoration: none;
+
+  cursor: pointer;
+
+  transition:
+    background 0.18s ease,
+    color 0.18s ease,
+    transform 0.18s ease;
+
+
+  &:hover {
+    background: $primary-light;
+
+    color: $primary-dark;
+
+    transform: translateY(-1px);
+  }
+
+
+  &.is-active {
+    background: $primary;
+
+    color: #ffffff;
+
+
+    &:hover {
+      background: $primary-dark;
+
+      color: #ffffff;
+    }
+  }
+}
+
+
+// --------------------------------------------------
+// PREVIEW SCROLL
+// --------------------------------------------------
+
+.preview-frame-body {
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  scrollbar-gutter: stable;
+}
+
+
+// --------------------------------------------------
+// MOBILE
+// --------------------------------------------------
+
+@media (max-width: 600px) {
+  .preview-field-tab {
+    width: 30px;
+    height: 30px;
+  }
+
+
+  .preview-field-tab__label {
+    left: 36px;
+  }
+
+
+  .preview-editable-section__name {
+    max-width: 130px;
+  }
+}
+
+// ==================================================
+// HERO INSIDE VISUAL EDITOR
+// ==================================================
+
+.preview-editable-section--hero {
+  position: relative;
+
+  width: 100%;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border-top: 0;
+
+
+  // ----------------------------------------------
+  // O wrapper genérico não pode criar espaço
+  // ----------------------------------------------
+
+  > .dynamic-section,
+  > [id] > .dynamic-section {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+
+  .dynamic-section--hero {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+
+  // ----------------------------------------------
+  // HERO
+  // ----------------------------------------------
+
+  .hero-section {
+    width: 100%;
+
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+
+  // ----------------------------------------------
+  // BANNER
+  // ----------------------------------------------
+
+  .hero-banner {
+    width: 100%;
+
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+
+  // ----------------------------------------------
+  // TOOLBAR
+  //
+  // Fica flutuando sobre a Hero.
+  // Não pode ocupar espaço no fluxo.
+  // ----------------------------------------------
+
+  .preview-editable-section__toolbar {
+    position: absolute !important;
+
+    top: 12px;
+    left: 50%;
+
+    z-index: 950;
+
+    margin: 0 !important;
+
+    transform: translateX(-50%);
+  }
+
+
+  // ----------------------------------------------
+  // FIELD HANDLES
+  // ----------------------------------------------
+
+  .preview-field-handle-layer {
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 900;
+
+    margin: 0;
+    padding: 0;
+
+    pointer-events: none;
+  }
+
+
+  .preview-field-tab {
+    pointer-events: auto;
+  }
+}
+
+.preview-section-content {
+  width: 100%;
+
+  margin: 0;
+  padding: 0;
+}
+
+
+.preview-editable-section--hero {
+  .preview-section-content {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}

@@ -1,0 +1,202 @@
+<%
+  dashboard_active =
+    controller_name == "dashboard"
+
+  pages_active =
+    %w[
+      pages
+      page_previews
+      sections
+      section_items
+    ].include?(controller_name)
+
+  settings_active =
+    controller_name == "site_settings"
+%>
+
+<header
+  class="admin-navbar"
+  data-controller="admin-navbar"
+>
+
+  <div class="admin-navbar__inner">
+
+    <!-- ==================================================
+         BRAND
+    =================================================== -->
+
+    <%= link_to(
+          admin_root_path,
+          class: "admin-navbar__brand"
+        ) do %>
+
+      <span class="admin-navbar__brand-mark">
+        R
+      </span>
+
+      <span class="admin-navbar__brand-copy">
+
+        <strong>
+          Rosemary CMS
+        </strong>
+
+        <small>
+          Gestão do site
+        </small>
+
+      </span>
+
+    <% end %>
+
+
+    <!-- ==================================================
+         DESKTOP / TABLET NAVIGATION
+    =================================================== -->
+
+    <nav
+      class="admin-navbar__navigation"
+      aria-label="Navegação administrativa"
+    >
+
+      <%= link_to(
+            admin_root_path,
+            class: [
+              "admin-navbar__link",
+              dashboard_active ? "is-active" : nil
+            ].compact.join(" ")
+          ) do %>
+
+        Visão geral
+
+      <% end %>
+
+
+      <%= link_to(
+            admin_pages_path,
+            class: [
+              "admin-navbar__link",
+              pages_active ? "is-active" : nil
+            ].compact.join(" ")
+          ) do %>
+
+        Páginas
+
+      <% end %>
+
+
+      <%= link_to(
+            edit_admin_site_setting_path,
+            class: [
+              "admin-navbar__link",
+              settings_active ? "is-active" : nil
+            ].compact.join(" ")
+          ) do %>
+
+        Configurações
+
+      <% end %>
+
+    </nav>
+
+
+    <!-- ==================================================
+         ACTIONS
+    =================================================== -->
+
+    <div class="admin-navbar__actions">
+
+      <%= link_to(
+            root_path,
+            class: "admin-navbar__view-site"
+          ) do %>
+
+        <span>
+          Ver site
+        </span>
+
+        <span
+          class="admin-navbar__external"
+          aria-hidden="true"
+        >
+          ↗
+        </span>
+
+      <% end %>
+
+
+      <button
+        type="button"
+        class="admin-navbar__menu-button"
+        aria-label="Abrir menu"
+        aria-expanded="false"
+        data-admin-navbar-target="button"
+        data-action="click->admin-navbar#toggle"
+      >
+
+        <span></span>
+        <span></span>
+        <span></span>
+
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- ==================================================
+       MOBILE MENU
+  =================================================== -->
+
+  <div
+    class="admin-navbar__mobile"
+    data-admin-navbar-target="menu"
+    hidden
+  >
+
+    <nav class="admin-navbar__mobile-links">
+
+      <%= link_to(
+            "Visão geral",
+            admin_root_path,
+            class: [
+              "admin-navbar__mobile-link",
+              dashboard_active ? "is-active" : nil
+            ].compact.join(" ")
+          ) %>
+
+
+      <%= link_to(
+            "Páginas",
+            admin_pages_path,
+            class: [
+              "admin-navbar__mobile-link",
+              pages_active ? "is-active" : nil
+            ].compact.join(" ")
+          ) %>
+
+
+      <%= link_to(
+            "Configurações",
+            edit_admin_site_setting_path,
+            class: [
+              "admin-navbar__mobile-link",
+              settings_active ? "is-active" : nil
+            ].compact.join(" ")
+          ) %>
+
+
+      <%= link_to(
+            "Ver site",
+            root_path,
+            class: "
+              admin-navbar__mobile-link
+              admin-navbar__mobile-link--site
+            "
+          ) %>
+
+    </nav>
+
+  </div>
+
+</header>

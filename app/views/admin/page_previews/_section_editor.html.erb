@@ -1,0 +1,346 @@
+<%
+  form_id = "preview-section-form-#{section.id}"
+
+  return_to = admin_page_preview_frame_path(
+    @page,
+    locale: I18n.locale
+  )
+%>
+
+<div
+  class="preview-editor"
+  data-controller="preview-editor preview-editor-tabs section-composition translation"
+  data-translation-url-value="<%= admin_translation_path %>"
+>
+  <div class="preview-editor__header">
+    <div class="preview-editor__identity">
+      <span class="preview-editor__eyebrow">
+        Editando bloco
+      </span>
+
+      <strong>
+        <%= section.title.presence || section.editor_type_label %>
+      </strong>
+
+      <span>
+        <%= section.editor_type_label %>
+      </span>
+    </div>
+
+    <button
+      type="button"
+      class="preview-editor__close"
+      aria-label="Fechar editor"
+      data-action="click->preview-editor#close"
+    >
+      ×
+    </button>
+  </div>
+
+  <nav class="preview-editor__tabs">
+    <button
+      type="button"
+      class="preview-editor__tab is-active"
+      data-preview-editor-tabs-target="tab"
+      data-tab="content"
+      data-action="click->preview-editor-tabs#select"
+    >
+      Conteúdo
+    </button>
+
+    <button
+      type="button"
+      class="preview-editor__tab"
+      data-preview-editor-tabs-target="tab"
+      data-tab="appearance"
+      data-action="click->preview-editor-tabs#select"
+    >
+      Aparência
+    </button>
+
+    <button
+      type="button"
+      class="preview-editor__tab"
+      data-preview-editor-tabs-target="tab"
+      data-tab="media"
+      data-action="click->preview-editor-tabs#select"
+    >
+      Mídia
+    </button>
+
+    <% if section.section_type == "cards" %>
+      <button
+        type="button"
+        class="preview-editor__tab"
+        data-preview-editor-tabs-target="tab"
+        data-tab="items"
+        data-action="click->preview-editor-tabs#select"
+      >
+        Cards
+        <span class="preview-editor__tab-count">
+          <%= section.section_items.count %>
+        </span>
+      </button>
+    <% elsif section.section_type == "faq" %>
+      <button
+        type="button"
+        class="preview-editor__tab"
+        data-preview-editor-tabs-target="tab"
+        data-tab="items"
+        data-action="click->preview-editor-tabs#select"
+      >
+        Perguntas
+        <span class="preview-editor__tab-count">
+          <%= section.section_items.count %>
+        </span>
+      </button>
+    <% end %>
+
+    <button
+      type="button"
+      class="preview-editor__tab"
+      data-preview-editor-tabs-target="tab"
+      data-tab="settings"
+      data-action="click->preview-editor-tabs#select"
+    >
+      Configurações
+    </button>
+  </nav>
+
+  <%= simple_form_for(
+        [:admin, @page, section],
+        html: {
+          id: form_id,
+          class: "preview-editor__form"
+        }
+      ) do |f| %>
+
+    <%= hidden_field_tag(
+          :return_to,
+          return_to
+        ) %>
+
+    <div class="preview-editor__panels">
+      <section
+        class="preview-editor__panel is-active"
+        data-preview-editor-tabs-target="panel"
+        data-panel="content"
+      >
+        <%= render(
+              "admin/sections/content_fields",
+              f: f,
+              section: section
+            ) %>
+      </section>
+
+      <section
+        class="preview-editor__panel"
+        data-preview-editor-tabs-target="panel"
+        data-panel="appearance"
+        hidden
+      >
+        <div class="preview-editor__panel-heading">
+          <div>
+            <span class="preview-editor__panel-eyebrow">
+              Aparência
+            </span>
+
+            <h3>
+              Composição e estilo
+            </h3>
+
+            <p>
+              Controle estrutura, formato, cores e tipografia.
+            </p>
+          </div>
+        </div>
+
+        <%= render(
+              "admin/sections/composition_settings",
+              f: f,
+              section: section
+            ) %>
+
+        <div class="preview-editor__settings-grid">
+          <div class="preview-editor__settings-card">
+            <h4>Título</h4>
+
+            <%= f.input(
+                  :title_font_family,
+                  collection: Section::FONT_FAMILIES.map {
+                    |font| [font.humanize, font]
+                  },
+                  label: "Fonte"
+                ) %>
+
+            <div class="preview-editor__two-columns">
+              <%= f.input(
+                    :title_font_size_desktop,
+                    label: "Desktop"
+                  ) %>
+
+              <%= f.input(
+                    :title_font_size_mobile,
+                    label: "Mobile"
+                  ) %>
+            </div>
+          </div>
+
+          <div class="preview-editor__settings-card">
+            <h4>Texto</h4>
+
+            <%= f.input(
+                  :body_font_family,
+                  collection: Section::FONT_FAMILIES.map {
+                    |font| [font.humanize, font]
+                  },
+                  label: "Fonte"
+                ) %>
+
+            <div class="preview-editor__two-columns">
+              <%= f.input(
+                    :body_font_size_desktop,
+                    label: "Desktop"
+                  ) %>
+
+              <%= f.input(
+                    :body_font_size_mobile,
+                    label: "Mobile"
+                  ) %>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        class="preview-editor__panel"
+        data-preview-editor-tabs-target="panel"
+        data-panel="media"
+        hidden
+      >
+        <div class="preview-editor__panel-heading">
+          <div>
+            <span class="preview-editor__panel-eyebrow">
+              Mídia
+            </span>
+
+            <h3>
+              Imagens e enquadramento
+            </h3>
+
+            <p>
+              O mesmo editor da tela completa é utilizado aqui.
+            </p>
+          </div>
+        </div>
+
+        <%= render(
+              "admin/sections/media_editor",
+              f: f,
+              section: section,
+              page: @page,
+              return_to: return_to
+            ) %>
+      </section>
+
+      <% if %w[cards faq].include?(section.section_type) %>
+        <section
+          class="preview-editor__panel"
+          data-preview-editor-tabs-target="panel"
+          data-panel="items"
+          hidden
+        >
+          <% if section.section_type == "cards" %>
+            <%= render(
+                  "admin/page_previews/cards_settings",
+                  f: f,
+                  section: section
+                ) %>
+          <% else %>
+            <div class="preview-editor__panel-heading">
+              <span class="preview-editor__panel-eyebrow">
+                FAQ
+              </span>
+
+              <h3>
+                Perguntas frequentes
+              </h3>
+            </div>
+
+            <div class="preview-editor__items-list">
+              <% section.section_items.ordered.each_with_index do |item, index| %>
+                <div class="preview-editor__item-row">
+                  <span>
+                    <%= format("%02d", index + 1) %>
+                  </span>
+
+                  <strong>
+                    <%= item.title %>
+                  </strong>
+                </div>
+              <% end %>
+            </div>
+
+            <%= link_to(
+                  "Gerenciar perguntas",
+                  admin_page_section_section_items_path(
+                    @page,
+                    section
+                  ),
+                  class: "admin-button-secondary",
+                  target: "_top"
+                ) %>
+          <% end %>
+        </section>
+      <% end %>
+
+      <section
+        class="preview-editor__panel"
+        data-preview-editor-tabs-target="panel"
+        data-panel="settings"
+        hidden
+      >
+        <%= render(
+              "admin/sections/settings_fields",
+              f: f,
+              section: section
+            ) %>
+      </section>
+    </div>
+  <% end %>
+
+  <div class="preview-editor__actions">
+    <div class="preview-editor__actions-left">
+      <%= link_to(
+            "Excluir bloco",
+            admin_page_section_path(
+              @page,
+              section
+            ),
+            class: "preview-editor__delete",
+            data: {
+              turbo_method: :delete,
+              turbo_confirm: "Deseja realmente excluir este bloco?"
+            },
+            target: "_top"
+          ) %>
+    </div>
+
+    <div class="preview-editor__actions-right">
+      <%= link_to(
+            "Pré-visualizar",
+            admin_page_preview_path(@page),
+            class: "admin-button-secondary",
+            target: "_top"
+          ) %>
+
+      <button
+        type="submit"
+        form="<%= form_id %>"
+        class="admin-button admin-button--primary"
+      >
+        Salvar rascunho
+      </button>
+    </div>
+  </div>
+</div>

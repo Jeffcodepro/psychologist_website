@@ -1,0 +1,135 @@
+<div class="section-settings-editor">
+  <header class="section-settings-editor__header">
+    <span class="section-editor-eyebrow">
+      Configurações
+    </span>
+
+    <h2>
+      Comportamento do bloco
+    </h2>
+
+    <p>
+      Controle a estrutura, visibilidade e participação desta seção na navegação.
+    </p>
+  </header>
+
+  <div class="section-settings-grid">
+    <article class="section-settings-card">
+      <header class="section-settings-card__header">
+        <span class="section-settings-card__icon">
+          #
+        </span>
+
+        <div>
+          <h3>Identificação</h3>
+
+          <p>
+            Informações utilizadas internamente pelo CMS.
+          </p>
+        </div>
+      </header>
+
+      <div class="section-settings-card__fields">
+        <%= f.input(
+              :section_type,
+              collection: Section::SECTION_TYPES.map {
+                |type| [type.humanize, type]
+              },
+              label: "Tipo do bloco"
+            ) %>
+
+        <%= f.input(
+              :anchor,
+              label: "Identificador",
+              hint: "Use letras minúsculas, números e hífens."
+            ) %>
+      </div>
+    </article>
+
+    <article class="section-settings-card">
+      <header class="section-settings-card__header">
+        <span class="section-settings-card__icon">
+          ◉
+        </span>
+
+        <div>
+          <h3>Visibilidade</h3>
+
+          <p>
+            Escolha onde este conteúdo deve aparecer.
+          </p>
+        </div>
+      </header>
+
+      <div class="section-settings-switches">
+        <label class="section-settings-switch">
+          <%= f.check_box(
+                :visible,
+                class: "section-settings-switch__input"
+              ) %>
+
+          <span class="section-settings-switch__control">
+            <span></span>
+          </span>
+
+          <span class="section-settings-switch__text">
+            <strong>Exibir este bloco</strong>
+
+            <small>
+              Quando desativado, permanece salvo no CMS mas não aparece no site.
+            </small>
+          </span>
+        </label>
+
+        <label class="section-settings-switch">
+          <%= f.check_box(
+                :show_in_nav,
+                class: "section-settings-switch__input"
+              ) %>
+
+          <span class="section-settings-switch__control">
+            <span></span>
+          </span>
+
+          <span class="section-settings-switch__text">
+            <strong>Exibir na navegação</strong>
+
+            <small>
+              Permite que esta seção seja utilizada nos menus do site.
+            </small>
+          </span>
+        </label>
+      </div>
+    </article>
+
+    <article class="section-settings-card section-settings-card--wide">
+      <header class="section-settings-card__header">
+        <span class="section-settings-card__icon">
+          Aa
+        </span>
+
+        <div>
+          <h3>Nome na navegação</h3>
+
+          <p>
+            Defina como esta seção será apresentada nos menus em cada idioma.
+          </p>
+        </div>
+      </header>
+
+      <div class="section-settings-navigation">
+        <%= f.input(
+              :nav_label,
+              label: "Português",
+              placeholder: "Ex.: Psicoterapia"
+            ) %>
+
+        <%= f.input(
+              :nav_label_en,
+              label: "Inglês",
+              placeholder: "Ex.: Psychotherapy"
+            ) %>
+      </div>
+    </article>
+  </div>
+</div>

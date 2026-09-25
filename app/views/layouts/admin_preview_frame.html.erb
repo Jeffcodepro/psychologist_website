@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+
+<html lang="<%= I18n.locale %>">
+
+  <head>
+
+    <title>
+      Preview | <%= @page.name %>
+    </title>
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1"
+    >
+
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag(
+          "application",
+          "data-turbo-track": "reload"
+        ) %>
+
+    <%= javascript_importmap_tags %>
+
+  </head>
+
+
+  <body class="preview-frame-body">
+
+    <%= yield %>
+
+  </body>
+
+</html>

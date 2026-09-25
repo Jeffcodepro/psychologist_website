@@ -1,2 +1,13 @@
-<h1>Pages#home</h1>
-<p>Find me in app/views/pages/home.html.erb</p>
+<% content_for :page_title do %>
+  <%= @page.localized_seo_title %>
+<% end %>
+
+<% content_for :meta_description do %>
+  <%= @page.localized_seo_description %>
+<% end %>
+
+<main class="public-page public-page--<%= @page.slug %>">
+  <% @sections.each do |section| %>
+    <%= render "shared/section_render", section: section %>
+  <% end %>
+</main>

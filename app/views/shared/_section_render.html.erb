@@ -1,0 +1,87 @@
+<%
+  preview_mode =
+    request.path.include?("/admin/pages/") &&
+    request.path.include?("/preview/frame")
+
+  banner_attached = section.banner.attached?
+  banner_layout = section.effective_banner_layout
+  banner_x = section.effective_banner_position_x
+  banner_y = section.effective_banner_position_y
+  banner_zoom = section.effective_banner_zoom
+  overlay = section.effective_banner_overlay
+
+  composition_enabled =
+    %w[hero text_image].include?(section.section_type)
+
+  image_available =
+    section.image.attached? ||
+    (
+      section.section_type == "hero" &&
+      @site_setting&.profile_image&.attached?
+    )
+%>
+
+<div
+  class="
+    section-frame
+    section-frame--<%= banner_layout %>
+    <%= "section-frame--with-media" if banner_attached %>
+    <%= "section-frame--preview" if preview_mode %>
+  "
+  data-section-frame-id="<%= section.id %>"
+  <% if preview_mode %>
+    data-controller="preview-composition"
+    data-preview-composition-update-url-value="<%= admin_page_section_path(@page, section) %>"
+  <% end %>
+  style="
+    --section-title-color: <%= section.effective_title_color %>;
+    --section-body-color: <%= section.effective_body_color %>;
+    --section-accent-color: <%= section.effective_accent_color %>;
+    --section-background-color: <%= section.effective_background_color %>;
+    --section-overlay-color: <%= section.effective_overlay_color %>;
+    --section-overlay-opacity: <%= overlay.to_f / 100 %>;
+  "
+>
+  <% if banner_attached %>
+    <div class="section-frame__banner">
+      <%= image_tag(
+            section.banner,
+            alt: "",
+            class: "section-frame__banner-image",
+            style: "
+              object-position: #{banner_x}% #{banner_y}%;
+              transform: scale(#{banner_zoom});
+              transform-origin: #{banner_x}% #{banner_y}%;
+            "
+          ) %>
+
+      <div class="section-frame__overlay"></div>
+    </div>
+  <% end %>
+
+  <div class="section-frame__content">
+    <%= render(
+          "sections/#{section.section_type}",
+          section: section
+        ) %>
+  </div>
+
+  <% if preview_mode && banner_attached %>
+    <button
+      type="button"
+      class="preview-element-handle preview-element-handle--banner"
+      data-action="pointerdown->preview-composition#startBannerDrag"
+    >
+      <span class="preview-element-handle__grip">⠿</span>
+      <span>Mover banner</span>
+    </button>
+  <% end %>
+
+  <% if preview_mode %>
+    <%= render(
+          "admin/page_previews/composition_drag_zones",
+          banner: banner_attached,
+          layout: composition_enabled && image_available
+        ) %>
+  <% end %>
+</div>

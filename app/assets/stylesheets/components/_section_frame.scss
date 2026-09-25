@@ -1,0 +1,151 @@
+.section-frame {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--section-background-color);
+
+  &__banner {
+    position: relative;
+    z-index: 1;
+    order: 1;
+    width: 100%;
+    height: 380px;
+    overflow: hidden;
+    background: #e8ebe8;
+  }
+
+  &__banner-image {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+  }
+
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    display: none;
+    background: var(--section-overlay-color);
+    opacity: var(--section-overlay-opacity);
+    pointer-events: none;
+  }
+
+  &__content {
+    position: relative;
+    z-index: 2;
+    order: 2;
+    width: 100%;
+  }
+
+  &--bottom {
+    .section-frame__banner {
+      order: 3;
+    }
+  }
+
+  &--background {
+    min-height: 1px;
+
+    .section-frame__banner {
+      position: absolute;
+      z-index: 0;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .section-frame__overlay {
+      display: block;
+    }
+
+    .section-frame__content {
+      z-index: 2;
+    }
+
+    .section-frame__content > section {
+      background: transparent !important;
+    }
+  }
+
+  &--top,
+  &--bottom {
+    .section-frame__overlay {
+      display: none;
+    }
+  }
+
+  &__content {
+    h1,
+    h2,
+    h3,
+    h4,
+    .section-heading,
+    .hero-section__title,
+    .cards-section__title,
+    .faq-section__title,
+    .psychology-card__title {
+      color: var(--section-title-color) !important;
+    }
+
+    p,
+    .section-body,
+    .hero-section__body,
+    .cards-section__intro,
+    .faq-section__intro,
+    .faq-item__answer-inner,
+    .psychology-card__body {
+      color: var(--section-body-color) !important;
+    }
+
+    .hero-section__eyebrow,
+    .psychology-card__number,
+    .faq-item__number {
+      color: var(--section-accent-color) !important;
+    }
+  }
+}
+
+.section-frame--background {
+  .section-frame__content > section {
+    color: var(--section-body-color);
+  }
+}
+
+.public-page > .section-frame {
+  margin: 0;
+}
+
+.public-page > .section-frame > .section-frame__content > section:not(.hero-section) {
+  min-height: 0;
+  margin: 0;
+  padding-top: 44px;
+  padding-bottom: 44px;
+}
+
+@media (max-width: 1024px) {
+  .section-frame {
+    &__banner {
+      height: 310px;
+    }
+  }
+
+  .public-page > .section-frame > .section-frame__content > section:not(.hero-section) {
+    padding-top: 38px;
+    padding-bottom: 38px;
+  }
+}
+
+@media (max-width: 600px) {
+  .section-frame {
+    &__banner {
+      height: 230px;
+    }
+  }
+
+  .public-page > .section-frame > .section-frame__content > section:not(.hero-section) {
+    padding-top: 30px;
+    padding-bottom: 30px;
+  }
+}

@@ -2,6 +2,12 @@
   <div class="admin-breadcrumb"><%= link_to "Mensagens recebidas", admin_contact_requests_path %></div>
   <header class="admin-section-editor__heading"><div><span class="admin-page-eyebrow">Contato recebido</span><h1><%= @contact_request.full_name %></h1></div></header>
   <section class="admin-section-editor__panel is-active contact-message">
+    <% if @contact_request.email_delivered_at? %>
+      <p>E-mail enviado em <%= l(@contact_request.email_delivered_at, format: "%d/%m/%Y %H:%M") %>.</p>
+    <% else %>
+      <p><%= @contact_request.email_delivery_error || "Envio por e-mail pendente." %></p>
+      <%= button_to "Enviar por e-mail", deliver_admin_contact_request_path(@contact_request), class: "admin-button-secondary" %>
+    <% end %>
     <dl><dt>Telefone</dt><dd><%= @contact_request.phone %></dd><dt>E-mail</dt><dd><%= @contact_request.email %></dd><dt>Mensagem</dt><dd><%= simple_format(@contact_request.message) %></dd></dl>
     <%= button_to "Excluir mensagem", admin_contact_request_path(@contact_request), method: :delete, class: "admin-button-quiet admin-button-danger", form: { data: { turbo_confirm: "Excluir esta mensagem?" } } %>
   </section>

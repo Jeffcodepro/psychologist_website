@@ -5,7 +5,7 @@ class Admin::FlexibleMediaTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
 
   setup do
-    sign_in User.create!(email: "media-test@example.test", password: "Local-test-password-123!")
+    sign_in User.create!(admin: true, email: "media-test@example.test", password: "Local-test-password-123!")
     @page = Page.create!(name: "Mídia de teste", slug: "midia-teste")
     @section = @page.sections.create!(section_type: "text", title: "Conteúdo flexível", body: "Meu parágrafo", body_en: "My paragraph")
     @files = []

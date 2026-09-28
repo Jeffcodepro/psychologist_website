@@ -1,7 +1,7 @@
 <div class="card-content-list">
   <div class="card-content-list__heading">
     <div><h3>Conteúdo e imagem de cada card</h3><p>Cada card pode ter sua própria imagem e enquadramento.</p></div>
-    <%= link_to "+ Adicionar card", new_admin_page_section_section_item_path(@page, section, kind: "card"), class: "admin-button-secondary", data: { turbo_frame: "_top" } %>
+    <%= link_to "+ Adicionar card", new_admin_page_section_section_item_path(@page, section, kind: "card", from_preview: controller_name == "page_previews" ? "1" : nil), class: "admin-button-secondary", target: "_top" %>
   </div>
   <% section.section_items.cards.ordered.each do |item| %>
     <div class="card-content-list__item">
@@ -11,7 +11,7 @@
         <span class="card-content-list__placeholder" aria-hidden="true">▧</span>
       <% end %>
       <div><strong><%= item.title %></strong><small><%= item.image.attached? ? "Com imagem" : "Sem imagem" %> · <%= item.visible? ? "Visível" : "Oculto" %></small></div>
-      <%= link_to "Editar conteúdo e imagem", edit_admin_page_section_section_item_path(@page, section, item), class: "admin-button-quiet", data: { turbo_frame: "_top" } %>
+      <%= link_to "Editar conteúdo e imagem", edit_admin_page_section_section_item_path(@page, section, item, from_preview: controller_name == "page_previews" ? "1" : nil), class: "admin-button-quiet", target: "_top" %>
     </div>
   <% end %>
 </div>

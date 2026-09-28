@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  devise_for :users
+  devise_for :users, skip: %i[registrations unlocks]
 
   devise_scope :user do
     get "admin/login",
@@ -12,12 +12,15 @@ Rails.application.routes.draw do
   end
 
   root to: "pages#home"
+  get "contato", to: "contacts#show", as: :contact
   resources :contact_requests, only: :create, path: "contato"
 
   namespace :admin do
     root to: "dashboard#index"
 
-    resources :contact_requests, only: %i[index show destroy]
+    resources :contact_requests, only: %i[index show destroy] do
+      post :deliver, on: :member
+    end
     resource :translation, only: :create
     resource :site_setting, only: %i[edit update]
 

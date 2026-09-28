@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <title>Acesso administrativo · Rosemary CMS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <%= csrf_meta_tags %><%= csp_meta_tag %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+  <body class="auth-page">
+    <main class="auth-shell">
+      <aside class="auth-intro">
+        <%= link_to "R", root_path, class: "auth-brand", aria: { label: "Voltar ao site" } %>
+        <span class="auth-eyebrow">Rosemary CMS</span>
+        <h1>Seu espaço<br>para cuidar<br>do conteúdo.</h1>
+        <p>Organize páginas, atualize imagens e acompanhe os contatos em um só lugar.</p>
+        <%= link_to "← Voltar ao site", root_path, class: "auth-back" %>
+      </aside>
+      <section class="auth-panel">
+        <% if notice.present? %><p class="auth-feedback" role="status"><%= notice %></p><% end %>
+        <% if alert.present? %><p class="auth-feedback auth-feedback--error" role="alert"><%= alert %></p><% end %>
+        <%= yield %>
+      </section>
+    </main>
+  </body>
+</html>

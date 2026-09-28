@@ -1,8 +1,6 @@
-puts "Limpando conteúdo anterior..."
+abort "O conteúdo inicial só pode ser criado em um banco sem páginas." if Page.exists?
 
-SectionItem.delete_all
-Section.delete_all
-Page.delete_all
+puts "Criando conteúdo inicial..."
 
 site_setting = SiteSetting.first_or_initialize
 

@@ -1,15 +1,6 @@
 module SectionsHelper
-  FONT_NAMES = {
-    "playfair" => "Playfair Display", "dm_sans" => "DM Sans",
-    "cormorant" => "Cormorant Garamond", "lora" => "Lora",
-    "montserrat" => "Montserrat", "libre_baskerville" => "Libre Baskerville",
-    "merriweather" => "Merriweather", "inter" => "Inter", "manrope" => "Manrope",
-    "source_sans" => "Source Sans 3", "nunito_sans" => "Nunito Sans"
-  }.freeze
-  SERIF_FONTS = %w[playfair cormorant lora libre_baskerville merriweather].freeze
-  FONT_STACKS = FONT_NAMES.to_h do |key, name|
-    [key, "\"#{name}\", #{SERIF_FONTS.include?(key) ? 'serif' : 'sans-serif'}"]
-  end.freeze
+  FONT_NAMES = FontCatalog::NAMES
+  FONT_STACKS = FontCatalog::STACKS
 
   SHAPE_OPTIONS = [["Retangular", "rectangle"], ["Arredondada", "rounded"], ["Quadrada", "square"],
                    ["Circular", "circle"], ["Oval", "oval"], ["Arco", "arch"]].freeze

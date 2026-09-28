@@ -34,6 +34,8 @@
       admin_page_preview_frame_path(page_id: @page.id, locale: locale)
     elsif @page.present? && !@page.home?
       public_page_path(slug: @page.slug, locale: locale)
+    elsif controller_name == "contacts"
+      contact_path(locale: locale)
     else
       root_path(locale: locale)
     end
@@ -42,7 +44,7 @@
   en_path = language_path.call("en")
   demo_contacts = @site_setting&.demo_contacts?
   contact_available = demo_contacts || [email, phone, whatsapp_number.presence, instagram, linkedin].any?(&:present?)
-  appointment_path = "#agendamento"
+  appointment_path = contact_path(locale: I18n.locale)
 
   appointment_label =
     I18n.locale == :en ?
@@ -101,7 +103,7 @@
 
 
         <% if appointment_path.present? %>
-          <%= link_to appointment_label, appointment_path, class: "site-footer__cta" %>
+          <%= link_to appointment_label, appointment_path, class: "site-footer__cta", target: preview_frame ? "_top" : nil %>
         <% end %>
 
       </div>
@@ -128,6 +130,7 @@
             end %>
             <%= link_to page.localized_nav_label, destination, target: preview_frame ? "_top" : nil %>
           <% end %>
+          <%= link_to(I18n.locale == :en ? "Contact" : "Contato", contact_path(locale: I18n.locale), target: preview_frame ? "_top" : nil) %>
         </nav>
 
       </div>

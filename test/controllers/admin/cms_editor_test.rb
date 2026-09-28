@@ -5,7 +5,7 @@ class Admin::CmsEditorTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
 
   setup do
-    sign_in User.create!(email: "cms-test@example.test", password: "Local-test-password-123!")
+    sign_in User.create!(admin: true, email: "cms-test@example.test", password: "Local-test-password-123!")
     @page = Page.create!(name: "Página de teste", slug: "pagina-teste")
     @section = @page.sections.create!(section_type: "hero", title: "Acolhimento", media_layout: "text_left")
   end
@@ -13,7 +13,7 @@ class Admin::CmsEditorTest < ActionDispatch::IntegrationTest
   test "editor and preview render fonts, responsive controls and cropping without errors" do
     get edit_admin_page_section_path(@page, @section)
     assert_response :success
-    assert_select ".font-picker__option", count: 22
+    assert_select ".font-picker__option", count: FontCatalog::NAMES.size * 2
     assert_select 'select[name="section[responsive_settings][mobile][media_layout]"]'
     assert_select 'input[type="file"][hidden][name="section[image]"]', count: 1
     assert_select 'input[type="file"][hidden][name="section[banner]"]', count: 1

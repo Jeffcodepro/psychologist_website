@@ -10,7 +10,7 @@
       <% if contact_request.errors.any? %>
         <div class="appointment-form__errors" role="alert"><strong><%= english ? "Please check your details:" : "Confira seus dados:" %></strong><ul><% contact_request.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul></div>
       <% end %>
-      <%= hidden_field_tag :source_path, request.path %>
+      <%= hidden_field_tag :source_path, contact_request.source_path.presence || request.path %>
       <div class="appointment-form__honeypot" aria-hidden="true"><%= f.label :website, "Website" %><%= f.text_field :website, tabindex: -1, autocomplete: "off" %></div>
       <div class="appointment-form__field"><%= f.label :full_name, english ? "Full name" : "Nome completo" %><%= f.text_field :full_name, required: true, maxlength: 150, autocomplete: "name", placeholder: english ? "How would you like to be called?" : "Como você gostaria de ser chamado(a)?" %></div>
       <div class="appointment-form__row">

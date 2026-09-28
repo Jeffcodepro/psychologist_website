@@ -186,7 +186,7 @@ label:has(> .site-identity-file-input:focus-visible) { outline: 2px solid #1769f
 }
 .appointment-section { background: #edf2ec; padding: clamp(40px, 6vw, 80px) 0; scroll-margin-top: 100px; }
 .appointment-section__layout { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); align-items: start; gap: clamp(28px, 5vw, 70px); }
-.appointment-section__intro { padding-top: 16px; h2 { font: 500 clamp(30px, 3.2vw, 44px)/1.2 $headers-font; color: #2b4335; margin: 14px 0 22px; } p { font: 400 16px/1.8 $body-font; color: #53695a; } }
+.appointment-section__intro { padding-top: 16px; h1 { font: 500 clamp(30px, 3.2vw, 44px)/1.2 $headers-font; color: #2b4335; margin: 14px 0 22px; } p { font: 400 16px/1.8 $body-font; color: #53695a; } }
 .appointment-section__eyebrow { font: 600 11px/1.5 $body-font; text-transform: uppercase; letter-spacing: .13em; color: #3e7655; }
 .appointment-section__intro .appointment-section__note { font-size: 13px; margin-top: 24px; }
 .appointment-form { padding: clamp(20px, 3vw, 32px); border: 1px solid #dae4db; border-radius: 18px; background: white; box-shadow: 0 14px 40px rgba(38,67,48,.04); }
@@ -239,3 +239,6 @@ label:has(> .site-identity-file-input:focus-visible) { outline: 2px solid #1769f
 .section-frame--preview .section-frame__banner { overflow: visible; }
 .section-frame--preview .section-frame__banner .media-sequence { overflow: hidden; }
 @media (max-width: 600px) { .element-drop-zones__hint { font-size: 11px; max-width: 85%; } .element-drop-zone { font-size: 11px; } }
+
+.contact-page { min-height: 65vh; }
+.contact-page .appointment-section { padding-block: clamp(42px, 7vw, 96px); }

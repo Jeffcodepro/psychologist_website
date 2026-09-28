@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::Base
+  layout :application_layout
   # ==================================================
   # LOCALE
   # ==================================================
@@ -22,6 +23,10 @@ class ApplicationController < ActionController::Base
   end
 
   private
+
+  def application_layout
+    devise_controller? ? "authentication" : "application"
+  end
 
   # ==================================================
   # LOCALE

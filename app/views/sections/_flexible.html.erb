@@ -20,7 +20,7 @@
           <% if section.section_type == "faq" %><%= render "sections/questions", section: section %><% end %>
           <% if section.section_type == "gallery" %><%= render "sections/gallery_items", section: section %><% end %>
           <% if %w[hero cta].include?(section.section_type) %>
-            <%= link_to(I18n.locale == :en ? "Book a conversation" : "Agende agora", "#agendamento", class: "hero-section__primary-action appointment-link") %>
+            <%= link_to(I18n.locale == :en ? "Book a conversation" : "Agende agora", contact_path(locale: I18n.locale), class: "hero-section__primary-action appointment-link", target: preview_mode ? "_top" : nil) %>
           <% end %>
         </div>
         <% if images.any? %>

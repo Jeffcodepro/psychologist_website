@@ -49,7 +49,7 @@ class Admin::SectionsController < Admin::BaseController
       respond_to do |format|
         format.html do
           redirect_to(
-            params[:return_to].presence ||
+            safe_preview_return_path ||
               edit_admin_page_section_path(@page, @section),
             notice: "Rascunho salvo."
           )
@@ -295,7 +295,7 @@ class Admin::SectionsController < Admin::BaseController
 
   def redirect_after_change
     redirect_to(
-      params[:return_to].presence ||
+      safe_preview_return_path ||
         admin_page_preview_path(@page)
     )
   end

@@ -1,5 +1,5 @@
 <div class="preview-live-editor" data-controller="section-sort preview-editor"
-     data-section-sort-url-value="<%= swap_positions_admin_page_sections_path(@page) %>" data-field-swap-url-value="<%= swap_fields_admin_page_sections_path(@page) %>">
+     data-section-sort-url-value="<%= swap_positions_admin_page_sections_path(@page) %>">
   <%= render "shared/navbar" %>
   <main>
     <% @sections.each do |section| %>
@@ -13,7 +13,6 @@
       </div>
     <% end %>
   </main>
-  <%= render "shared/contact_section", preview: true %>
   <%= render "shared/footer" %>
   <%= render "shared/whatsapp_bubble" %>
   <div class="preview-editor-backdrop" data-preview-editor-target="backdrop" data-action="preview-editor#close" hidden></div>

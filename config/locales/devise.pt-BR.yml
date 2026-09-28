@@ -1,0 +1,30 @@
+pt-BR:
+  devise:
+    failure:
+      already_authenticated: "Você já está conectado."
+      unauthenticated: "Entre com sua conta para acessar o painel."
+      unconfirmed: "Confirme sua conta antes de entrar."
+      locked: "Muitas tentativas de acesso. Tente novamente em 30 minutos."
+      invalid: "E-mail ou senha inválidos."
+      not_found_in_database: "E-mail ou senha inválidos."
+      inactive: "Esta conta não tem acesso ao painel."
+      timeout: "Sua sessão expirou. Entre novamente."
+      last_attempt: "Resta uma tentativa antes do bloqueio temporário."
+    sessions:
+      signed_in: "Você entrou no painel."
+      signed_out: "Você saiu do painel."
+      already_signed_out: "Você saiu do painel."
+    passwords:
+      send_instructions: "Se a conta existir, você receberá as instruções por e-mail."
+      send_paranoid_instructions: "Se a conta existir, você receberá as instruções por e-mail."
+      updated: "Senha atualizada com sucesso."
+      updated_not_active: "Senha atualizada. Entre novamente."
+      no_token: "Abra o link de recuperação enviado por e-mail."
+    mailer:
+      reset_password_instructions:
+        subject: "Recuperar acesso · Rosemary CMS"
+  errors:
+    messages:
+      not_saved:
+        one: "Não foi possível salvar:"
+        other: "Não foi possível salvar:"

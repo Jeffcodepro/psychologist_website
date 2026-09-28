@@ -116,10 +116,10 @@ export default class extends Controller {
             },
 
             body: JSON.stringify({
-              source_id:
+              first_id:
                 this.sourceSectionId,
 
-              target_id:
+              second_id:
                 targetId
             })
           }

@@ -4,7 +4,7 @@ class Admin::VisualCompositionTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
 
   setup do
-    sign_in User.create!(email: "composition-admin@example.test", password: "Local-test-password-123!")
+    sign_in User.create!(admin: true, email: "composition-admin@example.test", password: "Local-test-password-123!")
     @page = Page.create!(name: "Composição", slug: "composition-test")
     @section = @page.sections.create!(section_type: "hero", title: "Título", body: "Parágrafo")
   end

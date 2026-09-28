@@ -17,7 +17,7 @@ export default class extends Controller {
   }
 
   prepare() {
-    this.element.querySelectorAll(".section-heading, .section-body p, .appointment-section__intro h2, .appointment-section__intro > p").forEach(element => {
+    this.element.querySelectorAll(".section-heading, .section-body p, .appointment-section__intro h1, .appointment-section__intro > p").forEach(element => {
       const original = element.innerHTML
       const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT)
       const nodes = []

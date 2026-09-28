@@ -15,4 +15,11 @@ class Admin::ContactRequestsController < Admin::BaseController
     ContactRequest.find(params[:id]).destroy!
     redirect_to admin_contact_requests_path, notice: "Mensagem excluída.", status: :see_other
   end
+
+  def deliver
+    contact = ContactRequest.find(params[:id])
+    delivered = EmailDelivery.call(contact)
+    options = delivered ? { notice: "E-mail enviado." } : { alert: contact.email_delivery_error }
+    redirect_to admin_contact_request_path(contact), **options, status: :see_other
+  end
 end

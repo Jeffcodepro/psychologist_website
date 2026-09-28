@@ -6,7 +6,7 @@ class Admin::TranslationsController < Admin::BaseController
     ).call
 
     render json: translation
-  rescue StandardError => e
+  rescue TranslationService::Error => e
     render json: {
       error: e.message
     }, status: :unprocessable_entity

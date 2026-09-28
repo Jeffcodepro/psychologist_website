@@ -48,15 +48,20 @@ export default class extends Controller {
     this.zonesTarget.hidden = false
     this.hintTarget.textContent = `${this.handle.textContent.trim()} · solte ou escolha uma posição`
     this.element.classList.add("is-element-dragging")
-    const rect = this.element.getBoundingClientRect()
-    const top = Math.max(82, rect.top)
-    const height = Math.max(220, Math.min(rect.bottom, innerHeight - 16) - top)
-    Object.assign(this.zonesTarget.style, { top: `${top}px`, left: `${Math.max(8, rect.left + 8)}px`, width: `${Math.min(innerWidth - 16, rect.width - 16)}px`, height: `${height}px` })
+    this.positionZones()
     this.zoneTargets.forEach(zone => {
       const direction = zone.dataset.position
       zone.hidden = this.field === "banner" ? ["left", "right"].includes(direction) : this.field === "image" && direction === "center"
       zone.textContent = this.field === "banner" ? { top: "Banner acima", center: "Imagem de fundo", bottom: "Banner abaixo" }[direction] : { top: "Acima", left: "Esquerda", center: "Centralizar", right: "Direita", bottom: "Abaixo" }[direction]
     })
+  }
+
+  positionZones() {
+    const rect = this.element.getBoundingClientRect()
+    const top = Math.max(82, rect.top)
+    const height = Math.min(rect.bottom, innerHeight - 16) - top
+    this.zonesTarget.hidden = height < 220
+    Object.assign(this.zonesTarget.style, { top: `${top}px`, left: `${Math.max(8, rect.left + 8)}px`, width: `${Math.min(innerWidth - 16, rect.width - 16)}px`, height: `${Math.max(0, height)}px` })
   }
 
   move(event) {
@@ -135,6 +140,7 @@ export default class extends Controller {
     if (!this.active || !this.origin) return
     const offset = this.pointerY < 100 ? -10 : this.pointerY > innerHeight - 75 ? 10 : 0
     if (offset) window.scrollBy({ top: offset, behavior: "instant" })
+    this.positionZones()
     this.scrollFrame = requestAnimationFrame(() => this.autoScroll())
   }
 

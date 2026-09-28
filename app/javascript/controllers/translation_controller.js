@@ -1,35 +1,24 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = [
-    "button",
-    "status"
-  ]
+  static targets = ["button", "status", "titlePt", "bodyPt", "titleEn", "bodyEn"]
 
   static values = {
     url: String
   }
 
   async translate() {
-    const form = this.element.querySelector("form")
+    const form = this.element.matches("form") ? this.element : this.element.querySelector("form")
 
     if (!form) return
 
-    const titleInput = form.querySelector(
-      '[name="section[title]"]'
-    )
+    const titleInput = this.hasTitlePtTarget ? this.titlePtTarget : form.querySelector('[name$="[title]"]')
 
-    const bodyInput = form.querySelector(
-      '[name="section[body]"]'
-    )
+    const bodyInput = this.hasBodyPtTarget ? this.bodyPtTarget : form.querySelector('[name$="[body]"]')
 
-    const titleEnInput = form.querySelector(
-      '[name="section[title_en]"]'
-    )
+    const titleEnInput = this.hasTitleEnTarget ? this.titleEnTarget : form.querySelector('[name$="[title_en]"]')
 
-    const bodyEnInput = form.querySelector(
-      '[name="section[body_en]"]'
-    )
+    const bodyEnInput = this.hasBodyEnTarget ? this.bodyEnTarget : form.querySelector('[name$="[body_en]"]')
 
     if (!titleInput || !bodyInput) {
       this.showStatus(
@@ -66,15 +55,9 @@ export default class extends Controller {
           },
           credentials: "same-origin",
           body: JSON.stringify({
-            title: title,
-            body: body,
-            source_title: title,
-            source_body: body,
             translation: {
               title: title,
-              body: body,
-              source_title: title,
-              source_body: body
+              body: body
             }
           })
         }
@@ -150,15 +133,9 @@ export default class extends Controller {
       loading
     )
 
-    const strong = this.buttonTarget.querySelector(
-      "strong"
-    )
-
-    if (!strong) return
-
-    strong.textContent = loading
-      ? "Traduzindo..."
-      : "Gerar versão em inglês"
+    const label = this.buttonTarget.querySelector("strong") || this.buttonTarget
+    if (loading) { this.originalLabel = label.textContent; label.textContent = "Traduzindo…" }
+    else if (this.originalLabel) label.textContent = this.originalLabel
   }
 
   showStatus(message, error = false) {

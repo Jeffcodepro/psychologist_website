@@ -37,7 +37,7 @@ class ContactRequestsTest < ActionDispatch::IntegrationTest
     request = ContactRequest.create!(valid_details)
     get admin_contact_request_path(request)
     assert_redirected_to new_user_session_path
-    sign_in User.create!(email: "contact-admin@example.test", password: "Local-test-password-123!")
+    sign_in User.create!(admin: true, email: "contact-admin@example.test", password: "Local-test-password-123!")
     get admin_contact_requests_path
     assert_response :success
     assert_select 'a', text: 'Abrir mensagem'

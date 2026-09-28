@@ -1,4 +1,8 @@
 class SiteSetting < ApplicationRecord
+  include ImageAttachments
+  validates_image_attachments :seo_image
+  validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true
+  validates :instagram, :linkedin, format: { with: /\Ahttps?:\/\/[^\s]+\z/, message: "deve começar com https:// ou http://" }, allow_blank: true
   MAX_IMAGE_SIZE =
     10.megabytes
 

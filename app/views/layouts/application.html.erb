@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="<%= I18n.locale %>">
   <head>
-    <title>PsychologistWebsite</title>
+    <title><%= content_for?(:page_title) ? yield(:page_title) : (@site_setting&.professional_name.presence || "Rosemary Dias") %></title>
+    <% if content_for?(:meta_description) %><meta name="description" content="<%= yield(:meta_description) %>"><% end %>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>

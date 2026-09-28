@@ -1,4 +1,6 @@
 class Section < ApplicationRecord
+  include ImageAttachments
+  validates_image_attachments :image, :banner
   include ResponsiveSection
   include MediaAdjustable
   SECTION_TYPES = %w[
@@ -12,19 +14,7 @@ class Section < ApplicationRecord
     contact
   ].freeze
 
-  FONT_FAMILIES = %w[
-    playfair
-    dm_sans
-    cormorant
-    lora
-    montserrat
-    libre_baskerville
-    merriweather
-    inter
-    manrope
-    source_sans
-    nunito_sans
-  ].freeze
+  FONT_FAMILIES = FontCatalog::NAMES.keys.freeze
 
   TEXT_ALIGNMENTS = %w[left center right].freeze
   TEXT_THEMES = %w[dark light].freeze

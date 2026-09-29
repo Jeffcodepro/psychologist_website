@@ -1,0 +1,8 @@
+pt-BR:
+  editorial:
+    published_on: Publicado em
+    date_format: "%d/%m/%Y"
+en:
+  editorial:
+    published_on: Published on
+    date_format: "%B %-d, %Y"

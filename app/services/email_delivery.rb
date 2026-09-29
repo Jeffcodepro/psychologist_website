@@ -1,13 +1,13 @@
 class EmailDelivery
-  REQUIRED_KEYS = %w[SMTP_ADDRESS SMTP_USERNAME SMTP_PASSWORD MAILER_FROM CONTACT_RECIPIENT].freeze
+  REQUIRED_KEYS = %w[SMTP_ADDRESS SMTP_USERNAME SMTP_PASSWORD MAILER_FROM].freeze
 
-  def self.configured?
-    REQUIRED_KEYS.all? { |key| ENV[key].present? }
+  def self.configured?(tenant = nil)
+    REQUIRED_KEYS.all? { |key| ENV[key].present? } && (tenant ? tenant.delivery_recipient : ENV["CONTACT_RECIPIENT"]).present?
   end
 
   def self.call(contact)
     return true if contact.email_delivered_at?
-    unless configured?
+    unless configured?(contact.tenant)
       contact.update_columns(email_delivery_error: "Configure o serviço de e-mail para enviar esta mensagem.")
       return false
     end

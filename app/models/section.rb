@@ -1,4 +1,8 @@
 class Section < ApplicationRecord
+  include EditableButtons
+  editable_buttons :action_buttons
+  validates :buttons_position, inclusion: { in: %w[before_text between_text after_text] }
+  validates :buttons_alignment, inclusion: { in: %w[left center right] }
   include ImageAttachments
   validates_image_attachments :image, :banner
   include ResponsiveSection
@@ -51,6 +55,28 @@ class Section < ApplicationRecord
   ].freeze
 
   belongs_to :page
+  delegate :tenant, :tenant_id, to: :page
+  validate do
+    errors.add(:form_fields, "campos inválidos") if section_type == "contact" && (!form_fields.is_a?(Array) || !ContactFormSchema.valid?(effective_form_fields))
+  end
+  validates :title_font_weight, :body_font_weight, inclusion: { in: [300, 400, 500, 600, 700, 800] }
+  validates :title_font_style, :body_font_style, inclusion: { in: %w[normal italic] }
+  validates :title_line_height, :body_line_height, numericality: { greater_than_or_equal_to: 1, less_than_or_equal_to: 2.5 }
+  validates :title_letter_spacing, :body_letter_spacing, numericality: { greater_than_or_equal_to: -1, less_than_or_equal_to: 4 }
+
+  def form_fields_json
+    (form_fields.is_a?(Array) ? effective_form_fields : ContactFormSchema::DEFAULT_FIELDS).to_json
+  end
+
+  def form_fields_json=(value)
+    self.form_fields = JSON.parse(value)
+  rescue JSON::ParserError, TypeError
+    self.form_fields = nil
+  end
+
+  def effective_form_fields
+    form_fields.presence || ContactFormSchema::DEFAULT_FIELDS
+  end
 
   has_many :section_items, dependent: :destroy
   has_many :section_slides, dependent: :destroy

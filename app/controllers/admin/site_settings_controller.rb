@@ -39,10 +39,10 @@ class Admin::SiteSettingsController < Admin::BaseController
 
   def set_site_setting
     @site_setting =
-      SiteSetting.first_or_initialize
+      (current_tenant.site_setting || current_tenant.build_site_setting)
 
     @site_setting.professional_name ||=
-      "Rosemary Dias"
+      current_tenant.name
   end
 
   # ==================================================
@@ -57,7 +57,7 @@ class Admin::SiteSettingsController < Admin::BaseController
         # PROFESSIONAL
         # --------------------------------------------
 
-        :professional_name,
+        :professional_name, :header_actions_json, :footer_actions_json,
         :crp,
 
         # --------------------------------------------

@@ -1,5 +1,5 @@
 <div class="admin-section-editor admin-item-editor" data-controller="translation" data-translation-url-value="<%= admin_translation_path %>">
-  <div class="admin-breadcrumb"><%= link_to "Páginas", admin_pages_path %><span>/</span><%= link_to @page.name, admin_page_sections_path(@page) %><span>/</span><%= link_to @section.title.presence || "Bloco", (params[:from_preview] == "1" ? admin_page_preview_path(@page) : edit_admin_page_section_path(@page, @section)) %></div>
+  <div class="admin-breadcrumb"><%= link_to content_library_label(@page), content_library_path(@page) %><span>/</span><%= link_to @page.name, admin_page_sections_path(@page) %><span>/</span><%= link_to @section.title.presence || "Bloco", (params[:from_preview] == "1" ? admin_page_preview_path(@page) : edit_admin_page_section_path(@page, @section)) %></div>
   <header class="admin-section-editor__heading"><div><span class="admin-page-eyebrow">Conteúdo da seção</span><h1><%= @section_item.persisted? ? "Editar #{@section_item.editor_label}" : "Adicionar #{@section_item.editor_label}" %></h1><p>Organize o texto e, se desejar, adicione uma imagem com seu próprio enquadramento.</p></div><span class="admin-section-editor__draft">Rascunho</span></header>
   <%= simple_form_for [:admin, @page, @section, @section_item], html: { class: "admin-section-editor__form" } do |f| %>
     <%= f.error_notification %>
@@ -8,16 +8,31 @@
     <section class="admin-section-editor__panel is-active">
       <div class="admin-section-editor__panel-heading"><span>Conteúdo</span><h2><%= @section_item.item_kind == "question" ? "Pergunta e resposta" : "Texto do card" %></h2><p>Textos longos terão a opção “Ler mais”, mantendo os cards com a mesma altura.</p></div>
       <%= f.input :title, label: @section_item.item_kind == "question" ? "Pergunta" : "Título", input_html: { data: { translation_target: "titlePt" } } %>
-      <%= f.input :body, label: @section_item.item_kind == "question" ? "Resposta" : "Texto", input_html: { rows: 5, data: { translation_target: "bodyPt" } } %>
+      <%= f.input :body, label: @section_item.item_kind == "question" ? "Resposta" : (@section_item.linked_page&.editorial? ? 'Resumo do card' : 'Texto'), input_html: { rows: 5, data: { translation_target: "bodyPt" } } %>
       <details class="admin-optional-fields"><summary>Versão em inglês (opcional)</summary>
         <button type="button" class="admin-button-secondary" data-translation-target="button" data-action="translation#translate">Traduzir com IA</button>
         <p class="section-translation-feedback" data-translation-target="status" role="status" hidden></p>
         <%= f.input :title_en, label: "Título em inglês", input_html: { data: { translation_target: "titleEn" } } %>
         <%= f.input :body_en, label: "Texto em inglês", input_html: { rows: 5, data: { translation_target: "bodyEn" } } %>
       </details>
+      <% if @section_item.item_kind == 'card' %>
+        <section class="admin-card-destination">
+          <h3>Ao clicar no card</h3>
+          <%= f.input :linked_page_id, as: :select, collection: current_tenant.pages.ordered.map { |page| ["#{page.content_label}: #{page.name}#{' · rascunho' unless page.published?}", page.id] }, include_blank: 'Sem redirecionamento', label: 'Abrir página ou texto completo' %>
+          <p>O card inteiro será clicável. Escolha um conteúdo existente ou use “Salvar e criar texto completo” para começar um artigo com este título, texto e imagem.</p>
+          <% if @section_item.linked_page && @section_item.linked_page.tenant_id == current_tenant.id %>
+            <%= link_to 'Editar texto de destino', admin_page_sections_path(@section_item.linked_page), class: 'admin-button-secondary' %>
+            <% unless @section_item.linked_page.published? %><p>O texto de destino está em rascunho. Publique-o para ativar o link no site.</p><% end %>
+          <% end %>
+          <p>Depois de salvar o destino, publique também a página que contém este card.</p>
+        </section>
+      <% end %>
       <% unless @section_item.item_kind == "question" %><%= render "admin/shared/image_cropper", f: f, record: @section_item, title: "Imagem opcional" %><% end %>
       <div class="admin-section-editor__input-grid"><%= f.input :position, label: "Ordem de exibição", input_html: { min: 0 } %><%= f.input :visible, as: :boolean, label: "Exibir este conteúdo" %></div>
     </section>
-    <footer class="admin-section-editor__actions"><div class="admin-section-editor__actions-left"><%= link_to "Voltar ao bloco", (params[:from_preview] == "1" ? admin_page_preview_path(@page) : edit_admin_page_section_path(@page, @section)), class: "admin-button-quiet" %></div><div class="admin-section-editor__actions-right"><%= f.button :submit, "Salvar #{@section_item.editor_label}", class: "admin-button admin-button--primary" %></div></footer>
+    <footer class="admin-section-editor__actions"><div class="admin-section-editor__actions-left"><%= link_to "Voltar ao bloco", (params[:from_preview] == "1" ? admin_page_preview_path(@page) : edit_admin_page_section_path(@page, @section)), class: "admin-button-quiet" %></div><div class="admin-section-editor__actions-right">
+      <% if @section_item.item_kind == 'card' && @section_item.linked_page_id.blank? %><button type="submit" name="write_article" value="1" class="admin-button-secondary" data-turbo-submits-with="Criando texto…">Salvar e criar texto completo</button><% end %>
+      <%= f.button :submit, "Salvar #{@section_item.editor_label}", class: "admin-button admin-button--primary" %>
+    </div></footer>
   <% end %>
 </div>

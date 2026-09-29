@@ -34,9 +34,9 @@ class Admin::SectionItemsController < Admin::BaseController
     @section_item.position =
       next_position if @section_item.position.blank?
 
-    if @section_item.save
+    if save_section_item
       redirect_to(
-        after_save_path,
+        @article ? admin_page_sections_path(@article) : after_save_path,
         notice: "Conteúdo criado com sucesso."
       )
     else
@@ -49,11 +49,10 @@ class Admin::SectionItemsController < Admin::BaseController
   end
 
   def update
-    if @section_item.update(
-      section_item_params
-    )
+    @section_item.assign_attributes(section_item_params)
+    if save_section_item
       redirect_to(
-        after_save_path,
+        @article ? admin_page_sections_path(@article) : after_save_path,
         notice: "Conteúdo atualizado com sucesso."
       )
     else
@@ -78,9 +77,20 @@ class Admin::SectionItemsController < Admin::BaseController
 
   private
 
+  def save_section_item
+    SectionItem.transaction do
+      @section_item.save!
+      @article = ArticleFromCardService.call(card: @section_item) if params[:write_article] == '1'
+    end
+    true
+  rescue ActiveRecord::RecordInvalid => error
+    @section_item.errors.add(:base, error.record.errors.full_messages.to_sentence) unless error.record == @section_item
+    false
+  end
+
   def set_page
     @page =
-      Page.find(
+      current_tenant.pages.find(
         params[:page_id]
       )
   end
@@ -109,6 +119,7 @@ class Admin::SectionItemsController < Admin::BaseController
       .require(:section_item)
       .permit(
         :item_kind,
+        :linked_page_id,
         :title,
         :body,
         :title_en,

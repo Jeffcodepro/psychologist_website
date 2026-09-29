@@ -1,6 +1,6 @@
 <div class="admin-page-settings">
   <div class="admin-breadcrumb">
-    <%= link_to "Páginas", admin_pages_path %>
+    <%= link_to content_library_label(@page), content_library_path(@page) %>
     <span>/</span>
     <strong><%= @page.name %></strong>
   </div>

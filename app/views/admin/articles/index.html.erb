@@ -1,0 +1,22 @@
+<div class="admin-site-structure">
+  <header class="admin-page-heading"><div><span class="admin-page-eyebrow">Conteúdo editorial</span><h1>Blog e textos</h1><p>Cada texto tem um card de apresentação em Conteúdos. Personalize seu resumo e imagem; “Saiba mais” leva o visitante ao texto completo.</p></div><%= link_to '+ Novo texto', new_admin_article_path, class: 'admin-button admin-button--primary' %></header>
+  <div class="admin-site-map">
+    <% @articles.each do |article| %>
+      <article class="admin-site-page admin-site-page--article">
+        <div class="admin-site-page__main">
+          <div class="admin-site-page__heading"><div><span class="admin-site-page__type"><%= article.content_label %></span><h2><%= article.name %></h2><span class="admin-site-page__url">/<%= article.slug %></span></div><span class="admin-status-pill admin-status-pill--<%= article.published? ? 'published' : 'draft' %>"><%= article.published? ? 'Publicado' : 'Rascunho' %></span></div>
+          <% if article.description.present? %><p class="admin-site-page__description"><%= truncate(article.description, length: 200) %></p><% end %>
+          <%= render "shared/article_publication", page: article %>
+        </div>
+        <div class="admin-site-page__actions">
+          <%= link_to 'Editar conteúdo', admin_page_sections_path(article), class: 'admin-button admin-button--primary' %>
+          <%= link_to 'Card em Conteúdos', edit_admin_article_card_path(article), class: 'admin-button-secondary' %>
+          <%= link_to 'Pré-visualizar e publicar', admin_page_preview_path(article), class: 'admin-button-secondary' %>
+          <%= link_to 'Configurar texto', edit_admin_page_path(article), class: 'admin-button-quiet' %>
+          <%= button_to 'Excluir texto', admin_page_path(article), method: :delete, class: 'admin-button-quiet admin-button-danger', form: { data: { turbo_confirm: 'Excluir este texto e seus blocos? Os cards serão mantidos, mas perderão o link para ele.' } } %>
+        </div>
+      </article>
+    <% end %>
+    <% if @articles.empty? %><div class="admin-empty-state"><h2>Seu primeiro texto começa aqui</h2><p>Use “Novo texto” ou abra um card e escolha “Salvar e criar texto completo”. Os conteúdos existentes nas páginas continuam preservados.</p><%= link_to 'Criar primeiro texto', new_admin_article_path, class: 'admin-button admin-button--primary' %></div><% end %>
+  </div>
+</div>

@@ -14,11 +14,16 @@ module SectionsHelper
       values = {}
       %w[title body].each do |role|
         values["#{role}-font"] = FONT_STACKS.fetch(section.visual_value("#{role}_font_family", device))
+        %w[font_weight font_style line_height letter_spacing].each do |property|
+          values["#{role}-#{property.tr('_', '-')}"] = "#{section.visual_value("#{role}_#{property}", device)}#{property == 'letter_spacing' ? 'px' : ''}"
+        end
         values["#{role}-size"] = "#{section.visual_value("#{role}_font_size", device)}px"
       end
       %w[title body accent background overlay].each do |role|
         values["#{role}-color"] = section.visual_value("#{role}_color", device)
       end
+      values["buttons-order"] = { "before_text" => 0, "between_text" => 1, "after_text" => 3 }.fetch(section.visual_value("buttons_position", device))
+      values["buttons-align"] = { "left" => "flex-start", "center" => "center", "right" => "flex-end" }.fetch(section.visual_value("buttons_alignment", device))
       values["text-align"] = section.visual_value("text_alignment", device)
       values["title-align"] = section.visual_value("title_alignment", device)
       values["body-align"] = section.visual_value("body_alignment", device)

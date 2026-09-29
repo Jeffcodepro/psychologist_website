@@ -1,6 +1,7 @@
-class ContactsController < ApplicationController
+class ContactsController < PublicController
   def show
-    @site_setting = SiteSetting.first
-    @navigation_pages = Page.published.navigation
+    @page = current_tenant.pages.published.find_by!(slug: "contato")
+    @sections = @page.sections.published.visible.ordered
+    render "pages/home"
   end
 end

@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["button", "panel", "notice"]
+  static targets = ["button", "panel"]
 
   connect() {
     this.syncDevice = () => this.activate(document.documentElement.dataset.editingDevice || "desktop")
@@ -21,8 +21,5 @@ export default class extends Controller {
       panel.hidden = panel.dataset.device !== device
       if (panel.tagName === "DETAILS" && !panel.hidden) panel.open = true
     })
-    this.noticeTarget.textContent = device === "desktop" ?
-      "Editando a aparência base do desktop. Tablet e mobile usam esta base nos campos que não foram personalizados." :
-      `Editando somente ${device === "mobile" ? "mobile" : "tablet"}. Estes ajustes não alteram o desktop. Deixe um campo vazio para usar o padrão.`
   }
 }

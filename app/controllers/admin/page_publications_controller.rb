@@ -16,6 +16,6 @@ class Admin::PagePublicationsController < Admin::BaseController
   private
 
   def set_page
-    @page = Page.find(params[:page_id])
+    @page = current_tenant.pages.find(params[:page_id])
   end
 end

@@ -2,7 +2,8 @@ require "test_helper"
 
 class ResponsiveSectionTest < ActiveSupport::TestCase
   setup do
-    @page = Page.create!(name: "Página de teste", slug: "pagina-teste")
+    @tenant = Tenant.create!(name: "Teste", slug: "teste", primary: true)
+    @page = @tenant.pages.create!(name: "Página de teste", slug: "pagina-teste")
     @section = @page.sections.create!(section_type: "hero", media_layout: "text_left", title_font_size_desktop: 52)
   end
 

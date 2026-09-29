@@ -2,9 +2,14 @@
   <% { "tablet" => "Tablet · 601 a 1024 px", "mobile" => "Mobile · até 600 px" }.each do |device, label| %>
     <details class="responsive-settings__device" data-device-appearance-target="panel" data-device="<%= device %>" hidden>
       <summary><%= label %> <small><%= section.responsive_settings.fetch(device, {}).any? ? "Personalizado" : "Usando padrão" %></small></summary>
-      <p>Deixe vazio para usar o desktop. No mobile, o tamanho padrão do texto vem dos campos “Mobile padrão” e a composição se adapta para uma coluna.</p>
       <div class="responsive-settings__fields">
         <% choices = {
+          "title_font_style" => ["Estilo do título", [["Normal", "normal"], ["Itálico", "italic"]]],
+          "body_font_style" => ["Estilo do texto", [["Normal", "normal"], ["Itálico", "italic"]]],
+          "title_font_weight" => ["Peso do título", [300, 400, 500, 600, 700, 800]],
+          "body_font_weight" => ["Peso do texto", [300, 400, 500, 600, 700, 800]],
+          "buttons_position" => ["Posição dos botões", [["Antes dos textos", "before_text"], ["Entre título e parágrafo", "between_text"], ["Depois dos textos", "after_text"]]],
+          "buttons_alignment" => ["Alinhamento dos botões", [["Esquerda", "left"], ["Centro", "center"], ["Direita", "right"]]],
           "text_order" => ["Ordem do texto", [["Título acima do parágrafo", "title_first"], ["Parágrafo acima do título", "body_first"]]],
           "title_alignment" => ["Alinhamento do título", [["Esquerda", "left"], ["Centro", "center"], ["Direita", "right"]]],
           "body_alignment" => ["Alinhamento do parágrafo", [["Esquerda", "left"], ["Centro", "center"], ["Direita", "right"]]],
@@ -34,11 +39,11 @@
             <% if font_field %><span class="font-picker__sample" data-font-picker-target="sample">Cuidar de você · Aa Bb Çç 123</span><% end %>
           </div>
         <% end %>
-        <% { "title_font_size" => "Título (px)", "body_font_size" => "Texto (px)", "banner_overlay" => "Escurecimento do banner (%)" }.each do |field, title| %>
+        <% { "title_font_size" => "Título (px)", "body_font_size" => "Texto (px)", "title_line_height" => "Entrelinhas do título", "body_line_height" => "Entrelinhas do texto", "title_letter_spacing" => "Espaço entre letras do título (px)", "body_letter_spacing" => "Espaço entre letras do texto (px)", "banner_overlay" => "Escurecimento do banner (%)" }.each do |field, title| %>
           <% input_id = "responsive_#{section.id}_#{device}_#{field}"; range = ResponsiveSection::NUMBER_FIELDS.fetch(field) %>
           <div>
             <%= label_tag input_id, title %>
-            <%= number_field_tag "section[responsive_settings][#{device}][#{field}]", section.responsive_settings.dig(device, field), id: input_id, min: range.begin, max: range.end, placeholder: "Padrão: #{section.visual_value(field, device)}" %>
+            <%= number_field_tag "section[responsive_settings][#{device}][#{field}]", section.responsive_settings.dig(device, field), id: input_id, min: range.begin, max: range.end, step: field.include?("height") || field.include?("spacing") ? 0.05 : 1, placeholder: "Padrão: #{section.visual_value(field, device)}" %>
           </div>
         <% end %>
         <% { "title_color" => "Cor do título", "body_color" => "Cor do texto", "background_color" => "Cor de fundo" }.each do |field, title| %>

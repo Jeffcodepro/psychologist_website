@@ -1,5 +1,5 @@
 <% english = I18n.locale == :en %>
-<%= turbo_frame_tag "contact_form" do %>
+<%= turbo_frame_tag "contact_form_#{form_section.id}" do %>
   <% if sent %>
     <div class="appointment-form__success" role="status" tabindex="-1">
       <span aria-hidden="true">✓</span><h3><%= english ? "Message received" : "Mensagem recebida" %></h3>
@@ -10,14 +10,24 @@
       <% if contact_request.errors.any? %>
         <div class="appointment-form__errors" role="alert"><strong><%= english ? "Please check your details:" : "Confira seus dados:" %></strong><ul><% contact_request.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul></div>
       <% end %>
+      <%= hidden_field_tag :form_section_id, form_section.id %>
       <%= hidden_field_tag :source_path, contact_request.source_path.presence || request.path %>
       <div class="appointment-form__honeypot" aria-hidden="true"><%= f.label :website, "Website" %><%= f.text_field :website, tabindex: -1, autocomplete: "off" %></div>
-      <div class="appointment-form__field"><%= f.label :full_name, english ? "Full name" : "Nome completo" %><%= f.text_field :full_name, required: true, maxlength: 150, autocomplete: "name", placeholder: english ? "How would you like to be called?" : "Como você gostaria de ser chamado(a)?" %></div>
-      <div class="appointment-form__row">
-        <div class="appointment-form__field"><%= f.label :phone, english ? "Phone number" : "Telefone com DDD" %><%= f.telephone_field :phone, required: true, maxlength: 30, autocomplete: "tel", placeholder: "(11) 99999-9999" %></div>
-        <div class="appointment-form__field"><%= f.label :email, "E-mail" %><%= f.email_field :email, required: true, maxlength: 254, autocomplete: "email", placeholder: "voce@exemplo.com" %></div>
+      <div class="contact-fields">
+        <% form_section.effective_form_fields.each do |field| %>
+          <% field_id = "contact_#{form_section.id}_#{field['key']}"; name = "contact_request[answers][#{field['key']}]"; value = contact_request.answers[field['key']]; label = ContactFormSchema.label(field) %>
+          <div class="appointment-form__field contact-fields__<%= field['width'] %>">
+            <%= label_tag field_id, "#{label}#{field['required'] ? ' *' : ''}" %>
+            <% options = { id: field_id, required: field['required'], maxlength: field['type'] == 'textarea' ? 5000 : 254 } %>
+            <% if field['type'] == 'textarea' %><%= text_area_tag name, value, **options, rows: 5 %>
+            <% elsif field['type'] == 'select' %><%= select_tag name, options_for_select(field['options'], value), **options.except(:maxlength), include_blank: english ? 'Select' : 'Selecione' %>
+            <% elsif field['type'] == 'checkbox' %><%= check_box_tag name, '1', value == '1', **options.except(:maxlength) %>
+            <% else %><%= text_field_tag name, value, **options, type: field['type'], autocomplete: { 'email' => 'email', 'tel' => 'tel' }.fetch(field['type'], field['key'] == 'full_name' ? 'name' : 'off') %>
+            <% end %>
+          </div>
+        <% end %>
       </div>
-      <div class="appointment-form__field"><%= f.label :message, english ? "Tell me a little about what is happening" : "Conte um pouco sobre o que está acontecendo" %><%= f.text_area :message, required: true, maxlength: 5000, rows: 5, placeholder: english ? "Share only what you feel comfortable sharing." : "Compartilhe apenas o que se sentir à vontade para contar." %></div>
+      <p class="appointment-section__note"><%= english ? "Your information will only be used to respond to your request." : "Suas informações serão usadas apenas para responder ao seu contato." %></p>
       <%= f.submit local_assigns[:preview] ? "Prévia do formulário" : (english ? "Request a conversation" : "Quero agendar uma conversa"), class: "appointment-form__submit", disabled: local_assigns[:preview], data: { turbo_submits_with: english ? "Sending…" : "Enviando…" } %>
       <% if local_assigns[:preview] %><small>O envio fica disponível no site.</small><% end %>
     <% end %>

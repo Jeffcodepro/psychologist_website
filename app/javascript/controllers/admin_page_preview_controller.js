@@ -13,8 +13,9 @@ export default class extends Controller {
   }
 
   connect() {
-    this.locale = "pt-BR"
+    this.locale = new URL(this.iframeTarget.src).searchParams.get("locale") || "pt-BR"
     this.device = "desktop"
+    this.updateLanguageButtons(this.locale)
 
     this.handleFrameLoad =
       this.handleFrameLoad.bind(this)
@@ -70,6 +71,16 @@ export default class extends Controller {
     if (!locale) return
 
     this.locale = locale
+    const parentUrl = new URL(window.location.href)
+    parentUrl.searchParams.set("locale", locale)
+    history.replaceState({}, "", parentUrl)
+    document.querySelectorAll('a[href]').forEach(link => {
+      const target = new URL(link.href, location.origin)
+      if (target.origin === location.origin && target.pathname.startsWith('/admin')) {
+        target.searchParams.set('locale', locale)
+        link.href = target.toString()
+      }
+    })
 
     const url =
       this.currentFrameUrl()

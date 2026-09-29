@@ -1,0 +1,21 @@
+<article class="admin-section-editor__card button-designer" data-controller="button-designer">
+  <h3><%= heading %></h3>
+  <p>Adicione somente os botões que deseja exibir. Arraste pela alça ou use as setas para reordenar. Exclua todos para deixar esta área sem botão.</p>
+  <%= f.hidden_field field, data: { button_designer_target: 'value' } %>
+  <div data-button-designer-target="list" class="form-designer__fields"></div>
+  <button type="button" class="admin-button-secondary" data-action="button-designer#add">+ Adicionar botão</button>
+  <span data-button-designer-target="status" role="status"></span>
+  <template data-button-designer-target="template">
+    <div class="form-designer__field" data-button-row>
+      <div class="form-designer__toolbar"><button type="button" draggable="true" class="form-designer__handle" aria-label="Arrastar botão" data-action="dragstart->button-designer#start dragend->button-designer#end">⠿</button><strong data-heading></strong><button type="button" class="admin-button-quiet" data-action="button-designer#up" aria-label="Mover botão para cima">↑</button><button type="button" class="admin-button-quiet" data-action="button-designer#down" aria-label="Mover botão para baixo">↓</button><button type="button" class="admin-button-quiet admin-button-danger" data-action="button-designer#remove">Excluir</button></div>
+      <div class="admin-section-editor__input-grid" data-action="input->button-designer#update change->button-designer#update">
+        <label>Texto <input data-property="label" required maxlength="80"></label>
+        <label>Texto em inglês <input data-property="label_en" maxlength="80"></label>
+        <label>Ação <select data-property="action"><%= options_for_select(ActionButtonSchema::ACTIONS) %></select></label>
+        <label>Estilo <select data-property="style"><option value="primary">Destaque</option><option value="secondary">Contorno</option></select></label>
+        <label data-destination-row>Destino <input data-property="value" maxlength="1000" placeholder="https://exemplo.com"></label>
+        <label data-page-row hidden>Página <select data-property="page_value"><option value="">Selecione</option><%= options_for_select(current_tenant.pages.ordered.map { |page| [page.name, page.id] }) %></select></label>
+      </div>
+    </div>
+  </template>
+</article>

@@ -5,8 +5,9 @@ class Admin::CmsEditorTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
 
   setup do
-    sign_in User.create!(admin: true, email: "cms-test@example.test", password: "Local-test-password-123!")
-    @page = Page.create!(name: "Página de teste", slug: "pagina-teste")
+    @tenant = Tenant.create!(name: "Teste", slug: "teste", primary: true)
+    sign_in @tenant.users.create!(admin: true, email: "cms-test@example.test", password: "Local-test-password-123!")
+    @page = @tenant.pages.create!(name: "Página de teste", slug: "pagina-teste")
     @section = @page.sections.create!(section_type: "hero", title: "Acolhimento", media_layout: "text_left")
   end
 
@@ -69,6 +70,7 @@ class Admin::CmsEditorTest < ActionDispatch::IntegrationTest
     assert_response :redirect
     assert_not card.reload.image.attached?
     assert published.reload.image.attached?
+    sign_out :user
     get public_page_path(slug: @page.slug)
     assert_response :success
     assert_select ".psychology-card__image", count: 1

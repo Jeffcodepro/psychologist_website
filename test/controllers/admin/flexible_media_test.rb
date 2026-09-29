@@ -5,8 +5,9 @@ class Admin::FlexibleMediaTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
 
   setup do
-    sign_in User.create!(admin: true, email: "media-test@example.test", password: "Local-test-password-123!")
-    @page = Page.create!(name: "Mídia de teste", slug: "midia-teste")
+    @tenant = Tenant.create!(name: "Teste", slug: "teste", primary: true)
+    sign_in @tenant.users.create!(admin: true, email: "media-test@example.test", password: "Local-test-password-123!")
+    @page = @tenant.pages.create!(name: "Mídia de teste", slug: "midia-teste")
     @section = @page.sections.create!(section_type: "text", title: "Conteúdo flexível", body: "Meu parágrafo", body_en: "My paragraph")
     @files = []
   end
@@ -48,6 +49,7 @@ class Admin::FlexibleMediaTest < ActionDispatch::IntegrationTest
     assert_equal 24, published_slide.image_position_x
     assert_equal BigDecimal("1.7"), published_slide.image_zoom
     assert_equal "120", published_slide.media_adjustment("image", "brightness")
+    sign_out :user
     get public_page_path(slug: @page.slug)
     assert_response :success
     assert_select '.section-frame--background .media-sequence', count: 2
@@ -55,6 +57,7 @@ class Admin::FlexibleMediaTest < ActionDispatch::IntegrationTest
     assert_select '.media-sequence__pause', count: 2
     assert_select '[data-media-sequence-delay-value="7000"]', count: 2
     assert_includes response.body, "--media-rotation: 15.0deg"
+    sign_in @tenant.users.first
     patch admin_page_section_path(@page, @section), params: { section: { section_slides_attributes: { "0" => { id: slide.id, _destroy: "1" } } } }
     assert_response :redirect
     assert_equal 1, @section.reload.section_slides.count
@@ -77,7 +80,7 @@ class Admin::FlexibleMediaTest < ActionDispatch::IntegrationTest
     assert_select '.question__summary', text: /Como começar\?/
     assert_select '.compact-card__title', text: 'Apoio'
     assert_select '.psychology-card__number, .faq-item__number', count: 0
-    assert_select '.compact-card__content[tabindex="0"]'
+    assert_select '.card-reader-dialog'
     assert_select '.element-grip[data-move-field="body"]'
     assert_select '.element-grip[data-move-field="title"]'
   end

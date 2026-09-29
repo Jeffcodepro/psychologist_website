@@ -614,13 +614,17 @@
 
 .admin-preview-header {
   display: flex;
-  align-items: flex-end;
+  flex-wrap: wrap;
+  align-items: center;
   justify-content: space-between;
 
   gap: 30px;
 
 
   &__copy {
+    flex: 1 1 640px;
+    min-width: 0;
+
     h1 {
       margin:
         5px 0 0;
@@ -648,8 +652,20 @@
   &__actions {
     display: flex;
     align-items: center;
+    flex: 0 0 auto;
+    flex-wrap: wrap;
 
     gap: 9px;
+
+    form { margin: 0; }
+
+    .admin-button,
+    .admin-button-secondary {
+      min-height: 44px;
+      padding: 10px 18px;
+      white-space: nowrap;
+      line-height: 1.4;
+    }
   }
 }
 
@@ -1743,6 +1759,8 @@
     align-items: stretch;
 
     flex-direction: column;
+
+    &__copy { flex-basis: auto; }
 
 
     &__actions {

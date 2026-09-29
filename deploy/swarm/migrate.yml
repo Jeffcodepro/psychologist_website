@@ -1,0 +1,42 @@
+version: "3.8"
+
+# Stack temporária: execute após restaurar o banco, antes de subir/atualizar web.
+services:
+  migrate:
+    image: ${APP_IMAGE:?Use a mesma imagem da stack da aplicação}
+    command: ["bin/rails", "db:environment:set", "db:migrate"]
+    environment:
+      RAILS_ENV: production
+      APP_HOST: ${APP_HOST:-rosemarydias.com}
+      DB_HOST: psychologist_postgres
+      DB_PORT: "5432"
+      DB_NAME: psychologist_production
+      DB_USERNAME: psychologist
+      DB_PASSWORD_FILE: /run/secrets/db_password
+      RAILS_MASTER_KEY_FILE: /run/secrets/rails_master_key
+    secrets:
+      - source: rails_master_key
+        target: rails_master_key
+      - source: db_password
+        target: db_password
+    networks: [backend]
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == banco-de-dados-manager02
+      restart_policy: { condition: none }
+      resources:
+        limits: { memory: 1G }
+
+networks:
+  backend:
+    external: true
+    name: psychologist_backend
+secrets:
+  rails_master_key:
+    external: true
+    name: psychologist_rails_master_key_v1
+  db_password:
+    external: true
+    name: psychologist_db_password_v1

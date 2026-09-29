@@ -1,0 +1,27 @@
+<article class="admin-section-editor__card form-designer" data-controller="form-designer">
+  <h3>Campos do formulário</h3>
+  <p>Arraste pela alça para mudar a ordem. Campos de meia largura ficam lado a lado em telas maiores e se empilham no celular.</p>
+  <%= f.hidden_field :form_fields_json, data: { form_designer_target: 'value' } %>
+  <div class="form-designer__fields" data-form-designer-target="list"></div>
+  <button type="button" class="admin-button-secondary" data-action="form-designer#add">+ Adicionar campo</button>
+  <p class="form-designer__status" data-form-designer-target="status" role="status"></p>
+  <template data-form-designer-target="template">
+    <div class="form-designer__field" data-field-row>
+      <div class="form-designer__toolbar">
+        <button type="button" class="form-designer__handle" draggable="true" aria-label="Arrastar campo" title="Arrastar campo" data-action="dragstart->form-designer#start dragend->form-designer#end">⠿</button>
+        <strong data-field-heading></strong>
+        <button type="button" class="admin-button-quiet" data-action="form-designer#up" aria-label="Mover campo para cima">↑</button>
+        <button type="button" class="admin-button-quiet" data-action="form-designer#down" aria-label="Mover campo para baixo">↓</button>
+        <button type="button" class="admin-button-quiet admin-button-danger" data-action="form-designer#remove">Excluir</button>
+      </div>
+      <div class="admin-section-editor__input-grid" data-action="input->form-designer#update change->form-designer#update">
+        <label>Nome do campo <input data-property="label" maxlength="100" required></label>
+        <label>Nome em inglês <input data-property="label_en" maxlength="100"></label>
+        <label>Tipo <select data-property="type"><option value="text">Texto curto</option><option value="textarea">Texto longo</option><option value="email">E-mail</option><option value="tel">Telefone</option><option value="select">Lista de opções</option><option value="checkbox">Caixa de seleção</option><option value="date">Data</option></select></label>
+        <label>Largura <select data-property="width"><option value="full">Linha inteira</option><option value="half">Meia linha</option></select></label>
+        <label data-options-row hidden>Opções, uma por linha <textarea data-property="options" rows="3"></textarea></label>
+        <label class="form-designer__required"><input type="checkbox" data-property="required"> Preenchimento obrigatório</label>
+      </div>
+    </div>
+  </template>
+</article>

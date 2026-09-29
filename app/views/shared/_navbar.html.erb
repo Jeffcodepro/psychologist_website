@@ -38,10 +38,6 @@
   whatsapp_number =
     @site_setting&.whatsapp.to_s.gsub(/\D/, "")
 
-  appointment_label =
-    I18n.locale == :en ?
-      "Book a session" :
-      "Agendar atendimento"
 
   public_path_for = lambda do |page|
     if page.home?
@@ -65,8 +61,8 @@
     navigation_pages.find(&:home?)
 
   brand_path =
-    if preview_frame && brand_page.present?
-      preview_path_for.call(brand_page)
+    if preview_frame
+      brand_page ? preview_path_for.call(brand_page) : admin_root_path
     else
       root_path(locale: current_locale)
     end
@@ -85,7 +81,7 @@
         locale: locale
       )
     elsif controller_name == "contacts"
-      contact_path(locale: locale)
+      contact_destination(locale: locale)
     else
       root_path(locale: locale)
     end
@@ -157,7 +153,6 @@
               ].compact.join(" ")
             ) %>
       <% end %>
-      <%= link_to(I18n.locale == :en ? "Contact" : "Contato", contact_path(locale: current_locale), class: "site-navbar__link #{'is-active' if controller_name == 'contacts'}", target: preview_frame ? "_top" : nil) %>
     </nav>
 
     <div class="site-navbar__actions">
@@ -183,13 +178,7 @@
             ) %>
       </div>
 
-      <% if current_page.present? || controller_name == "contacts" %>
-        <%= link_to(
-              appointment_label,
-              contact_path(locale: current_locale),
-              class: "site-navbar__cta", target: preview_frame ? "_top" : nil
-            ) %>
-      <% end %>
+      <div class="site-navbar__configured-actions"><%= render "shared/action_buttons", buttons: @site_setting&.header_actions %></div>
 
       <button
         type="button"
@@ -257,7 +246,6 @@
               }
             ) %>
       <% end %>
-      <%= link_to(I18n.locale == :en ? "Contact" : "Contato", contact_path(locale: current_locale), class: "site-navbar__mobile-link", target: preview_frame ? "_top" : nil) %>
     </nav>
 
     <div class="site-navbar__mobile-footer">
@@ -283,13 +271,7 @@
             ) %>
       </div>
 
-      <% if current_page.present? || controller_name == "contacts" %>
-        <%= link_to(
-              appointment_label,
-              contact_path(locale: current_locale),
-              class: "site-navbar__mobile-cta", target: preview_frame ? "_top" : nil
-            ) %>
-      <% end %>
+      <div class="site-navbar__configured-actions"><%= render "shared/action_buttons", buttons: @site_setting&.header_actions %></div>
     </div>
   </aside>
 </header>

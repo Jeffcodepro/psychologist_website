@@ -2,6 +2,9 @@
      data-section-sort-url-value="<%= swap_positions_admin_page_sections_path(@page) %>">
   <%= render "shared/navbar" %>
   <main>
+    <% if @page.editorial? && @page.published_at.present? %>
+      <div class="container article-publication-header"><%= render "shared/article_publication", page: @page %></div>
+    <% end %>
     <% @sections.each do |section| %>
       <div class="preview-editable-section" data-section-id="<%= section.id %>" data-action="dragover->section-sort#dragOver drop->section-sort#drop">
         <div class="preview-editable-section__toolbar">

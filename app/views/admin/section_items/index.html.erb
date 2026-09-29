@@ -1,5 +1,5 @@
 <div class="admin-section-editor">
-  <div class="admin-breadcrumb"><%= link_to "Páginas", admin_pages_path %><span>/</span><%= link_to @section.title.presence || "Bloco", edit_admin_page_section_path(@page, @section) %></div>
+  <div class="admin-breadcrumb"><%= link_to content_library_label(@page), content_library_path(@page) %><span>/</span><%= link_to @section.title.presence || "Bloco", edit_admin_page_section_path(@page, @section) %></div>
   <header class="admin-section-editor__heading"><div><span class="admin-page-eyebrow">Conteúdo</span><h1><%= @section.title %></h1><p>Edite o conteúdo individual e sua imagem.</p></div><%= link_to "+ Adicionar conteúdo", new_admin_page_section_section_item_path(@page, @section, kind: params[:kind]), class: "admin-button admin-button--primary" %></header>
   <section class="admin-section-editor__panel is-active">
     <nav class="card-content-list__heading">

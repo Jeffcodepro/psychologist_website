@@ -4,13 +4,13 @@ class PagePublicationService
   end
 
   def call
-    ApplicationRecord.transaction do
+    @page.with_lock do
       remove_current_publication
       publish_sections
 
       @page.update!(
         published: true,
-        published_at: Time.current
+        published_at: (@page.published_at if @page.editorial?) || Time.current
       )
     end
   end

@@ -16,6 +16,8 @@ class SectionItem < ApplicationRecord
     { "card" => "card", "question" => "pergunta", "gallery" => "imagem da galeria" }.fetch(item_kind, "card")
   end
   belongs_to :section
+  belongs_to :linked_page, class_name: 'Page', optional: true
+  validate :destination_belongs_to_site
 
   has_one_attached :image
 
@@ -57,6 +59,13 @@ class SectionItem < ApplicationRecord
   end
 
   private
+
+  def destination_belongs_to_site
+    return if linked_page_id.blank?
+    unless item_kind == 'card' && linked_page && linked_page.tenant_id == section&.page&.tenant_id
+      errors.add(:linked_page_id, 'escolha uma página ou texto deste site')
+    end
+  end
 
   def detach_removed_image
     # Published cards may still reference the same blob.

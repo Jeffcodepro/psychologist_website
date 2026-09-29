@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
   <head>
-    <title>Acesso administrativo · Rosemary CMS</title>
+    <title>Acesso administrativo · <%= @login_tenant&.name || "CMS" %></title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex, nofollow">
     <%= csrf_meta_tags %><%= csp_meta_tag %>
@@ -11,11 +11,11 @@
   <body class="auth-page">
     <main class="auth-shell">
       <aside class="auth-intro">
-        <%= link_to "R", root_path, class: "auth-brand", aria: { label: "Voltar ao site" } %>
-        <span class="auth-eyebrow">Rosemary CMS</span>
+        <span class="auth-brand" aria-hidden="true"><%= @login_tenant&.name&.first || "R" %></span>
+        <span class="auth-eyebrow"><%= @login_tenant&.name || "Área administrativa" %> CMS</span>
         <h1>Seu espaço<br>para cuidar<br>do conteúdo.</h1>
         <p>Organize páginas, atualize imagens e acompanhe os contatos em um só lugar.</p>
-        <%= link_to "← Voltar ao site", root_path, class: "auth-back" %>
+        <p class="auth-back">Acesso exclusivo para contas autorizadas.</p>
       </aside>
       <section class="auth-panel">
         <% if notice.present? %><p class="auth-feedback" role="status"><%= notice %></p><% end %>

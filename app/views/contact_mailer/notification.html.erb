@@ -1,7 +1,5 @@
 <h1>Novo contato pelo site</h1>
-<p><strong>Nome:</strong> <%= @contact.full_name %></p>
-<p><strong>Telefone:</strong> <%= @contact.phone %></p>
-<p><strong>E-mail:</strong> <%= @contact.email %></p>
-<h2>Mensagem</h2>
-<%= simple_format(@contact.message) %>
-<p>Você pode responder diretamente a este e-mail. O contato também está salvo no painel administrativo.</p>
+<% @contact.response_fields.each do |label, value| %>
+  <h2><%= label %></h2><%= simple_format(value == '1' ? 'Sim' : value) %>
+<% end %>
+<p>O contato também está salvo no painel administrativo.</p>

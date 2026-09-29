@@ -17,6 +17,10 @@
       ) do |f| %>
 
     <section class="admin-settings-section">
+      <%= render "admin/shared/button_designer", f: f, field: :header_actions_json, heading: "Botões do cabeçalho" %>
+      <%= render "admin/shared/button_designer", f: f, field: :footer_actions_json, heading: "Botões do rodapé" %>
+    </section>
+    <section class="admin-settings-section">
       <header class="admin-settings-section__header">
         <span class="admin-settings-section__number">01</span>
         <div>
@@ -78,49 +82,8 @@
       </header>
 
       <div class="admin-form-grid admin-form-grid--2">
-        <%= f.input(
-              :instagram,
-              label: "Instagram"
-            ) %>
-
-        <%= f.input(
-              :linkedin,
-              label: "LinkedIn"
-            ) %>
-
-        <% if @site_setting.respond_to?(:facebook) %>
-          <%= f.input(
-                :facebook,
-                label: "Facebook"
-              ) %>
-        <% end %>
-
-        <% if @site_setting.respond_to?(:youtube) %>
-          <%= f.input(
-                :youtube,
-                label: "YouTube"
-              ) %>
-        <% end %>
-
-        <% if @site_setting.respond_to?(:tiktok) %>
-          <%= f.input(
-                :tiktok,
-                label: "TikTok"
-              ) %>
-        <% end %>
-
-        <% if @site_setting.respond_to?(:threads) %>
-          <%= f.input(
-                :threads,
-                label: "Threads"
-              ) %>
-        <% end %>
-
-        <% if @site_setting.respond_to?(:x_twitter) %>
-          <%= f.input(
-                :x_twitter,
-                label: "X / Twitter"
-              ) %>
+        <% ApplicationHelper::SOCIAL_NETWORKS.each do |field, label, icon| %>
+          <%= f.input field, as: :url, label: safe_join([tag.i(class: "fa-brands fa-#{icon} fa-fw", aria: { hidden: true }), label], " "), placeholder: "https://" %>
         <% end %>
       </div>
     </section>

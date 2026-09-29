@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["frame", "image", "empty", "file", "dimensions", "shape", "x", "y", "zoom", "xField", "yField", "zoomField", "xLabel", "yLabel", "zoomLabel", "error", "adjustment"]
+  static targets = ["frame", "image", "empty", "file", "dimensions", "shape", "x", "y", "zoom", "xField", "yField", "zoomField", "xLabel", "yLabel", "zoomLabel", "positionHint", "error", "adjustment"]
   static values = { shape: String, baseShape: String, shapeField: String, kind: String, adjustments: Object, x: Number, y: Number, zoom: Number }
 
   connect() {
@@ -80,18 +80,24 @@ export default class extends Controller {
   start(event) {
     if (!this.imageTarget.naturalWidth) return
     event.preventDefault()
-    const rect = this.frameTarget.getBoundingClientRect()
-    const cover = Math.max(rect.width / this.imageTarget.naturalWidth, rect.height / this.imageTarget.naturalHeight)
-    const zoom = Number(this.zoomTarget.value)
+    const overflow = this.cropOverflow()
+    if (!overflow) return
     this.drag = { clientX: event.clientX, clientY: event.clientY, x: Number(this.xTarget.value), y: Number(this.yTarget.value),
-      overflowX: this.imageTarget.naturalWidth * cover * zoom - rect.width,
-      overflowY: this.imageTarget.naturalHeight * cover * zoom - rect.height }
+      overflowX: overflow.x, overflowY: overflow.y }
     this.frameTarget.setPointerCapture(event.pointerId)
     this.frameTarget.classList.add("is-dragging")
   }
 
   move(event) {
     if (!this.drag) return
+    const axes = []
+    if (Math.abs(event.clientX - this.drag.clientX) > 3) axes.push("x")
+    if (Math.abs(event.clientY - this.drag.clientY) > 3) axes.push("y")
+    if (this.ensurePanSpace(axes)) {
+      const overflow = this.cropOverflow()
+      this.drag.overflowX = overflow.x
+      this.drag.overflowY = overflow.y
+    }
     const { clientX, clientY, x, y, overflowX, overflowY } = this.drag
     if (overflowX > 0.5) this.xTarget.value = this.clamp(x - (event.clientX - clientX) * 100 / overflowX)
     if (overflowY > 0.5) this.yTarget.value = this.clamp(y - (event.clientY - clientY) * 100 / overflowY)
@@ -104,12 +110,43 @@ export default class extends Controller {
     if (this.frameTarget.hasPointerCapture(event.pointerId)) this.frameTarget.releasePointerCapture(event.pointerId)
   }
 
-  changed() {
+  changed(event) {
+    const axis = ["x", "y"].find(key => event?.currentTarget === this[`${key}Target`])
+    if (axis) this.ensurePanSpace([axis])
+    if (event?.currentTarget === this.zoomTarget) this.positionHint("")
     for (const key of ["x", "y", "zoom"]) this[`${key}FieldTarget`].value = this[`${key}Target`].value
     this.render()
   }
 
+  cropOverflow() {
+    const width = this.frameTarget.clientWidth, height = this.frameTarget.clientHeight
+    const naturalWidth = this.imageTarget.naturalWidth, naturalHeight = this.imageTarget.naturalHeight
+    if (!width || !height || !naturalWidth || !naturalHeight) return null
+    const cover = Math.max(width / naturalWidth, height / naturalHeight)
+    const zoom = Number(this.zoomTarget.value)
+    return { x: naturalWidth * cover * zoom - width, y: naturalHeight * cover * zoom - height }
+  }
+
+  ensurePanSpace(axes) {
+    const overflow = this.cropOverflow()
+    // object-position cannot move an image along an axis that fits the frame exactly.
+    // Only expand on an explicit positioning gesture; opening/resetting a crop stays at 100%.
+    if (!overflow || !axes.some(axis => overflow[axis] <= 0.5)) return false
+    const zoom = Number(this.zoomTarget.value)
+    const nextZoom = Math.min(Number(this.zoomTarget.max), Math.max(1.15, zoom))
+    if (nextZoom <= zoom) return false
+    this.zoomTarget.value = nextZoom
+    this.positionHint(`Zoom ajustado para ${Math.round(nextZoom * 100)}% para permitir o movimento sem deixar bordas vazias.`)
+    return true
+  }
+
+  positionHint(message) {
+    this.positionHintTarget.textContent = message
+    this.positionHintTarget.hidden = !message
+  }
+
   reset() {
+    this.positionHint("")
     this.xTarget.value = 50
     this.yTarget.value = 50
     this.zoomTarget.value = 1
@@ -117,6 +154,7 @@ export default class extends Controller {
   }
 
   inherit() {
+    this.positionHint("")
     for (const key of ["x", "y", "zoom"]) {
       const fieldName = this[`${key}FieldTarget`].name.replace(/\[responsive_settings\]\[(tablet|mobile)\]/, "")
       const baseField = this.form.querySelector(`[name="${fieldName}"]`)

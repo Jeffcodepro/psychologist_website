@@ -1,0 +1,114 @@
+version: "3.8"
+
+services:
+  web:
+    image: ${APP_IMAGE:?Informe APP_IMAGE com a tag publicada no registry}
+    environment:
+      RAILS_ENV: production
+      RACK_ENV: production
+      RAILS_SERVE_STATIC_FILES: "true"
+      RAILS_LOG_LEVEL: info
+      RAILS_MAX_THREADS: "5"
+      WEB_CONCURRENCY: "1"
+      APP_HOST: ${APP_HOST:-rosemarydias.com}
+      APP_TIME_ZONE: America/Sao_Paulo
+      DB_HOST: psychologist_postgres
+      DB_PORT: "5432"
+      DB_NAME: psychologist_production
+      DB_USERNAME: psychologist
+      DB_PASSWORD_FILE: /run/secrets/db_password
+      RAILS_MASTER_KEY_FILE: /run/secrets/rails_master_key
+      SMTP_ADDRESS: smtp.gmail.com
+      SMTP_PORT: "587"
+      SMTP_DOMAIN: ${APP_HOST:-rosemarydias.com}
+      SMTP_USERNAME: ${SMTP_USERNAME:-jeffersonoliveira1212@gmail.com}
+      SMTP_PASSWORD_FILE: /run/secrets/smtp_password
+      MAILER_FROM: ${SMTP_USERNAME:-jeffersonoliveira1212@gmail.com}
+      CONTACT_RECIPIENT: ${CONTACT_RECIPIENT:-jeffersonoliveira1212@gmail.com}
+      OPENAI_TRANSLATION_MODEL: gpt-5-nano
+      OPENAI_API_KEY_FILE: /run/secrets/openai_api_key
+    secrets:
+      - source: rails_master_key
+        target: rails_master_key
+      - source: db_password
+        target: db_password
+      - source: smtp_password
+        target: smtp_password
+      - source: openai_api_key
+        target: openai_api_key
+    volumes:
+      - storage:/rails/storage
+      - rate_limits:/rails/tmp/rate-limits
+    networks: [public, backend]
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "--max-time", "5", "http://127.0.0.1:3000/up"]
+      interval: 30s
+      timeout: 6s
+      retries: 3
+      start_period: 60s
+    stop_grace_period: 30s
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == banco-de-dados-manager02
+      restart_policy: { condition: on-failure, delay: 5s }
+      update_config:
+        parallelism: 1
+        order: stop-first
+        failure_action: rollback
+        monitor: 90s
+      rollback_config: { parallelism: 1, order: stop-first }
+      resources:
+        reservations: { cpus: "0.10", memory: 256M }
+        limits: { cpus: "1.00", memory: 1G }
+      labels:
+        - traefik.enable=true
+        - traefik.swarm.network=${TRAEFIK_PUBLIC_NETWORK:-network_swarm_public}
+        # Compatibilidade com instalações Traefik v2 / providers.docker.swarmMode.
+        - traefik.docker.network=${TRAEFIK_PUBLIC_NETWORK:-network_swarm_public}
+        - traefik.http.routers.psychologist.rule=Host(`${APP_HOST:-rosemarydias.com}`)
+        - traefik.http.routers.psychologist.entrypoints=${TRAEFIK_HTTPS_ENTRYPOINT:-websecure}
+        - traefik.http.routers.psychologist.tls=true
+        - traefik.http.routers.psychologist.tls.certresolver=${TRAEFIK_CERTRESOLVER:?Informe o certresolver existente no Traefik}
+        - traefik.http.routers.psychologist.service=psychologist
+        - traefik.http.routers.psychologist.middlewares=psychologist-upload
+        - traefik.http.services.psychologist.loadbalancer.server.port=3000
+        - traefik.http.middlewares.psychologist-upload.buffering.maxRequestBodyBytes=31457280
+        - traefik.http.routers.psychologist-http.rule=Host(`${APP_HOST:-rosemarydias.com}`)
+        - traefik.http.routers.psychologist-http.entrypoints=${TRAEFIK_HTTP_ENTRYPOINT:-web}
+        - traefik.http.routers.psychologist-http.middlewares=psychologist-https
+        - traefik.http.routers.psychologist-http.service=psychologist
+        - traefik.http.middlewares.psychologist-https.redirectscheme.scheme=https
+        - traefik.http.middlewares.psychologist-https.redirectscheme.permanent=true
+
+networks:
+  public:
+    external: true
+    name: ${TRAEFIK_PUBLIC_NETWORK:-network_swarm_public}
+  backend:
+    external: true
+    name: psychologist_backend
+volumes:
+  storage:
+    external: true
+    name: psychologist_storage
+  rate_limits:
+    external: true
+    name: psychologist_rate_limits
+secrets:
+  rails_master_key:
+    external: true
+    name: psychologist_rails_master_key_v1
+  db_password:
+    external: true
+    name: psychologist_db_password_v1
+  smtp_password:
+    external: true
+    name: psychologist_smtp_password_v1
+  openai_api_key:
+    external: true
+    name: psychologist_openai_api_key_v1

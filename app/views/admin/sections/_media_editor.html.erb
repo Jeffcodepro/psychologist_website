@@ -1,5 +1,4 @@
 <% return_path = local_assigns[:return_to].presence || (section.persisted? ? edit_admin_page_section_path(page, section) : admin_page_sections_path(page)) %>
-<p class="device-appearance__notice">Banner e fotografia são opcionais e independentes. Sem fotografia, o texto ocupa o espaço disponível. Em Aparência, ajuste posição, formato e enquadramento para cada tela.</p>
 <article class="admin-section-editor__card">
   <%= f.input :media_interval_seconds, label: "Tempo entre imagens (segundos)", input_html: { min: 2, max: 30 }, hint: "Com duas ou mais imagens, a troca é automática, sem setas laterais. Quem visita pode pausar a sequência." %>
 </article>

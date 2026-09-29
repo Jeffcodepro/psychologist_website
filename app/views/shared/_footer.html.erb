@@ -17,11 +17,7 @@
       .to_s
       .gsub(/\D/, "")
 
-  instagram =
-    @site_setting&.instagram.presence
-
-  linkedin =
-    @site_setting&.linkedin.presence
+  social_links = social_profiles(@site_setting)
 
   footer_text =
     @site_setting&.localized_footer_text.presence
@@ -31,11 +27,11 @@
 
   language_path = ->(locale) do
     if preview_frame && @page.present?
-      admin_page_preview_frame_path(page_id: @page.id, locale: locale)
+      admin_page_preview_path(@page, locale: locale)
     elsif @page.present? && !@page.home?
       public_page_path(slug: @page.slug, locale: locale)
     elsif controller_name == "contacts"
-      contact_path(locale: locale)
+      contact_destination(locale: locale)
     else
       root_path(locale: locale)
     end
@@ -43,13 +39,7 @@
   pt_path = language_path.call("pt-BR")
   en_path = language_path.call("en")
   demo_contacts = @site_setting&.demo_contacts?
-  contact_available = demo_contacts || [email, phone, whatsapp_number.presence, instagram, linkedin].any?(&:present?)
-  appointment_path = contact_path(locale: I18n.locale)
-
-  appointment_label =
-    I18n.locale == :en ?
-      "Book a session" :
-      "Agendar atendimento"
+  contact_available = demo_contacts || [email, phone, whatsapp_number.presence].any?(&:present?) || social_links.any?
 
   footer_default_text =
     I18n.locale == :en ?
@@ -102,9 +92,7 @@
         </p>
 
 
-        <% if appointment_path.present? %>
-          <%= link_to appointment_label, appointment_path, class: "site-footer__cta", target: preview_frame ? "_top" : nil %>
-        <% end %>
+        <div class="site-footer__configured-actions"><%= render "shared/action_buttons", buttons: @site_setting&.footer_actions %></div>
 
       </div>
 
@@ -130,7 +118,6 @@
             end %>
             <%= link_to page.localized_nav_label, destination, target: preview_frame ? "_top" : nil %>
           <% end %>
-          <%= link_to(I18n.locale == :en ? "Contact" : "Contato", contact_path(locale: I18n.locale), target: preview_frame ? "_top" : nil) %>
         </nav>
 
       </div>
@@ -179,58 +166,19 @@
 
           <% if whatsapp_number.present? %>
 
-            <%= link_to(
-                  "WhatsApp",
-                  "https://wa.me/#{whatsapp_number}",
-                  target: "_blank",
-                  rel: "noopener",
-                  class: "site-footer__contact-link"
-                ) %>
-
-          <% end %>
-
-
-          <% if instagram.present? %>
-
-            <%= link_to(
-                  instagram,
-                  target: "_blank",
-                  rel: "noopener",
-                  class: "site-footer__social-link"
-                ) do %>
-
-              <span>
-                Instagram
-              </span>
-
-              <span aria-hidden="true">
-                ↗
-              </span>
-
+            <%= link_to "https://wa.me/#{whatsapp_number}", target: "_blank", rel: "noopener noreferrer", class: "site-footer__contact-link site-footer__social-link" do %>
+              <i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i>
+              <span>WhatsApp</span>
             <% end %>
 
           <% end %>
 
 
-          <% if linkedin.present? %>
-
-            <%= link_to(
-                  linkedin,
-                  target: "_blank",
-                  rel: "noopener",
-                  class: "site-footer__social-link"
-                ) do %>
-
-              <span>
-                LinkedIn
-              </span>
-
-              <span aria-hidden="true">
-                ↗
-              </span>
-
+          <% social_links.each do |profile| %>
+            <%= link_to profile[:url], target: "_blank", rel: "noopener noreferrer", class: "site-footer__social-link" do %>
+              <i class="fa-brands fa-<%= profile[:icon] %> fa-fw" aria-hidden="true"></i>
+              <span><%= profile[:label] %></span>
             <% end %>
-
           <% end %>
 
         </div>
@@ -279,6 +227,7 @@
         <%= link_to(
               "PT",
               pt_path,
+              target: preview_frame ? "_top" : nil,
               class: [
                 "site-footer__language",
                 ("is-active" if I18n.locale == :"pt-BR")
@@ -292,6 +241,7 @@
         <%= link_to(
               "EN",
               en_path,
+              target: preview_frame ? "_top" : nil,
               class: [
                 "site-footer__language",
                 ("is-active" if I18n.locale == :en)

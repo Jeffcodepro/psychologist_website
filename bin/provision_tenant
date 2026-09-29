@@ -1,0 +1,31 @@
+#!/usr/bin/env ruby
+require_relative "../config/environment"
+require "io/console"
+
+def ask(label)
+  print "#{label}: "
+  STDIN.gets&.strip || abort("Entrada encerrada.")
+end
+
+name = ask("Nome do cliente")
+slug = ask("Identificador do site (letras minúsculas e hífens)")
+email = ask("E-mail de acesso")
+domain = ask("Domínio próprio, sem https:// (opcional)").presence
+recipient = ask("E-mail que receberá os contatos")
+print "Senha de acesso (mínimo 12 caracteres): "
+password = STDIN.noecho(&:gets)&.chomp
+puts
+print "Confirme a senha: "
+confirmation = STDIN.noecho(&:gets)&.chomp
+puts
+abort "As senhas não coincidem." unless password.present? && password == confirmation
+begin
+  result = TenantProvisioner.call(name: name, slug: slug, email: email, password: password, domain: domain, contact_recipient: recipient)
+  puts "Cliente criado. Guarde este link privado:"
+  host = domain || ENV.fetch("APP_HOST", "localhost:3000")
+  protocol = Rails.env.production? ? "https" : "http"
+  puts "#{protocol}://#{host}#{result[:login_path]}"
+  puts "Site: #{protocol}://#{domain || "#{host}/s/#{slug}"}"
+rescue ActiveRecord::RecordInvalid => error
+  abort error.record.errors.full_messages.join("\n")
+end

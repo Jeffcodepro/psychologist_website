@@ -1,6 +1,6 @@
 <div class="admin-page-builder">
   <div class="admin-breadcrumb">
-    <%= link_to "Páginas", admin_pages_path %>
+    <%= link_to content_library_label(@page), content_library_path(@page) %>
     <span>/</span>
     <strong><%= @page.name %></strong>
   </div>
@@ -37,21 +37,15 @@
     </div>
   </header>
 
-  <div class="admin-page-builder__notice">
-    <span class="admin-page-builder__notice-icon">
-      i
-    </span>
-
-    <div>
-      <strong>
-        Esta página é construída por blocos.
-      </strong>
-
-      <p>
-        Abra qualquer bloco para alterar conteúdo, imagens, aparência e configurações.
-      </p>
+  <% if @page.editorial? %>
+    <div class="admin-article-origins">
+      <span>O card apresenta um resumo e abre este texto em “Saiba mais”. Edite o texto aqui e personalize sua apresentação em Conteúdos.</span>
+      <%= link_to 'Card em Conteúdos', edit_admin_article_card_path(@page), class: 'admin-button-secondary' %>
+      <% @page.linking_cards.joins(:section).where(sections: { publication_state: 'draft' }).includes(section: :page).each do |card| %>
+        <%= link_to "Voltar ao card: #{card.title}", edit_admin_page_section_section_item_path(card.section.page, card.section, card), class: 'admin-button-quiet' %>
+      <% end %>
     </div>
-  </div>
+  <% end %>
 
   <div class="admin-section-map">
     <% @sections.each_with_index do |section, index| %>

@@ -3,6 +3,8 @@ module ResponsiveSection
 
   DEVICES = %w[tablet mobile].freeze
   ENUM_FIELDS = {
+    "buttons_position" => %w[before_text between_text after_text],
+    "buttons_alignment" => %w[left center right],
     "media_layout" => %w[text_left text_right media_top media_bottom],
     "media_size" => %w[small medium large],
     "image_shape" => %w[rectangle rounded square circle oval arch],
@@ -11,9 +13,13 @@ module ResponsiveSection
     "title_alignment" => %w[left center right],
     "body_alignment" => %w[left center right],
     "text_order" => %w[title_first body_first],
+    "title_font_style" => %w[normal italic], "body_font_style" => %w[normal italic],
+    "title_font_weight" => %w[300 400 500 600 700 800], "body_font_weight" => %w[300 400 500 600 700 800],
     "visible" => %w[true false]
   }.freeze
   NUMBER_FIELDS = {
+    "title_line_height" => 1..2.5, "body_line_height" => 1..2.5,
+    "title_letter_spacing" => -1..4, "body_letter_spacing" => -1..4,
     "title_font_size" => 10..120, "body_font_size" => 10..120,
     "image_position_x" => 0..100, "image_position_y" => 0..100,
     "banner_position_x" => 0..100, "banner_position_y" => 0..100,

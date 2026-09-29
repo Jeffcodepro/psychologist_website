@@ -10,9 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_09_25_202000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_28_150000) do
   # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
+  enable_extension "pg_catalog.plpgsql"
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -43,10 +43,10 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_25_202000) do
   end
 
   create_table "contact_requests", force: :cascade do |t|
-    t.string "full_name", null: false
-    t.string "phone", null: false
-    t.string "email", null: false
-    t.text "message", null: false
+    t.string "full_name", default: "", null: false
+    t.string "phone", default: "", null: false
+    t.string "email", default: "", null: false
+    t.text "message", default: "", null: false
     t.string "source_path"
     t.datetime "read_at"
     t.datetime "created_at", null: false
@@ -54,7 +54,11 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_25_202000) do
     t.datetime "email_delivered_at"
     t.string "email_delivery_error"
     t.string "request_fingerprint"
+    t.bigint "tenant_id", null: false
+    t.jsonb "answers", default: {}, null: false
+    t.jsonb "form_snapshot", default: [], null: false
     t.index ["request_fingerprint", "created_at"], name: "index_contact_requests_on_request_fingerprint_and_created_at"
+    t.index ["tenant_id"], name: "index_contact_requests_on_tenant_id"
   end
 
   create_table "pages", force: :cascade do |t|
@@ -74,8 +78,12 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_25_202000) do
     t.string "seo_title_en"
     t.text "seo_description"
     t.text "seo_description_en"
+    t.bigint "tenant_id", null: false
+    t.string "content_kind", default: "page", null: false
     t.index ["position"], name: "index_pages_on_position"
-    t.index ["slug"], name: "index_pages_on_slug", unique: true
+    t.index ["tenant_id", "content_kind"], name: "index_pages_on_tenant_id_and_content_kind"
+    t.index ["tenant_id", "slug"], name: "index_pages_on_tenant_id_and_slug", unique: true
+    t.index ["tenant_id"], name: "index_pages_on_tenant_id"
   end
 
   create_table "section_items", force: :cascade do |t|
@@ -94,6 +102,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_25_202000) do
     t.string "image_shape", default: "rectangle", null: false
     t.jsonb "media_adjustments", default: {}, null: false
     t.string "item_kind", default: "card", null: false
+    t.bigint "linked_page_id"
+    t.index ["linked_page_id"], name: "index_section_items_on_linked_page_id"
     t.index ["section_id"], name: "index_section_items_on_section_id"
   end
 
@@ -169,6 +179,18 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_25_202000) do
     t.string "text_order", default: "title_first", null: false
     t.string "title_alignment"
     t.string "body_alignment"
+    t.jsonb "form_fields", default: [], null: false
+    t.integer "title_font_weight", default: 500, null: false
+    t.string "title_font_style", default: "normal", null: false
+    t.decimal "title_line_height", precision: 3, scale: 2, default: "1.2", null: false
+    t.decimal "title_letter_spacing", precision: 3, scale: 2, default: "0.0", null: false
+    t.integer "body_font_weight", default: 400, null: false
+    t.string "body_font_style", default: "normal", null: false
+    t.decimal "body_line_height", precision: 3, scale: 2, default: "1.7", null: false
+    t.decimal "body_letter_spacing", precision: 3, scale: 2, default: "0.0", null: false
+    t.jsonb "action_buttons", default: [], null: false
+    t.string "buttons_position", default: "after_text", null: false
+    t.string "buttons_alignment", default: "left", null: false
     t.index ["page_id", "publication_state", "anchor"], name: "index_sections_on_page_state_anchor", unique: true, where: "(anchor IS NOT NULL)"
     t.index ["page_id", "publication_state", "position"], name: "index_sections_on_page_state_position"
     t.index ["page_id"], name: "index_sections_on_page_id"
@@ -201,6 +223,27 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_25_202000) do
     t.integer "profile_image_position_x", default: 50, null: false
     t.integer "profile_image_position_y", default: 50, null: false
     t.boolean "demo_contacts", default: false, null: false
+    t.bigint "tenant_id", null: false
+    t.jsonb "header_actions", default: [], null: false
+    t.jsonb "footer_actions", default: [], null: false
+    t.index ["tenant_id"], name: "index_site_settings_on_tenant_id"
+    t.index ["tenant_id"], name: "unique_site_setting_per_tenant", unique: true
+  end
+
+  create_table "tenants", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "slug", null: false
+    t.string "domain"
+    t.string "login_digest"
+    t.boolean "primary", default: false, null: false
+    t.boolean "active", default: true, null: false
+    t.string "contact_recipient"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["domain"], name: "index_tenants_on_domain", unique: true, where: "(domain IS NOT NULL)"
+    t.index ["login_digest"], name: "index_tenants_on_login_digest", unique: true, where: "(login_digest IS NOT NULL)"
+    t.index ["primary"], name: "index_tenants_on_primary", unique: true, where: "(\"primary\" = true)"
+    t.index ["slug"], name: "index_tenants_on_slug", unique: true
   end
 
   create_table "users", force: :cascade do |t|
@@ -214,13 +257,20 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_25_202000) do
     t.boolean "admin", default: false, null: false
     t.integer "failed_attempts", default: 0, null: false
     t.datetime "locked_at"
+    t.bigint "tenant_id", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["tenant_id"], name: "index_users_on_tenant_id"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "contact_requests", "tenants"
+  add_foreign_key "pages", "tenants"
+  add_foreign_key "section_items", "pages", column: "linked_page_id", on_delete: :nullify
   add_foreign_key "section_items", "sections"
   add_foreign_key "section_slides", "sections"
   add_foreign_key "sections", "pages"
+  add_foreign_key "site_settings", "tenants"
+  add_foreign_key "users", "tenants"
 end

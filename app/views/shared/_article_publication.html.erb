@@ -1,0 +1,6 @@
+<% if page.editorial? && page.published_at.present? %>
+  <p class="article-publication">
+    <%= t("editorial.published_on") %>
+    <time datetime="<%= page.published_at.iso8601 %>"><%= l(page.published_at.to_date, format: t("editorial.date_format")) %></time>
+  </p>
+<% end %>

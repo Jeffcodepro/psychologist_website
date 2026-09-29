@@ -11,8 +11,8 @@
   <div class="admin-breadcrumb">
 
     <%= link_to(
-          "Páginas",
-          admin_pages_path
+          content_library_label(@page),
+          content_library_path(@page)
         ) %>
 
     <span>
@@ -53,11 +53,13 @@
       <p>
         Revise o rascunho antes de publicar as alterações.
       </p>
+      <%= render "shared/article_publication", page: @page %>
 
     </div>
 
 
     <div class="admin-preview-header__actions">
+      <% if @page.editorial? %><%= link_to 'Card em Conteúdos', edit_admin_article_card_path(@page), class: 'admin-button-secondary' %><% end %>
 
       <%= link_to(
             "Editar conteúdo",
@@ -233,7 +235,7 @@
       <iframe
         src="<%= admin_page_preview_frame_path(
                    @page,
-                   locale: "pt-BR"
+                   locale: @preview_locale
                  ) %>"
         class="admin-preview-device__iframe"
         data-admin-page-preview-target="iframe"

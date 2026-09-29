@@ -7,6 +7,9 @@
 <% end %>
 
 <main class="public-page public-page--<%= @page.slug %>" data-controller="text-reveal">
+  <% if @page.editorial? && @page.published_at.present? %>
+    <div class="container article-publication-header"><%= render "shared/article_publication", page: @page %></div>
+  <% end %>
   <% @sections.each do |section| %>
     <%= render "shared/section_render", section: section %>
   <% end %>

@@ -8,7 +8,9 @@
       page_previews
       sections
       section_items
-    ].include?(controller_name)
+    ].include?(controller_name) && !@page&.editorial?
+
+  articles_active = controller_name == 'articles' || @page&.editorial?
 
   settings_active =
     controller_name == "site_settings"
@@ -99,6 +101,7 @@
       <% end %>
 
       <%= link_to "Mensagens", admin_contact_requests_path, class: "admin-navbar__link #{'is-active' if controller_name == 'contact_requests'}" %>
+      <%= link_to 'Blog e textos', admin_articles_path, class: "admin-navbar__link #{'is-active' if articles_active}" %>
     </nav>
 
 
@@ -107,14 +110,15 @@
     =================================================== -->
 
     <div class="admin-navbar__actions">
+      <%= button_to "Sair", destroy_user_session_path, method: :delete, class: "admin-button-quiet", form_class: "admin-navbar__logout" %>
 
       <%= link_to(
-            root_path,
+            cms_home_preview_path,
             class: "admin-navbar__view-site"
           ) do %>
 
         <span>
-          Ver site
+          Pré-visualizar
         </span>
 
         <span
@@ -190,8 +194,8 @@
 
 
       <%= link_to(
-            "Ver site",
-            root_path,
+            "Pré-visualizar",
+            cms_home_preview_path,
             class: "
               admin-navbar__mobile-link
               admin-navbar__mobile-link--site
@@ -199,6 +203,7 @@
           ) %>
 
       <%= link_to "Mensagens", admin_contact_requests_path, class: "admin-navbar__mobile-link" %>
+      <%= link_to 'Blog e textos', admin_articles_path, class: "admin-navbar__mobile-link #{'is-active' if articles_active}" %>
 </nav>
 
   </div>

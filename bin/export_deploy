@@ -1,0 +1,51 @@
+#!/usr/bin/env ruby
+# Read-only export of the local database and uploads; credentials stay outside it.
+require_relative "../config/environment"
+require "open3"
+require "fileutils"
+require "digest"
+
+abort "Execute a exportação no ambiente development." unless Rails.env.development?
+abort "Esta exportação aceita apenas uploads locais." unless ActiveStorage::Blob.where.not(service_name: "local").none?
+File.umask(0o077)
+
+missing = ActiveStorage::Blob.find_each.count { |blob| !blob.service.exist?(blob.key) }
+abort "Existem #{missing} imagens ausentes no storage. Corrija antes de exportar." if missing.positive?
+
+destination = Rails.root.join("tmp", "deploy-export", Time.now.utc.strftime("%Y%m%dT%H%M%SZ"))
+abort "A pasta de destino já existe." if destination.exist?
+FileUtils.mkdir_p(destination, mode: 0o700)
+
+db = ActiveRecord::Base.connection_db_config.configuration_hash
+connection_env = { "PGPASSWORD" => db[:password].to_s }
+%i[host port username].each do |key|
+  variable = { host: "PGHOST", port: "PGPORT", username: "PGUSER" }.fetch(key)
+  connection_env[variable] = db[key].to_s if db[key].present?
+end
+
+dump_tool = ENV.fetch("PG_DUMP", "pg_dump")
+dump_version, status = Open3.capture2(dump_tool, "--version")
+abort "pg_dump não está disponível." unless status.success?
+
+success = system(connection_env, dump_tool, "--format=custom", "--no-owner", "--no-acl",
+  "--file=#{destination.join('database.dump')}", "--dbname=#{db.fetch(:database)}")
+abort "Falha ao exportar o banco; descarte a exportação incompleta." unless success
+
+success = system({ "COPYFILE_DISABLE" => "1" }, "tar", "-czf", destination.join("storage.tar.gz").to_s,
+  "--exclude=.keep", "-C", Rails.root.join("storage").to_s, ".")
+abort "Falha ao exportar imagens; descarte a exportação incompleta." unless success
+
+connection = ActiveRecord::Base.connection
+manifest = {
+  created_at: Time.now.utc.iso8601,
+  rails: Rails.version,
+  postgres_server: connection.select_value("SHOW server_version"),
+  dump_tool: dump_version.strip,
+  database: db.fetch(:database),
+  tables: connection.tables.sort.to_h { |table| [table, connection.select_value("SELECT COUNT(*) FROM #{connection.quote_table_name(table)}").to_i] },
+  files: %w[database.dump storage.tar.gz].to_h { |name| [name, { bytes: destination.join(name).size, sha256: Digest::SHA256.file(destination.join(name)).hexdigest }] }
+}
+File.write(destination.join("manifest.json"), JSON.pretty_generate(manifest) + "\n")
+File.write(destination.join("SHA256SUMS"), %w[database.dump storage.tar.gz manifest.json].map { |name| "#{Digest::SHA256.file(destination.join(name)).hexdigest}  #{name}\n" }.join)
+puts "Exportação criada em #{destination}"
+puts "Inclui dados, contas e imagens. Não inclui .env, master key nem link privado."

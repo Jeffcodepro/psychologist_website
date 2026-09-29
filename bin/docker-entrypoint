@@ -1,8 +1,18 @@
-#!/bin/bash -e
+#!/bin/bash
+set -euo pipefail
 
-# If running the rails server then create or migrate existing database
-if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
-  ./bin/rails db:prepare
-fi
+# Docker exec does not run this entrypoint: prefix maintenance commands with it.
+for name in RAILS_MASTER_KEY SECRET_KEY_BASE DB_PASSWORD SMTP_PASSWORD OPENAI_API_KEY; do
+  file_variable="${name}_FILE"
+  secret_path="${!file_variable:-}"
+  if [ -n "$secret_path" ]; then
+    if [ ! -r "$secret_path" ] || [ ! -s "$secret_path" ]; then
+      echo "Secret indisponível: $file_variable" >&2
+      exit 1
+    fi
+    export "$name=$(cat "$secret_path")"
+  fi
+done
 
-exec "${@}"
+# Migrations run explicitly once, before the web service rollout. Never seed here.
+exec "$@"

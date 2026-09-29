@@ -231,41 +231,6 @@
   gap: 7px;
 }
 
-.admin-page-builder__notice {
-  margin-bottom: 13px;
-  padding: 12px 14px;
-  display: flex;
-  gap: 10px;
-  border: 1px solid rgba(79, 111, 101, 0.14);
-  border-radius: 10px;
-  background: rgba(79, 111, 101, 0.045);
-}
-
-.admin-page-builder__notice-icon {
-  width: 25px;
-  height: 25px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: $primary;
-  color: #ffffff;
-  font-size: 0.56rem;
-  font-weight: 700;
-}
-
-.admin-page-builder__notice strong {
-  color: #405049;
-  font-size: 0.61rem;
-}
-
-.admin-page-builder__notice p {
-  margin: 2px 0 0;
-  color: #7e8984;
-  font-size: 0.55rem;
-}
-
 .admin-section-node__meta {
   margin-top: 9px;
   display: flex;

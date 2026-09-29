@@ -1,16 +1,14 @@
-class PagesController < ApplicationController
-  before_action :set_site_setting
-  before_action :set_navigation_pages
+class PagesController < PublicController
 
   def home
-    @page = Page.find_by(slug: "home", published: true) || Page.published.ordered.first
+    @page = current_tenant.pages.find_by(slug: "home", published: true) || current_tenant.pages.site_pages.published.ordered.first
     raise ActiveRecord::RecordNotFound unless @page
 
     load_sections
   end
 
   def show
-    @page = Page.find_by!(
+    @page = current_tenant.pages.find_by!(
       slug: params[:slug],
       published: true
     )
@@ -20,16 +18,6 @@ class PagesController < ApplicationController
   end
 
   private
-
-  def set_site_setting
-    @site_setting = SiteSetting.first
-  end
-
-  def set_navigation_pages
-    @navigation_pages = Page
-      .published
-      .navigation
-  end
 
   def load_sections
     @sections = @page

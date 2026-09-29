@@ -7,4 +7,4 @@
   <div class="auth-field"><%= f.label :password_confirmation, "Confirme a nova senha" %><%= f.password_field :password_confirmation, required: true, autocomplete: "new-password" %></div>
   <%= f.submit "Salvar nova senha", class: "auth-submit" %>
 <% end %>
-<div class="auth-links"><%= link_to "Voltar ao login", new_session_path(resource_name) %></div>
+<% if Tenant.from_access_key(session[:admin_access_key]) %><div class="auth-links"><%= link_to "Voltar ao login", new_user_session_path(access_key: session[:admin_access_key]) %></div><% end %>

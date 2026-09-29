@@ -1,10 +1,25 @@
 class Page < ApplicationRecord
+  belongs_to :tenant
   has_many :sections, dependent: :destroy
+  has_many :linking_cards, class_name: 'SectionItem', foreign_key: :linked_page_id, dependent: :nullify
+
+  EDITORIAL_KINDS = { 'Artigo' => 'article', 'Reflexão' => 'reflection' }.freeze
+  validates :content_kind, inclusion: { in: ['page', *EDITORIAL_KINDS.values] }
+  scope :site_pages, -> { where(content_kind: 'page') }
+  scope :editorial, -> { where(content_kind: EDITORIAL_KINDS.values) }
+
+  def editorial?
+    EDITORIAL_KINDS.value?(content_kind)
+  end
+
+  def content_label
+    EDITORIAL_KINDS.key(content_kind) || 'Página'
+  end
 
   before_validation :generate_slug, on: :create
 
   validates :name, presence: true
-  validates :slug, presence: true, uniqueness: true
+  validates :slug, presence: true, uniqueness: { scope: :tenant_id }
   validates :slug,
             format: {
               with: /\A[a-z0-9\-]+\z/,

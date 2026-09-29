@@ -52,6 +52,7 @@
         <input type="range" id="<%= input_id %>_<%= suffix %>" min="<%= min %>" max="<%= max %>" step="<%= step %>" value="<%= crop_value.call(field) %>" data-image-cropper-target="<%= target %>" data-action="input->image-cropper#changed">
         <%= hidden_field_tag "#{scope}[#{field}]", input_value.call(field), id: "#{input_id}_stored_#{suffix}", data: { image_cropper_target: "#{target}Field" } %>
       <% end %>
+      <small data-image-cropper-target="positionHint" role="status" hidden></small>
       <% unless device %>
         <details class="image-cropper__adjustments" open>
           <summary>Girar e espelhar</summary>

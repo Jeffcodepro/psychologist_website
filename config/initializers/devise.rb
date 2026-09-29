@@ -9,12 +9,15 @@
 # Use this hook to configure devise mailer, warden hooks and so forth.
 # Many of these configuration options can be set straight in your model.
 Devise.setup do |config|
+  config.reset_password_keys = [:email, :tenant_id]
+  config.warden do |manager|
+    manager.failure_app = ->(env) { AdminAccessFailure.call(env) }
+  end
   # The secret key used by Devise. Devise uses this key to generate
   # random tokens. Changing this key will render invalid all existing
   # confirmation, reset password and unlock tokens in the database.
   # Devise will use the `secret_key_base` as its `secret_key`
   # by default. You can change it below and use your own secret key.
-  # config.secret_key = 'a7d33e959a1c346a45715f907d8dbeb1516aa4a476b5f9c9d9e0fb59ec2f2b79ecde25e1019898b0bf25a20e98e717f88528584118dff3c0276365f8748cb4c7'
 
   # ==> Controller configuration
   # Configure the parent class to the devise controllers.
@@ -255,7 +258,9 @@ Devise.setup do |config|
 
   # Set this configuration to false if you want /users/sign_out to sign out
   # only the current scope. By default, Devise signs out all scopes.
-  # config.sign_out_all_scopes = true
+  # The CMS has one authentication scope. Remove its credentials while retaining
+  # the private-entry key so a timeout can return to the same tenant's login.
+  config.sign_out_all_scopes = false
 
   # ==> Navigation configuration
   # Lists the formats that should be treated as navigational. Formats like

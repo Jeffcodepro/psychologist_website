@@ -117,6 +117,12 @@ class Admin::SectionsController < Admin::BaseController
     case field
     when "title", "body"
       swap_text_fields(source, target, field)
+    when "buttons"
+      source_buttons, target_buttons = source.action_buttons, target.action_buttons
+      Section.transaction do
+        source.update!(action_buttons: target_buttons)
+        target.update!(action_buttons: source_buttons)
+      end
     when "image", "banner"
       swap_attachment(source, target, field)
     else
@@ -154,7 +160,7 @@ class Admin::SectionsController < Admin::BaseController
   private
 
   def set_page
-    @page = Page.find(params[:page_id])
+    @page = current_tenant.pages.find(params[:page_id])
   end
 
   def set_section
@@ -169,6 +175,7 @@ class Admin::SectionsController < Admin::BaseController
       .require(:section)
       .permit(
         :section_type,
+        :form_fields_json, :action_buttons_json, :buttons_position, :buttons_alignment,
         :title,
         :title_en,
         :body,
@@ -180,6 +187,8 @@ class Admin::SectionsController < Admin::BaseController
         :nav_label,
         :nav_label_en,
         :title_font_family,
+        :title_font_weight, :title_font_style, :title_line_height, :title_letter_spacing,
+        :body_font_weight, :body_font_style, :body_line_height, :body_letter_spacing,
         :body_font_family,
         :title_font_size_desktop,
         :title_font_size_mobile,

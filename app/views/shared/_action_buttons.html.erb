@@ -1,0 +1,5 @@
+<% Array(buttons).each do |button| %>
+  <% destination = configured_button_path(button); next if destination.blank? %>
+  <% label = I18n.locale == :en ? button['label_en'].presence || button['label'] : button['label'] %>
+  <%= link_to label, destination, class: "site-action site-action--#{button['style']} #{local_assigns[:button_class]}", target: %w[url whatsapp].include?(button['action']) ? '_blank' : (cms_preview? && button['action'] != 'anchor' ? '_top' : nil), rel: %w[url whatsapp].include?(button['action']) ? 'noopener noreferrer' : nil %>
+<% end %>

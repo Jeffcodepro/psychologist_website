@@ -3,7 +3,8 @@
 <p>Informe seu e-mail para receber as instruções de recuperação.</p>
 <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post, class: "auth-form" }) do |f| %>
   <%= render "devise/shared/error_messages", resource: resource %>
+  <%= hidden_field_tag :access_key, session[:admin_access_key] %>
   <div class="auth-field"><%= f.label :email, "E-mail" %><%= f.email_field :email, required: true, autofocus: true, autocomplete: "username" %></div>
   <%= f.submit "Enviar instruções", class: "auth-submit" %>
 <% end %>
-<div class="auth-links"><%= link_to "Voltar ao login", new_session_path(resource_name) %></div>
+<div class="auth-links"><%= link_to "Voltar ao login", new_user_session_path(access_key: session[:admin_access_key]) %></div>

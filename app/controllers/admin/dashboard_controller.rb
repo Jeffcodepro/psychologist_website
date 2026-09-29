@@ -1,20 +1,20 @@
 class Admin::DashboardController < Admin::BaseController
   def index
     @pages =
-      Page.order(:name)
+      current_tenant.pages.order(:name)
 
     @home_page =
-      Page.find_by(slug: "home") ||
+      current_tenant.pages.find_by(slug: "home") ||
         @pages.first
 
     @site_setting =
-      SiteSetting.first
+      current_tenant.site_setting
 
     @draft_sections_count =
-      Section.draft.count
+      current_tenant.sections.draft.count
 
     @published_sections_count =
-      Section.published.count
+      current_tenant.sections.published.count
 
     @seo_configured =
       @site_setting.present? &&

@@ -2,18 +2,18 @@ class Admin::PagesController < Admin::BaseController
   before_action :set_page, only: %i[edit update destroy]
 
   def index
-    @pages = Page.ordered
+    @pages = current_tenant.pages.site_pages.ordered
   end
 
   def new
-    @page = Page.new(
+    @page = current_tenant.pages.new(
       show_in_nav: true,
-      position: Page.maximum(:position).to_i + 1
+      position: current_tenant.pages.maximum(:position).to_i + 1
     )
   end
 
   def create
-    @page = Page.new(page_params)
+    @page = current_tenant.pages.new(page_params)
 
     if @page.save
       redirect_to(
@@ -32,7 +32,7 @@ class Admin::PagesController < Admin::BaseController
   def update
     if @page.update(page_params)
       redirect_to(
-        admin_pages_path,
+        @page.editorial? ? admin_articles_path : admin_pages_path,
         notice: "Página atualizada com sucesso."
       )
     else
@@ -42,10 +42,11 @@ class Admin::PagesController < Admin::BaseController
   end
 
   def destroy
+    editorial = @page.editorial?
     @page.destroy!
 
     redirect_to(
-      admin_pages_path,
+      editorial ? admin_articles_path : admin_pages_path,
       notice: "Página removida com sucesso."
     )
   end
@@ -53,11 +54,11 @@ class Admin::PagesController < Admin::BaseController
   private
 
   def set_page
-    @page = Page.find(params[:id])
+    @page = current_tenant.pages.find(params[:id])
   end
 
   def page_params
-    params
+    permitted = params
       .require(:page)
       .permit(
         :name,
@@ -73,5 +74,9 @@ class Admin::PagesController < Admin::BaseController
         :seo_description,
         :seo_description_en
       )
+    if @page&.editorial? && Page::EDITORIAL_KINDS.value?(params.dig(:page, :content_kind))
+      permitted[:content_kind] = params[:page][:content_kind]
+    end
+    permitted
   end
 end

@@ -79,6 +79,8 @@ test:
 #
 production:
   <<: *default
-  database: psychologist_website_production
-  username: psychologist_website
-  password: <%= ENV["PSYCHOLOGIST_WEBSITE_DATABASE_PASSWORD"] %>
+  host: <%= ENV.fetch("DB_HOST", "localhost").to_json %>
+  port: <%= ENV.fetch("DB_PORT", "5432") %>
+  database: <%= ENV.fetch("DB_NAME", "psychologist_production").to_json %>
+  username: <%= ENV.fetch("DB_USERNAME", "psychologist").to_json %>
+  password: <%= (ENV["DB_PASSWORD"] || ENV["PSYCHOLOGIST_WEBSITE_DATABASE_PASSWORD"]).to_json %>

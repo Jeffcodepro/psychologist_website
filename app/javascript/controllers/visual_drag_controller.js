@@ -99,6 +99,7 @@ export default class extends Controller {
   async choose(event) { await this.apply(event.currentTarget.dataset.position); this.cancel() }
 
   fieldsFor(position) {
+    if (this.field === "buttons") return ["left", "center", "right"].includes(position) ? { buttons_alignment: position } : { buttons_position: position === "top" ? "before_text" : "after_text" }
     if (this.field === "banner") return { banner_layout: { top: "top", center: "background", bottom: "bottom" }[position] }
     if (this.field === "image") return { media_layout: { left: "text_right", right: "text_left", top: "media_top", bottom: "media_bottom" }[position] }
     if (["left", "center", "right"].includes(position)) return { [this.field === "title" ? "title_alignment" : "body_alignment"]: position }

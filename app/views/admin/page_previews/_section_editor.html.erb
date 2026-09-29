@@ -68,6 +68,7 @@
       Mídia
     </button>
 
+    <% if section.section_type == "contact" %><button type="button" class="preview-editor__tab" data-preview-editor-tabs-target="tab" data-tab="contact_fields" data-action="preview-editor-tabs#select">Formulário</button><% end %>
     <% if section.persisted? %>
       <button type="button" class="preview-editor__tab" data-preview-editor-tabs-target="tab" data-tab="items" data-action="preview-editor-tabs#select">Cards <span><%= section.section_items.cards.count %></span></button>
       <% if %w[faq gallery].include?(section.section_type) %>
@@ -112,6 +113,9 @@
             ) %>
       </section>
 
+      <% if section.section_type == "contact" %>
+        <section class="preview-editor__panel" data-preview-editor-tabs-target="panel" data-panel="contact_fields" hidden><%= render "admin/sections/contact_fields", f: f, section: section %></section>
+      <% end %>
       <section
         class="preview-editor__panel"
         data-preview-editor-tabs-target="panel"
@@ -150,6 +154,7 @@
             <h4>Título</h4>
 
             <%= render "admin/sections/font_picker", f: f, field: :title_font_family, label: "Fonte" %>
+          <%= render "admin/sections/type_settings", f: f, role: "title" %>
 
             <div class="preview-editor__two-columns">
               <%= f.input(
@@ -168,6 +173,7 @@
             <h4>Texto</h4>
 
             <%= render "admin/sections/font_picker", f: f, field: :body_font_family, label: "Fonte" %>
+          <%= render "admin/sections/type_settings", f: f, role: "body" %>
 
             <div class="preview-editor__two-columns">
               <%= f.input(

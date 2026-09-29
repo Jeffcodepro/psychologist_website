@@ -19,7 +19,8 @@ class ApplicationController < ActionController::Base
   # ==================================================
 
   def after_sign_out_path_for(_resource_or_scope)
-    root_path
+    key = session[:admin_access_key]
+    Tenant.from_access_key(key) ? new_user_session_path(access_key: key) : root_path
   end
 
   private
@@ -46,6 +47,8 @@ class ApplicationController < ActionController::Base
     locale =
       params[:locale].presence
 
+    admin_request = request.path.start_with?("/admin")
+    return session[:admin_preview_locale].presence || I18n.default_locale if locale.blank? && admin_request
     return I18n.default_locale if locale.blank?
 
     available =
@@ -54,6 +57,7 @@ class ApplicationController < ActionController::Base
         .map(&:to_s)
 
     if available.include?(locale.to_s)
+      session[:admin_preview_locale] = locale if admin_request
       locale
     else
       I18n.default_locale

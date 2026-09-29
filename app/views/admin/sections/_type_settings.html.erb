@@ -1,0 +1,6 @@
+<div class="admin-section-editor__input-grid typography-settings">
+  <%= f.input "#{role}_font_weight", collection: [["Leve · 300", 300], ["Regular · 400", 400], ["Médio · 500", 500], ["Seminegrito · 600", 600], ["Negrito · 700", 700], ["Extra forte · 800", 800]], include_blank: false, label: "Peso" %>
+  <%= f.input "#{role}_font_style", collection: [["Normal", "normal"], ["Itálico", "italic"]], include_blank: false, label: "Estilo" %>
+  <%= f.input "#{role}_line_height", label: "Entrelinhas", input_html: { min: 1, max: 2.5, step: 0.05 } %>
+  <%= f.input "#{role}_letter_spacing", label: "Espaço entre letras (px)", input_html: { min: -1, max: 4, step: 0.05 } %>
+</div>

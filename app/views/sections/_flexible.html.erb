@@ -2,7 +2,7 @@
 <section class="flexible-section flexible-section--<%= section.section_type %>" id="<%= section.anchor.presence %>" data-section-id="<%= section.id %>">
   <div class="container flexible-section__container">
     <% if section.cards_placement == "before" %><%= render "sections/card_collection", section: section %><% end %>
-    <% if section.localized_title.present? || section.localized_body.present? || images.any? || %w[faq gallery].include?(section.section_type) %>
+    <% if section.localized_title.present? || section.localized_body.present? || images.any? || section.action_buttons.any? || %w[faq gallery contact].include?(section.section_type) %>
       <div class="flexible-section__layout <%= 'flexible-section__layout--with-image' if images.any? %>">
         <div class="flexible-section__copy">
           <% if section.localized_title.present? %>
@@ -17,11 +17,13 @@
               <div class="section-body"><%= simple_format(section.localized_body) %></div>
             </div>
           <% end %>
+          <% if section.section_type == "contact" %><%= render "shared/contact_form", contact_request: ContactRequest.new, sent: false, form_section: section, preview: preview_mode %><% end %>
           <% if section.section_type == "faq" %><%= render "sections/questions", section: section %><% end %>
           <% if section.section_type == "gallery" %><%= render "sections/gallery_items", section: section %><% end %>
-          <% if %w[hero cta].include?(section.section_type) %>
-            <%= link_to(I18n.locale == :en ? "Book a conversation" : "Agende agora", contact_path(locale: I18n.locale), class: "hero-section__primary-action appointment-link", target: preview_mode ? "_top" : nil) %>
-          <% end %>
+          <div class="section-actions" data-preview-field="buttons">
+            <% if preview_mode && section.action_buttons.any? %><%= render "admin/page_previews/element_handle", field: "buttons", label: "Botões" %><% end %>
+            <%= render "shared/action_buttons", buttons: section.action_buttons %>
+          </div>
         </div>
         <% if images.any? %>
           <div class="flexible-section__media" data-preview-field="image">

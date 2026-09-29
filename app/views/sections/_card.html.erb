@@ -1,4 +1,6 @@
-<article class="psychology-card compact-card <%= 'compact-card--with-image' if item.image.attached? %>" data-controller="card-reader" data-card-id="<%= item.id %>" style="<%= card_image_style(item) %>; <%= media_adjustment_style(item) %>">
+<% destination = card_destination(item) %>
+<% preview_body = card_preview_body(item, linked: destination.present?) %>
+<article class="psychology-card compact-card <%= 'compact-card--linked' if destination %> <%= 'compact-card--with-image' if item.image.attached? %>" data-controller="<%= 'card-reader' unless destination %>" data-card-id="<%= item.id %>" style="<%= card_image_style(item) %>; <%= media_adjustment_style(item) %>">
   <% if item.image.attached? %>
     <div class="compact-card__media"><div class="compact-card__image-frame" data-shape="<%= item.image_shape %>">
       <%= image_tag item.image, alt: item.localized_title, class: "psychology-card__image compact-card__image", loading: "lazy" %>
@@ -7,13 +9,22 @@
   <div class="compact-card__content">
     <div class="compact-card__excerpt" data-card-reader-target="excerpt">
     <h3 class="compact-card__title"><%= item.localized_title %></h3>
-    <% if item.localized_body.present? %><div class="compact-card__body"><%= simple_format(item.localized_body) %></div><% end %>
+    <% if destination && item.linked_page %><%= render "shared/article_publication", page: item.linked_page %><% end %>
+    <% if preview_body.present? %><div class="compact-card__body"><%= simple_format(destination ? truncate(strip_tags(preview_body).squish, length: 240, separator: ' ') : preview_body) %></div><% end %>
     </div>
-    <button type="button" class="compact-card__read-more" data-card-reader-target="button" data-action="card-reader#open" aria-haspopup="dialog" hidden><%= I18n.locale == :en ? "Read more" : "Ler mais" %> <span aria-hidden="true">↗</span></button>
+    <% if destination %>
+      <%= link_to destination, class: 'compact-card__link', target: (cms_preview? ? '_top' : nil), data: { turbo_frame: '_top' }, aria: { label: "#{I18n.locale == :en ? 'Learn more' : 'Saiba mais'}: #{item.localized_title}" } do %>
+        <%= I18n.locale == :en ? 'Learn more' : 'Saiba mais' %> <span aria-hidden="true">→</span>
+      <% end %>
+    <% else %>
+      <button type="button" class="compact-card__read-more" data-card-reader-target="button" data-action="card-reader#open" aria-haspopup="dialog" hidden><%= I18n.locale == :en ? "Read more" : "Ler mais" %> <span aria-hidden="true">↗</span></button>
+    <% end %>
   </div>
+  <% unless destination %>
   <dialog class="card-reader-dialog" data-card-reader-target="dialog" data-action="click->card-reader#backdrop" aria-labelledby="card-title-<%= item.id %>">
     <button type="button" class="card-reader-dialog__close" data-action="card-reader#close" aria-label="<%= I18n.locale == :en ? 'Close' : 'Fechar' %>">×</button>
     <h2 id="card-title-<%= item.id %>"><%= item.localized_title %></h2>
     <div class="card-reader-dialog__body"><%= simple_format(item.localized_body) %></div>
   </dialog>
+  <% end %>
 </article>

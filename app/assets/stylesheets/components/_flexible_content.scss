@@ -168,7 +168,7 @@ label:has(> .site-identity-file-input:focus-visible) { outline: 2px solid #1769f
 .flexible-section--faq .question { padding-inline: 0; }
 .flexible-section--faq .question[open] { padding-inline: 16px; }
 .compact-carousel { max-width: none; }
-.compact-carousel__track > .compact-card { flex: 0 0 calc((100% - (var(--fitted-cards, 1) - 1) * 20px) / var(--fitted-cards, 1)); }
+.compact-carousel__track > .compact-card { max-width: none; flex: 0 0 calc((100% - (var(--fitted-cards, 1) - 1) * 20px) / var(--fitted-cards, 1)); }
 .compact-carousel__arrow[hidden] { display: none; }
 .reveal-word { display: inline-block; transition: opacity 180ms linear, transform 220ms ease-out; }
 @media (prefers-reduced-motion: reduce) { .reveal-word { opacity: 1 !important; transform: none !important; transition: none; } }
@@ -201,6 +201,7 @@ label:has(> .site-identity-file-input:focus-visible) { outline: 2px solid #1769f
 .appointment-link:hover { background: #234f37; color: white; }
 .whatsapp-bubble { position: fixed; bottom: calc(22px + env(safe-area-inset-bottom)); right: 22px; z-index: 850; display: flex; align-items: center; gap: 9px; padding: 13px 18px; border-radius: 40px; color: #fff; background: #23844c; box-shadow: 0 5px 24px rgba(25,62,38,.24); text-decoration: none; font: 600 13px/1.4 $body-font; }
 .whatsapp-bubble:hover { background: #196b3a; color: #fff; }
+.whatsapp-bubble .fa-whatsapp { width: 28px; font-size: 28px; line-height: 1; text-align: center; flex-shrink: 0; }
 .whatsapp-bubble:focus-visible { outline: 3px solid #87c7a1; outline-offset: 4px; }
 .contact-message { font-size: 16px; overflow-wrap: anywhere; dt { margin-top: 18px; } dd p { font-size: 16px; } }
 @media (max-width: 800px) { .appointment-section__layout { grid-template-columns: minmax(0,1fr); } .appointment-section__intro { max-width: 600px; } }

@@ -1,9 +1,11 @@
 <%= simple_form_for(
       [:admin, page],
+      url: (local_assigns[:form_url] || (page.persisted? ? admin_page_path(page) : admin_pages_path)),
       html: {
         class: "admin-page-form"
       }
     ) do |f| %>
+  <%= f.error_notification %>
 
   <section class="admin-settings-section">
     <header class="admin-settings-section__header">
@@ -23,27 +25,39 @@
     </header>
 
     <div class="admin-form-grid admin-form-grid--2">
+      <% if page.editorial? || controller_name == 'articles' %>
+        <%= f.input :content_kind, as: :select, collection: Page::EDITORIAL_KINDS, include_blank: false, label: 'Tipo de texto' %>
+      <% end %>
       <%= f.input(
             :name,
-            label: "Nome da página"
+            label: page.editorial? ? 'Título do texto' : 'Nome da página'
           ) %>
 
       <%= f.input(
             :slug,
-            label: "Endereço da página (opcional)",
+            label: page.editorial? ? 'Endereço do texto (opcional)' : 'Endereço da página (opcional)',
             required: false,
             hint: "Ex.: psicoterapia. Se deixar vazio ao criar, usamos o nome da página."
           ) %>
     </div>
 
-    <details class="admin-optional-fields">
-      <summary>Descrições opcionais</summary>
-      <p>Não são necessárias para criar a página. A descrição também serve como alternativa para as buscas quando a descrição SEO estiver vazia.</p>
+    <% if controller_name == 'articles' %>
+      <% placement = ArticleCardService.new(article: page) %>
+      <div class="admin-card-destination">
+        <h3>Card na página Conteúdos</h3>
+        <%= label_tag :card_section, 'Onde o card deve aparecer?' %>
+        <%= select_tag :card_section, options_for_select([['Automático — Artigos ou Reflexões', '']] + placement.section_options, params[:card_section]) %>
+        <p>O card será criado com o título e o resumo abaixo, já apontando para o texto completo. Depois, use “Card em Conteúdos” para ajustar sua imagem e apresentação.</p>
+      </div>
+    <% end %>
+    <details class="admin-optional-fields" <%= 'open' if controller_name == 'articles' %>>
+      <summary><%= controller_name == 'articles' ? 'Resumo para o card' : 'Descrições opcionais' %></summary>
+      <p><%= controller_name == 'articles' ? 'Escreva uma apresentação curta ou deixe vazio para usar um trecho do texto automaticamente. O texto completo será produzido nos blocos, depois de criar o artigo.' : 'A descrição também serve como alternativa para as buscas quando a descrição SEO estiver vazia.' %></p>
     <div class="admin-form-grid admin-form-grid--2">
       <%= f.input(
             :description,
             as: :text,
-            label: "Descrição da página (opcional)",
+            label: controller_name == 'articles' ? 'Resumo do card (opcional)' : 'Descrição da página (opcional)',
             input_html: {
               rows: 4
             }
@@ -158,13 +172,13 @@
   <div class="admin-settings-actions">
     <%= link_to(
           "Cancelar",
-          admin_pages_path,
+          content_library_path(page),
           class: "admin-button-secondary"
         ) %>
 
     <%= f.button(
           :submit,
-          "Salvar página",
+          page.editorial? ? 'Salvar texto' : 'Salvar página',
           class: "admin-button admin-button--primary"
         ) %>
   </div>

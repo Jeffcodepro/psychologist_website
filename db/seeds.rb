@@ -2,7 +2,8 @@ abort "O conteúdo inicial só pode ser criado em um banco sem páginas." if Pag
 
 puts "Criando conteúdo inicial..."
 
-site_setting = SiteSetting.first_or_initialize
+tenant = Tenant.find_or_create_by!(primary: true) { |site| site.name = "Rosemary Dias"; site.slug = "rosemary" }
+site_setting = tenant.site_setting || tenant.build_site_setting
 
 site_setting.professional_name =
   site_setting.professional_name.presence || "Rosemary Dias"
@@ -22,7 +23,7 @@ def create_page!(
   seo_description:,
   seo_description_en:
 )
-  Page.create!(
+  Tenant.find_by!(primary: true).pages.create!(
     name: name,
     slug: slug,
     position: position,
@@ -768,6 +769,8 @@ create_section!(
     }
   ]
 )
+
+TenantProvisioner.ensure_contact_page!(tenant)
 
 puts "Publicando páginas..."
 

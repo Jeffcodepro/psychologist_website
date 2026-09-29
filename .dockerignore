@@ -35,3 +35,9 @@
 /app/assets/builds/*
 !/app/assets/builds/.keep
 /public/assets
+
+# Local editor/browser artifacts
+/.playwright-cli/
+/output/
+/.codex/
+/.agents/

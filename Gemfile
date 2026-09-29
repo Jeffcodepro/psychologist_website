@@ -80,3 +80,5 @@ group :test do
 end
 
 gem "json", "= 2.21.2"
+
+gem "image_processing", "~> 1.2"

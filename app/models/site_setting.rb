@@ -20,9 +20,13 @@ class SiteSetting < ApplicationRecord
   # ACTIVE STORAGE
   # ==================================================
 
-  has_one_attached :logo
+  has_one_attached :logo do |attachable|
+    ImageDelivery.configure(attachable, :logo)
+  end
 
-  has_one_attached :profile_image
+  has_one_attached :profile_image do |attachable|
+    ImageDelivery.configure(attachable, :content)
+  end
 
   has_one_attached :seo_image
 

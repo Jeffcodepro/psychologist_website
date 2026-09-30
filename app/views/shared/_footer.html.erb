@@ -66,8 +66,9 @@
 
         <% if @site_setting&.logo&.attached? %>
 
-          <%= image_tag(
+          <%= display_image_tag(
                 @site_setting.logo,
+                profile: :logo, sizes: "128px",
                 alt: professional_name,
                 class: "site-footer__logo"
               ) %>

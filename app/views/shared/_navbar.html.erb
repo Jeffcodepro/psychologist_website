@@ -108,8 +108,9 @@
             --site-logo-y: <%= logo_y %>%;
           "
         >
-          <%= image_tag(
+          <%= display_image_tag(
                 @site_setting.logo,
+                profile: :logo, sizes: "220px", eager: true,
                 alt: professional_name,
                 class: "site-navbar__logo"
               ) %>

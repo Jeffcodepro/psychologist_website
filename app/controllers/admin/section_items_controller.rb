@@ -71,7 +71,8 @@ class Admin::SectionItemsController < Admin::BaseController
         @page,
         @section, kind: @section_item.item_kind
       ),
-      notice: "Conteúdo removido."
+      notice: "Conteúdo removido.",
+      status: :see_other
     )
   end
 

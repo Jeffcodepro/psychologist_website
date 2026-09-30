@@ -19,7 +19,9 @@ class SectionItem < ApplicationRecord
   belongs_to :linked_page, class_name: 'Page', optional: true
   validate :destination_belongs_to_site
 
-  has_one_attached :image
+  has_one_attached :image do |attachable|
+    ImageDelivery.configure(attachable, :content)
+  end
 
   attr_accessor :remove_image
   after_save :detach_removed_image

@@ -9,10 +9,10 @@
     </nav>
     <% @section_items.each do |item| %>
       <article class="card-content-list__item">
-        <% if item.image.attached? %><%= image_tag item.image, alt: "", class: "card-content-list__thumbnail" %><% end %>
+        <% if item.image.attached? %><%= display_image_tag item.image, sizes: "80px", alt: "", class: "card-content-list__thumbnail" %><% end %>
         <div><strong><%= item.title %></strong><small><%= item.visible? ? "Visível" : "Oculto" %></small></div>
         <%= link_to "Editar", edit_admin_page_section_section_item_path(@page, @section, item), class: "admin-button-secondary" %>
-        <%= link_to "Excluir", admin_page_section_section_item_path(@page, @section, item), class: "admin-button-quiet", data: { turbo_method: :delete, turbo_confirm: "Excluir este conteúdo do rascunho?" } %>
+        <%= button_to "Excluir", admin_page_section_section_item_path(@page, @section, item), method: :delete, class: "admin-button-quiet", form: { data: { turbo_confirm: "Excluir este conteúdo do rascunho?" } } %>
       </article>
     <% end %>
     <% if @section_items.empty? %><p>Adicione o primeiro conteúdo quando quiser.</p><% end %>

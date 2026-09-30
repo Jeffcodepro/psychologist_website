@@ -3,7 +3,10 @@
      aria-label="<%= role == 'banner' ? 'Banners da seção' : 'Imagens da seção' %>">
   <% entries.each_with_index do |entry, index| %>
     <div class="media-sequence__slide <%= 'is-active' if index.zero? %>" data-media-sequence-target="slide" aria-hidden="<%= !index.zero? %>" style="<%= section_media_slide_style(entry, role) %>">
-      <%= image_tag entry[:attachment], alt: role == "banner" ? "" : section.localized_title, class: "media-sequence__image", loading: section.section_type == "hero" ? "eager" : "lazy" %>
+      <%= display_image_tag entry[:attachment], profile: role == "banner" ? :banner : :content,
+            sizes: role == "banner" ? "100vw" : "(max-width: 767px) 100vw, 60vw",
+            eager: index.zero? && section == @sections&.first,
+            alt: role == "banner" ? "" : section.localized_title, class: "media-sequence__image" %>
     </div>
   <% end %>
   <% if entries.size > 1 %>

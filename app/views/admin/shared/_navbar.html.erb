@@ -34,7 +34,7 @@
 
       <span class="admin-navbar__brand-mark <%= 'admin-navbar__brand-mark--photo' if @admin_site_setting&.profile_image&.attached? %>">
         <% if @admin_site_setting&.profile_image&.attached? %>
-          <%= image_tag @admin_site_setting.profile_image, alt: "Foto de #{@admin_site_setting.professional_name}", style: "object-position: #{@admin_site_setting.effective_profile_image_position_x}% #{@admin_site_setting.effective_profile_image_position_y}%; transform: scale(#{@admin_site_setting.effective_profile_image_zoom}); transform-origin: #{@admin_site_setting.effective_profile_image_position_x}% #{@admin_site_setting.effective_profile_image_position_y}%" %>
+          <%= display_image_tag @admin_site_setting.profile_image, sizes: "48px", eager: true, alt: "Foto de #{@admin_site_setting.professional_name}", style: "object-position: #{@admin_site_setting.effective_profile_image_position_x}% #{@admin_site_setting.effective_profile_image_position_y}%; transform: scale(#{@admin_site_setting.effective_profile_image_zoom}); transform-origin: #{@admin_site_setting.effective_profile_image_position_x}% #{@admin_site_setting.effective_profile_image_position_y}%" %>
         <% else %>R<% end %>
       </span>
 

@@ -3,7 +3,7 @@
 <article class="psychology-card compact-card <%= 'compact-card--linked' if destination %> <%= 'compact-card--with-image' if item.image.attached? %>" data-controller="<%= 'card-reader' unless destination %>" data-card-id="<%= item.id %>" style="<%= card_image_style(item) %>; <%= media_adjustment_style(item) %>">
   <% if item.image.attached? %>
     <div class="compact-card__media"><div class="compact-card__image-frame" data-shape="<%= item.image_shape %>">
-      <%= image_tag item.image, alt: item.localized_title, class: "psychology-card__image compact-card__image", loading: "lazy" %>
+      <%= display_image_tag item.image, alt: item.localized_title, class: "psychology-card__image compact-card__image", loading: "lazy" %>
     </div></div>
   <% end %>
   <div class="compact-card__content">

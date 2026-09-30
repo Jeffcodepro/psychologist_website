@@ -85,12 +85,15 @@ class Admin::SectionsController < Admin::BaseController
   end
 
   def destroy
-    @section.destroy!
-    normalize_positions
+    Section.transaction do
+      @section.destroy!
+      normalize_positions
+    end
 
     redirect_to(
-      admin_page_sections_path(@page),
-      notice: "Bloco removido."
+      safe_preview_return_path || admin_page_sections_path(@page),
+      notice: "Bloco removido.",
+      status: :see_other
     )
   end
 

@@ -1,7 +1,9 @@
 class SectionSlide < ApplicationRecord
   include MediaAdjustable
   belongs_to :section
-  has_one_attached :image
+  has_one_attached :image do |attachable|
+    ImageDelivery.configure(attachable, :banner)
+  end
 
   scope :ordered, -> { order(:position, :id) }
   validates :role, inclusion: { in: %w[image banner] }

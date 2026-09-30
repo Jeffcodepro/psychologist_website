@@ -6,7 +6,7 @@
   <% section.section_items.cards.ordered.each do |item| %>
     <div class="card-content-list__item">
       <% if item.image.attached? %>
-        <%= image_tag item.image, alt: "", class: "card-content-list__thumbnail" %>
+        <%= display_image_tag item.image, sizes: "80px", alt: "", class: "card-content-list__thumbnail" %>
       <% else %>
         <span class="card-content-list__placeholder" aria-hidden="true">▧</span>
       <% end %>

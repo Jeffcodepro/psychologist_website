@@ -1,7 +1,7 @@
 <div class="gallery-grid">
   <% section.section_items.gallery_items.visible.ordered.each do |item| %>
     <% if item.image.attached? %>
-      <figure><%= image_tag item.image, alt: item.localized_title, loading: "lazy", class: "img-fluid" %><figcaption><%= item.localized_title %></figcaption></figure>
+      <figure><%= display_image_tag item.image, alt: item.localized_title, loading: "lazy", class: "img-fluid" %><figcaption><%= item.localized_title %></figcaption></figure>
     <% end %>
   <% end %>
 </div>

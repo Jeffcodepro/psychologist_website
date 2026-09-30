@@ -251,18 +251,16 @@
 
   <div class="preview-editor__actions">
     <div class="preview-editor__actions-left">
-      <%= link_to(
+      <%= button_to(
             "Excluir bloco",
             admin_page_section_path(
               @page,
               section
             ),
+            method: :delete,
+            params: { return_to: return_to },
             class: "preview-editor__delete",
-            data: {
-              turbo_method: :delete,
-              turbo_confirm: "Deseja realmente excluir este bloco?"
-            },
-            target: "_top"
+            form: { data: { turbo_confirm: "Excluir este bloco do rascunho? A versão publicada só muda quando você publicar novamente." } }
           ) %>
     </div>
 

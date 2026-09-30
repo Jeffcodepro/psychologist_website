@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   web:
-    image: ${APP_IMAGE:?Informe APP_IMAGE com a tag publicada no registry}
+    image: ${APP_IMAGE:-psychologist-website:1.0.0}
     environment:
       RAILS_ENV: production
       RACK_ENV: production
@@ -68,12 +68,10 @@ services:
       labels:
         - traefik.enable=true
         - traefik.swarm.network=${TRAEFIK_PUBLIC_NETWORK:-network_swarm_public}
-        # Compatibilidade com instalações Traefik v2 / providers.docker.swarmMode.
-        - traefik.docker.network=${TRAEFIK_PUBLIC_NETWORK:-network_swarm_public}
         - traefik.http.routers.psychologist.rule=Host(`${APP_HOST:-rosemarydias.com}`)
         - traefik.http.routers.psychologist.entrypoints=${TRAEFIK_HTTPS_ENTRYPOINT:-websecure}
         - traefik.http.routers.psychologist.tls=true
-        - traefik.http.routers.psychologist.tls.certresolver=${TRAEFIK_CERTRESOLVER:?Informe o certresolver existente no Traefik}
+        - traefik.http.routers.psychologist.tls.certresolver=${TRAEFIK_CERTRESOLVER:-letsencryptresolver}
         - traefik.http.routers.psychologist.service=psychologist
         - traefik.http.routers.psychologist.middlewares=psychologist-upload
         - traefik.http.services.psychologist.loadbalancer.server.port=3000

@@ -295,17 +295,15 @@
   <footer class="admin-section-editor__actions">
     <div class="admin-section-editor__actions-left">
       <% if editing %>
-        <%= link_to(
+        <%= button_to(
               "Excluir bloco",
               admin_page_section_path(
                 @page,
                 section
               ),
+              method: :delete,
               class: "admin-section-editor__delete",
-              data: {
-                turbo_method: :delete,
-                turbo_confirm: "Deseja realmente excluir este bloco?"
-              }
+              form: { data: { turbo_confirm: "Excluir este bloco do rascunho? A versão publicada só muda quando você publicar novamente." } }
             ) %>
       <% end %>
     </div>

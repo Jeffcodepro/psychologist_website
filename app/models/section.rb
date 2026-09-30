@@ -102,8 +102,12 @@ class Section < ApplicationRecord
     section_slides.reject(&:marked_for_destruction?).select { |slide| slide.role == role && slide.image.attached? }.sort_by { |slide| [slide.position, slide.id || 0] }
   end
 
-  has_one_attached :image
-  has_one_attached :banner
+  has_one_attached :image do |attachable|
+    ImageDelivery.configure(attachable, :content)
+  end
+  has_one_attached :banner do |attachable|
+    ImageDelivery.configure(attachable, :banner)
+  end
   attr_accessor :remove_image, :remove_banner
   after_save do
     %w[image banner].each { |media| public_send(media).detach if ActiveModel::Type::Boolean.new.cast(public_send("remove_#{media}")) }

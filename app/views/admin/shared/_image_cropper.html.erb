@@ -30,7 +30,7 @@
       <div class="image-cropper__stage">
         <div class="image-cropper__frame" data-image-cropper-target="frame"
              data-action="pointerdown->image-cropper#start pointermove->image-cropper#move pointerup->image-cropper#stop pointercancel->image-cropper#stop">
-          <%= image_tag(attachment.attached? ? url_for(attachment) : "", alt: "Prévia do enquadramento", class: attachment.attached? ? "" : "is-hidden", draggable: false, data: { image_cropper_target: "image", action: "load->image-cropper#loaded" }) %>
+          <%= image_tag(attachment.attached? ? url_for(attachment) : "", alt: "Prévia do enquadramento", class: attachment.attached? ? "" : "is-hidden", draggable: false, loading: "lazy", decoding: "async", data: { image_cropper_target: "image", action: "load->image-cropper#loaded" }) %>
           <div class="image-cropper__empty <%= 'is-hidden' if attachment.attached? %>" data-image-cropper-target="empty">Selecione uma imagem para começar</div>
           <div class="image-cropper__grid" aria-hidden="true"></div>
         </div>

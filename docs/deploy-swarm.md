@@ -1,5 +1,7 @@
 # Deploy no Portainer / Docker Swarm
 
+**Atualização 1.1.1 (SEO, publicação e Cloudinary):** siga [o roteiro específico](update-cloudinary-seo.md). Ele inclui a stack completa `application-cloudinary.yml`, o novo secret e a migração das imagens existentes. As instruções de `1.0.0` abaixo registram a instalação anterior.
+
 Destino: **https://rosemarydias.com**. Projeto real: Ruby 3.3.5, Rails 8.1.4, PostgreSQL e imagens em disco. Duas stacks permanentes (`psychologist-db` e `psychologist-app`) e uma temporária para migrações. Não execute seeds ao importar o site local.
 
 ## Correção na instalação já em execução

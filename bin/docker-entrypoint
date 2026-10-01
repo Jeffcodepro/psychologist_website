@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Docker exec does not run this entrypoint: prefix maintenance commands with it.
-for name in RAILS_MASTER_KEY SECRET_KEY_BASE DB_PASSWORD SMTP_PASSWORD OPENAI_API_KEY; do
+for name in RAILS_MASTER_KEY SECRET_KEY_BASE DB_PASSWORD SMTP_PASSWORD OPENAI_API_KEY CLOUDINARY_URL; do
   file_variable="${name}_FILE"
   secret_path="${!file_variable:-}"
   if [ -n "$secret_path" ]; then

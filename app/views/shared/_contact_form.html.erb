@@ -6,7 +6,7 @@
       <p><%= english ? "Thank you for reaching out. I will get back to you using the details provided." : "Obrigada pelo contato. Retornarei pelos dados que você informou." %></p>
     </div>
   <% else %>
-    <%= form_with model: contact_request, url: contact_requests_path(locale: I18n.locale), class: "appointment-form" do |f| %>
+    <%= form_with model: contact_request, url: contact_requests_path, class: "appointment-form" do |f| %>
       <% if contact_request.errors.any? %>
         <div class="appointment-form__errors" role="alert"><strong><%= english ? "Please check your details:" : "Confira seus dados:" %></strong><ul><% contact_request.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul></div>
       <% end %>

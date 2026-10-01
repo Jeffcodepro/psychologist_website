@@ -1,0 +1,218 @@
+{
+  "environment": {
+    "platform": "macOS ARM64",
+    "physical_cores": 11,
+    "memory_gib": 18,
+    "ruby": "3.3.5",
+    "rails": "8.1.4",
+    "puma": "8.0.2",
+    "processes": 1,
+    "threads": 5,
+    "db_pool": 7,
+    "database": "psychologist_website_performance",
+    "scope": "loopback HTML only; synthetic sites; no external traffic or deployment"
+  },
+  "before": {
+    "measured_at": "2026-10-01T16:26:01Z",
+    "ruby": "ruby 3.3.5 (2024-09-03 revision ef084cc8f4) [arm64-darwin24]",
+    "mode": "closed-loop, HTML only, two synthetic domains, no external services",
+    "stages": [
+      {
+        "concurrency": 1,
+        "requested_seconds": 10,
+        "elapsed_seconds": 10.03,
+        "requests": 120,
+        "errors": 0,
+        "rps": 11.96,
+        "p50_ms": 68.5,
+        "p95_ms": 96.2,
+        "p99_ms": 149.3,
+        "statuses": {
+          "200": 120
+        },
+        "average_html_bytes": 197325
+      },
+      {
+        "concurrency": 10,
+        "requested_seconds": 10,
+        "elapsed_seconds": 10.56,
+        "requests": 160,
+        "errors": 0,
+        "rps": 15.15,
+        "p50_ms": 640.4,
+        "p95_ms": 764.4,
+        "p99_ms": 783.0,
+        "statuses": {
+          "200": 160
+        },
+        "average_html_bytes": 197325
+      },
+      {
+        "concurrency": 25,
+        "requested_seconds": 10,
+        "elapsed_seconds": 11.35,
+        "requests": 190,
+        "errors": 0,
+        "rps": 16.74,
+        "p50_ms": 1470.8,
+        "p95_ms": 1509.5,
+        "p99_ms": 1590.9,
+        "statuses": {
+          "200": 190
+        },
+        "average_html_bytes": 197325
+      },
+      {
+        "concurrency": 50,
+        "requested_seconds": 10,
+        "elapsed_seconds": 12.68,
+        "requests": 215,
+        "errors": 0,
+        "rps": 16.96,
+        "p50_ms": 2947.6,
+        "p95_ms": 2984.9,
+        "p99_ms": 2991.4,
+        "statuses": {
+          "200": 215
+        },
+        "average_html_bytes": 197325
+      }
+    ]
+  },
+  "after": {
+    "measured_at": "2026-10-01T16:33:31Z",
+    "ruby": "ruby 3.3.5 (2024-09-03 revision ef084cc8f4) [arm64-darwin24]",
+    "mode": "closed-loop, HTML only, two synthetic domains, no external services",
+    "stages": [
+      {
+        "concurrency": 1,
+        "requested_seconds": 10,
+        "elapsed_seconds": 10.0,
+        "requests": 271,
+        "errors": 0,
+        "rps": 27.1,
+        "p50_ms": 36.8,
+        "p95_ms": 39.0,
+        "p99_ms": 40.0,
+        "statuses": {
+          "200": 271
+        },
+        "average_html_bytes": 197325
+      },
+      {
+        "concurrency": 10,
+        "requested_seconds": 10,
+        "elapsed_seconds": 10.26,
+        "requests": 272,
+        "errors": 0,
+        "rps": 26.52,
+        "p50_ms": 373.0,
+        "p95_ms": 414.6,
+        "p99_ms": 441.0,
+        "statuses": {
+          "200": 272
+        },
+        "average_html_bytes": 197325
+      },
+      {
+        "concurrency": 25,
+        "requested_seconds": 10,
+        "elapsed_seconds": 10.76,
+        "requests": 285,
+        "errors": 0,
+        "rps": 26.48,
+        "p50_ms": 944.0,
+        "p95_ms": 980.0,
+        "p99_ms": 1003.8,
+        "statuses": {
+          "200": 285
+        },
+        "average_html_bytes": 197325
+      },
+      {
+        "concurrency": 50,
+        "requested_seconds": 10,
+        "elapsed_seconds": 11.87,
+        "requests": 310,
+        "errors": 0,
+        "rps": 26.12,
+        "p50_ms": 1905.3,
+        "p95_ms": 1944.0,
+        "p99_ms": 1947.4,
+        "statuses": {
+          "200": 310
+        },
+        "average_html_bytes": 197325
+      },
+      {
+        "concurrency": 100,
+        "requested_seconds": 10,
+        "elapsed_seconds": 13.78,
+        "requests": 355,
+        "errors": 0,
+        "rps": 25.77,
+        "p50_ms": 3822.7,
+        "p95_ms": 4045.7,
+        "p99_ms": 4048.2,
+        "statuses": {
+          "200": 355
+        },
+        "average_html_bytes": 197325
+      }
+    ]
+  },
+  "publication": {
+    "measured_at": "2026-10-01T16:36:03Z",
+    "ruby": "ruby 3.3.5 (2024-09-03 revision ef084cc8f4) [arm64-darwin24]",
+    "mode": "closed-loop, HTML only, two synthetic domains, no external services",
+    "stages": [
+      {
+        "concurrency": 25,
+        "requested_seconds": 60,
+        "elapsed_seconds": 60.79,
+        "requests": 1570,
+        "errors": 0,
+        "rps": 25.83,
+        "p50_ms": 961.3,
+        "p95_ms": 1060.3,
+        "p99_ms": 1158.0,
+        "statuses": {
+          "200": 1570
+        },
+        "average_html_bytes": 197245
+      }
+    ]
+  },
+  "sql_before": {
+    "status": 200,
+    "sql_queries": 99,
+    "elapsed_ms": 93.4,
+    "response_bytes": 197325,
+    "sql_groups": {
+      "tenants": 2,
+      "site_settings": 1,
+      "pages": 3,
+      "sections": 2,
+      "active_storage_attachments": 62,
+      "section_slides": 12,
+      "active_storage_blobs": 1,
+      "section_items": 16
+    }
+  },
+  "sql_after": {
+    "status": 200,
+    "sql_queries": 17,
+    "elapsed_ms": 67.5,
+    "response_bytes": 197325,
+    "sql_groups": {
+      "tenants": 2,
+      "site_settings": 1,
+      "pages": 3,
+      "sections": 2,
+      "section_slides": 1,
+      "section_items": 1,
+      "active_storage_attachments": 5,
+      "active_storage_blobs": 2
+    }
+  }
+}

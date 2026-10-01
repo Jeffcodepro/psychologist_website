@@ -53,8 +53,11 @@ Rails.application.routes.draw do
   end
 
   scope "(/s/:site_slug)" do
+    get "sitemap.xml", to: "discovery#sitemap", as: :sitemap, defaults: { format: :xml }
+    get "robots.txt", to: "discovery#robots", as: :robots
     root to: "pages#home"
     get "contato", to: "contacts#show", as: :contact
+    post "idioma", to: "language_preferences#update", as: :language_preference
     resources :contact_requests, only: :create, path: "contato"
     get ":slug", to: "pages#show", as: :public_page, constraints: { slug: /[a-z0-9\-]+/ }
   end

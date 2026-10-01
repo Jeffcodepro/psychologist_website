@@ -1,4 +1,4 @@
-<% items = section.section_items.cards.visible.includes(:linked_page).ordered %>
+<% items = section.visible_items("card") %>
 <% if items.any? %>
   <div class="card-collection card-collection--<%= section.cards_orientation %> card-collection--<%= section.cards_alignment %>"
        style="--cards-desktop: <%= section.cards_columns_desktop %>; --cards-tablet: <%= section.cards_columns_tablet %>; --cards-mobile: <%= section.cards_columns_mobile %>">

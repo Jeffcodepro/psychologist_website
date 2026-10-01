@@ -8,9 +8,10 @@ class Admin::PagePublicationsController < Admin::BaseController
 
     redirect_to admin_page_preview_path(@page),
                 notice: "Página publicada com sucesso."
-  rescue StandardError => e
+  rescue StandardError => error
+    Rails.logger.error("Publication failed page=#{@page.id} error=#{error.class} request=#{request.request_id}")
     redirect_to admin_page_preview_path(@page),
-                alert: "Não foi possível publicar: #{e.message}"
+                alert: "Não foi possível concluir a publicação. Tente novamente."
   end
 
   private

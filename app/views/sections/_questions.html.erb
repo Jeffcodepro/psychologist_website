@@ -1,5 +1,5 @@
 <div class="questions-list">
-  <% section.section_items.questions.visible.ordered.each do |item| %>
+  <% section.visible_items("question").each do |item| %>
     <details class="question" name="questions-<%= section.id %>">
       <summary class="question__summary"><span><%= item.localized_title %></span><span class="question__toggle" aria-hidden="true"></span></summary>
       <div class="question__answer"><%= simple_format(item.localized_body) %></div>

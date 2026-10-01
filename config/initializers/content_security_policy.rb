@@ -4,7 +4,7 @@ Rails.application.configure do
     policy.script_src :self
     policy.style_src :self, :unsafe_inline, "https://fonts.googleapis.com"
     policy.font_src :self, :data, "https://fonts.gstatic.com"
-    policy.img_src :self, :data, :blob
+    policy.img_src :self, :data, :blob, "https://res.cloudinary.com"
     policy.connect_src :self
     policy.frame_src :self
     policy.frame_ancestors :self

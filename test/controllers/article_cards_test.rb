@@ -64,7 +64,7 @@ class ArticleCardsTest < ActionDispatch::IntegrationTest
       assert_operator nodes.first.text.strip.length, :<=, 240
     end
     assert_not_includes response.body, 'Este é o conteúdo integral produzido pela autora.'
-    assert_select '.compact-card--linked .compact-card__link[href=?]', public_page_path(slug: article.slug, site_slug: @tenant.slug, locale: 'pt-BR'), text: /Saiba mais/
+    assert_select '.compact-card--linked .compact-card__link[href=?]', public_page_path(slug: article.slug, site_slug: @tenant.slug), text: /Saiba mais/
     assert_select '.compact-card--linked dialog', count: 0
     get public_page_path(slug: article.slug, site_slug: @tenant.slug)
     assert_includes response.body, 'Este é o conteúdo integral produzido pela autora.'

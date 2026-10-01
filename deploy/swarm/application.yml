@@ -2,14 +2,16 @@ version: "3.8"
 
 services:
   web:
-    image: ${APP_IMAGE:-psychologist-website:1.0.0}
+    image: ${APP_IMAGE:-psychologist-website:1.1.1}
     environment:
       RAILS_ENV: production
+      ACTIVE_STORAGE_SERVICE: ${ACTIVE_STORAGE_SERVICE:-local}
       RACK_ENV: production
       RAILS_SERVE_STATIC_FILES: "true"
       RAILS_LOG_LEVEL: info
       RAILS_MAX_THREADS: "5"
       WEB_CONCURRENCY: "1"
+      VIPS_CONCURRENCY: "1"
       APP_HOST: ${APP_HOST:-rosemarydias.com}
       APP_TIME_ZONE: America/Sao_Paulo
       DB_HOST: psychologist_postgres
@@ -68,7 +70,7 @@ services:
       labels:
         - traefik.enable=true
         - traefik.swarm.network=${TRAEFIK_PUBLIC_NETWORK:-network_swarm_public}
-        - traefik.http.routers.psychologist.rule=Host(`${APP_HOST:-rosemarydias.com}`)
+        - traefik.http.routers.psychologist.rule=Host(`${APP_HOST:-rosemarydias.com}`) || Host(`www.${APP_HOST:-rosemarydias.com}`)
         - traefik.http.routers.psychologist.entrypoints=${TRAEFIK_HTTPS_ENTRYPOINT:-websecure}
         - traefik.http.routers.psychologist.tls=true
         - traefik.http.routers.psychologist.tls.certresolver=${TRAEFIK_CERTRESOLVER:-letsencryptresolver}
@@ -76,7 +78,7 @@ services:
         - traefik.http.routers.psychologist.middlewares=psychologist-upload
         - traefik.http.services.psychologist.loadbalancer.server.port=3000
         - traefik.http.middlewares.psychologist-upload.buffering.maxRequestBodyBytes=31457280
-        - traefik.http.routers.psychologist-http.rule=Host(`${APP_HOST:-rosemarydias.com}`)
+        - traefik.http.routers.psychologist-http.rule=Host(`${APP_HOST:-rosemarydias.com}`) || Host(`www.${APP_HOST:-rosemarydias.com}`)
         - traefik.http.routers.psychologist-http.entrypoints=${TRAEFIK_HTTP_ENTRYPOINT:-web}
         - traefik.http.routers.psychologist-http.middlewares=psychologist-https
         - traefik.http.routers.psychologist-http.service=psychologist

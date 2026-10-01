@@ -21,8 +21,8 @@ module ApplicationHelper
   def card_preview_body(item, linked:)
     return item.localized_body if item.localized_body.present?
     return unless linked && item.linked_page&.editorial?
-    state = cms_preview? ? 'draft' : 'published'
-    item.linked_page.sections.where(publication_state: state).visible.ordered.detect { |section| section.localized_body.present? }&.localized_body
+    sections = cms_preview? ? item.linked_page.sections.draft.visible.ordered : item.linked_page.published_sections
+    sections.detect { |section| section.localized_body.present? }&.localized_body
   end
 
   def card_destination(item)
@@ -45,12 +45,17 @@ module ApplicationHelper
     controller_path.start_with?("admin/")
   end
 
+  def language_return_path
+    query = request.query_parameters.except("locale").to_query
+    request.path + (query.present? ? "?#{query}" : "")
+  end
+
   def contact_destination(locale: I18n.locale)
     if cms_preview?
       page = current_tenant.contact_page
       page ? admin_page_preview_path(page, locale: locale) : admin_pages_path(locale: locale)
     else
-      contact_path(locale: locale)
+      contact_path
     end
   end
 

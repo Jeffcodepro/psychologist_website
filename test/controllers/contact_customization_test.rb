@@ -26,6 +26,8 @@ class ContactCustomizationTest < ActionDispatch::IntegrationTest
     PagePublicationService.new(page: @page).call
     sign_out @user
     get contact_path(locale: 'en')
+    assert_response :see_other
+    follow_redirect!
     assert_response :success
     assert_select '.contact-fields .appointment-form__field', count: 3
     assert_select '.contact-fields__half', count: 2

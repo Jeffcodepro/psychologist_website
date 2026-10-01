@@ -1,5 +1,7 @@
 # Revisão de segurança — 28/09/2026
 
+Revisão histórica. Consulte também a [verificação de desempenho, domínios e segurança de 01/10/2026](performance-security-2026-10-01.md).
+
 ## Controles implementados e verificados
 
 | Ponto | Controle |

@@ -251,6 +251,10 @@
 
 
   &__language {
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    font-family: inherit;
     min-width: 39px;
     height: 39px;
 
@@ -649,4 +653,9 @@
       max-width: none;
     }
   }
+}
+
+.site-language-form {
+  display: inline-flex;
+  margin: 0;
 }

@@ -306,6 +306,10 @@
 
 
   &__language {
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    font-family: inherit;
     color: rgba(247, 244, 239, 0.52);
 
     font-family: $body-font;

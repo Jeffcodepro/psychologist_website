@@ -1,0 +1,11 @@
+<% label = language == "en" ? "EN" : "PT" %>
+<% active = I18n.locale.to_s == language %>
+<% classes = [css_class, ("is-active" if active)].compact.join(" ") %>
+<% if cms_preview? %>
+  <%= link_to label, admin_page_preview_path(@page, locale: language), target: "_top", class: classes %>
+<% else %>
+  <%= button_to label, language_preference_path,
+        params: { language: language, return_to: language_return_path },
+        form: { class: "site-language-form", data: { turbo: false } },
+        class: classes, aria: { pressed: active, label: language == "en" ? "English" : "Português" } %>
+<% end %>

@@ -1,6 +1,6 @@
 # CMS de sites profissionais
 
-Ruby 3.3.5, Rails 8.1, PostgreSQL, Devise e Stimulus. Cada cliente tem páginas, configurações, mensagens e contas separados por `tenant_id`. O site público pode usar `/s/identificador` ou um domínio próprio cadastrado.
+Ruby 3.3.5, Rails 8.1, PostgreSQL, Devise e Stimulus. Cada profissional pode ter um site público e um painel próprios, no seu domínio. Páginas, configurações, mensagens e contas são separados por site (`tenant_id` é o identificador interno). Sites sem domínio próprio podem usar `/s/identificador` em um host de plataforma neutro; um domínio cadastrado para um cliente exibe somente o site desse cliente.
 
 ## Desenvolvimento
 
@@ -47,13 +47,13 @@ As mensagens são salvas antes da tentativa de envio. Falhas aparecem em **Mensa
 
 ## Publicação e domínios
 
-Para Portainer/Swarm, use [o guia de deploy e importação dos dados locais](docs/deploy-swarm.md) e os arquivos de `deploy/swarm/`. O domínio inicial é `rosemarydias.com`. A stack usa master key e senhas via Docker Secrets; `secret_key_base` é lido das credentials criptografadas. O Dockerfile compila os assets e as migrações rodam separadamente. Use HTTPS; cookies de produção são Secure, HttpOnly e SameSite=Lax. Mantenha banco, volumes de uploads e backups privados.
+Para atualizar a aplicação que já está no ar, siga [o roteiro 1.1.1 com Cloudinary](docs/update-cloudinary-seo.md). Para a primeira instalação no Portainer/Swarm, use [o guia de deploy e importação dos dados locais](docs/deploy-swarm.md) e os arquivos de `deploy/swarm/`. O domínio inicial é `rosemarydias.com`. A stack usa master key e senhas via Docker Secrets; `secret_key_base` é lido das credentials criptografadas. O Dockerfile compila os assets e as migrações rodam separadamente. Use HTTPS; cookies de produção são Secure, HttpOnly e SameSite=Lax. Mantenha banco, volumes de uploads e backups privados.
 
-Para domínio próprio, cadastre `tenant.update!(domain: "www.cliente.com.br")`, configure o DNS e o certificado TLS no provedor. O domínio deve chegar a esta aplicação. Hosts não cadastrados são recusados em produção. O endereço `/s/identificador` continua disponível sem domínio próprio.
+Para domínio próprio, cadastre `tenant.update!(domain: "www.cliente.com.br")`, configure o DNS e o certificado TLS no provedor. O domínio deve chegar a esta aplicação. Hosts não cadastrados são recusados em produção. Sites sem domínio próprio usam `/s/identificador` em um host de plataforma neutro, conforme o guia de novos sites.
 
 Em produção com vários processos ou servidores, configure `RATE_LIMIT_REDIS_URL` para compartilhar limites de acesso. Sem Redis, usa-se arquivo local, adequado a um único servidor. Configure o proxy para limitar uploads a 30 MB por requisição e sobrescrever cabeçalhos encaminhados pelo cliente. O aplicativo aceita apenas imagens JPG/PNG/WebP com até 10 MB cada. Não publique o servidor de desenvolvimento na internet.
 
-Veja [a revisão de segurança](docs/security-review.md) e [a limpeza de arquivos](docs/cleanup.md).
+Veja [como disponibilizar novos sites e domínios](docs/sites-and-domains.md), o [relatório de carga e segurança de 01/10/2026](docs/performance-security-2026-10-01.md), [a revisão de segurança anterior](docs/security-review.md) e [a limpeza de arquivos](docs/cleanup.md).
 
 ## Verificações
 

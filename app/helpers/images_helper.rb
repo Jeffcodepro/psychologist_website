@@ -5,8 +5,13 @@ module ImagesHelper
 
     # Proxy URLs return the cached derivative directly, avoiding a redirect per image.
     sources = ImageDelivery::WIDTHS.fetch(profile).to_h do |width|
-      variant = attachment.variant(ImageDelivery.variant_name(width))
-      [rails_storage_proxy_path(variant, only_path: true), "#{width}w"]
+      url = if ImageDelivery.cloudinary?(attachment.blob)
+        ImageDelivery.cloudinary_url(attachment.blob, width: width)
+      else
+        variant = attachment.variant(ImageDelivery.variant_name(width))
+        rails_storage_proxy_path(variant, only_path: true)
+      end
+      [url, "#{width}w"]
     end
     metadata = attachment.blob.metadata
     if metadata["width"].to_i.positive? && metadata["height"].to_i.positive?

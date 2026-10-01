@@ -80,6 +80,15 @@ class Section < ApplicationRecord
 
   has_many :section_items, dependent: :destroy
   has_many :section_slides, dependent: :destroy
+
+  def visible_items(kind)
+    if association(:section_items).loaded?
+      section_items.select { |item| item.visible? && item.item_kind == kind }
+        .sort_by { |item| [item.position || 0, item.id || 0] }
+    else
+      section_items.where(item_kind: kind).visible.ordered.includes(:linked_page, image_attachment: :blob)
+    end
+  end
   accepts_nested_attributes_for :section_slides, allow_destroy: true,
     reject_if: ->(attrs) { attrs["id"].blank? && attrs["image"].blank? }
 

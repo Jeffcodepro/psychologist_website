@@ -25,19 +25,6 @@
   preview_frame =
     request.path.include?("/preview/frame")
 
-  language_path = ->(locale) do
-    if preview_frame && @page.present?
-      admin_page_preview_path(@page, locale: locale)
-    elsif @page.present? && !@page.home?
-      public_page_path(slug: @page.slug, locale: locale)
-    elsif controller_name == "contacts"
-      contact_destination(locale: locale)
-    else
-      root_path(locale: locale)
-    end
-  end
-  pt_path = language_path.call("pt-BR")
-  en_path = language_path.call("en")
   demo_contacts = @site_setting&.demo_contacts?
   contact_available = demo_contacts || [email, phone, whatsapp_number.presence].any?(&:present?) || social_links.any?
 
@@ -113,9 +100,9 @@
             <% destination = if preview_frame
               admin_page_preview_path(page, locale: I18n.locale)
             elsif page.home?
-              root_path(locale: I18n.locale)
+              root_path
             else
-              public_page_path(slug: page.slug, locale: I18n.locale)
+              public_page_path(slug: page.slug)
             end %>
             <%= link_to page.localized_nav_label, destination, target: preview_frame ? "_top" : nil %>
           <% end %>
@@ -225,29 +212,13 @@
 
       <div class="site-footer__languages">
 
-        <%= link_to(
-              "PT",
-              pt_path,
-              target: preview_frame ? "_top" : nil,
-              class: [
-                "site-footer__language",
-                ("is-active" if I18n.locale == :"pt-BR")
-              ]
-            ) %>
+        <%= render "shared/language_control", language: "pt-BR", css_class: "site-footer__language" %>
 
         <span>
           /
         </span>
 
-        <%= link_to(
-              "EN",
-              en_path,
-              target: preview_frame ? "_top" : nil,
-              class: [
-                "site-footer__language",
-                ("is-active" if I18n.locale == :en)
-              ]
-            ) %>
+        <%= render "shared/language_control", language: "en", css_class: "site-footer__language" %>
 
       </div>
 

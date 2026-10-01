@@ -166,7 +166,7 @@ class TenantSecurityTest < ActionDispatch::IntegrationTest
   test "signed in navigation and contact stay in CMS and preserve English" do
     sign_in @user
     get contact_path
-    assert_redirected_to admin_root_path(locale: "pt-BR")
+    assert_redirected_to admin_root_path
     get admin_page_preview_frame_path(@page, locale: "en")
     assert_response :success
     assert_select "a[href*='/admin/pages/#{@page.id}/preview'][href*='locale=en']"

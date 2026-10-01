@@ -1,6 +1,7 @@
 class Page < ApplicationRecord
   belongs_to :tenant
   has_many :sections, dependent: :destroy
+  has_many :published_sections, -> { published.visible.ordered }, class_name: "Section"
   has_many :linking_cards, class_name: 'SectionItem', foreign_key: :linked_page_id, dependent: :nullify
 
   EDITORIAL_KINDS = { 'Artigo' => 'article', 'Reflexão' => 'reflection' }.freeze

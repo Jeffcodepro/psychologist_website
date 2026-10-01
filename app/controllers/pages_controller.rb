@@ -20,10 +20,6 @@ class PagesController < PublicController
   private
 
   def load_sections
-    @sections = @page
-      .sections
-      .published
-      .visible
-      .ordered
+    @sections = PublicContentLoader.sections(@page)
   end
 end

@@ -41,12 +41,9 @@
 
   public_path_for = lambda do |page|
     if page.home?
-      root_path(locale: current_locale)
+      root_path
     else
-      public_page_path(
-        slug: page.slug,
-        locale: current_locale
-      )
+      public_page_path(slug: page.slug)
     end
   end
 
@@ -64,28 +61,9 @@
     if preview_frame
       brand_page ? preview_path_for.call(brand_page) : admin_root_path
     else
-      root_path(locale: current_locale)
+      root_path
     end
 
-  language_path_for = lambda do |locale|
-    if preview_frame
-      admin_page_preview_path(
-        current_page,
-        locale: locale
-      )
-    elsif current_page&.home?
-      root_path(locale: locale)
-    elsif current_page.present?
-      public_page_path(
-        slug: current_page.slug,
-        locale: locale
-      )
-    elsif controller_name == "contacts"
-      contact_destination(locale: locale)
-    else
-      root_path(locale: locale)
-    end
-  end
 %>
 
 <header
@@ -158,25 +136,9 @@
 
     <div class="site-navbar__actions">
       <div class="site-navbar__languages">
-        <%= link_to(
-              "PT",
-              language_path_for.call("pt-BR"),
-              target: preview_frame ? "_top" : nil,
-              class: [
-                "site-navbar__language",
-                I18n.locale == :"pt-BR" ? "is-active" : nil
-              ].compact.join(" ")
-            ) %>
+        <%= render "shared/language_control", language: "pt-BR", css_class: "site-navbar__language" %>
 
-        <%= link_to(
-              "EN",
-              language_path_for.call("en"),
-              target: preview_frame ? "_top" : nil,
-              class: [
-                "site-navbar__language",
-                I18n.locale == :en ? "is-active" : nil
-              ].compact.join(" ")
-            ) %>
+        <%= render "shared/language_control", language: "en", css_class: "site-navbar__language" %>
       </div>
 
       <div class="site-navbar__configured-actions"><%= render "shared/action_buttons", buttons: @site_setting&.header_actions %></div>
@@ -251,25 +213,9 @@
 
     <div class="site-navbar__mobile-footer">
       <div class="site-navbar__mobile-languages">
-        <%= link_to(
-              "PT",
-              language_path_for.call("pt-BR"),
-              target: preview_frame ? "_top" : nil,
-              class: [
-                "site-navbar__language",
-                I18n.locale == :"pt-BR" ? "is-active" : nil
-              ].compact.join(" ")
-            ) %>
+        <%= render "shared/language_control", language: "pt-BR", css_class: "site-navbar__language" %>
 
-        <%= link_to(
-              "EN",
-              language_path_for.call("en"),
-              target: preview_frame ? "_top" : nil,
-              class: [
-                "site-navbar__language",
-                I18n.locale == :en ? "is-active" : nil
-              ].compact.join(" ")
-            ) %>
+        <%= render "shared/language_control", language: "en", css_class: "site-navbar__language" %>
       </div>
 
       <div class="site-navbar__configured-actions"><%= render "shared/action_buttons", buttons: @site_setting&.header_actions %></div>

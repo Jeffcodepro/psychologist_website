@@ -70,6 +70,9 @@ class ImageCropperTest < ApplicationSystemTestCase
   test "dragging also opens space on a fitted axis and a click alone keeps the original crop" do
     open_cropper
     frame = find('[data-image-cropper-target="frame"]')
+    # Finish scrolling before the real mouse gesture; CSS smooth scrolling can
+    # otherwise move the frame away from the pointer during Selenium's drag.
+    frame.execute_script("this.scrollIntoView({block: 'center', behavior: 'instant'})")
     page.driver.browser.action.move_to(frame.native).click.perform
     assert_equal "1", crop_control("zoom").value
     page.driver.browser.action.move_to(frame.native).click_and_hold.move_by(0, 18).release.perform

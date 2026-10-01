@@ -17,7 +17,7 @@ default: &default
   encoding: unicode
   # For details on connection pooling, see Rails configuration guide
   # https://guides.rubyonrails.org/configuring.html#database-pooling
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  pool: <%= ENV.fetch("DB_POOL") { ENV.fetch("RAILS_MAX_THREADS", "5").to_i + 2 } %>
 
 development:
   <<: *default
@@ -84,3 +84,8 @@ production:
   database: <%= ENV.fetch("DB_NAME", "psychologist_production").to_json %>
   username: <%= ENV.fetch("DB_USERNAME", "psychologist").to_json %>
   password: <%= (ENV["DB_PASSWORD"] || ENV["PSYCHOLOGIST_WEBSITE_DATABASE_PASSWORD"]).to_json %>
+
+# Isolated database used only by the local performance harness.
+performance:
+  <<: *default
+  database: psychologist_website_performance

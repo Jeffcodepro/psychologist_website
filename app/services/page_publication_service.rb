@@ -8,9 +8,11 @@ class PagePublicationService
       remove_current_publication
       publish_sections
 
+      publication_time = Time.current
       @page.update!(
         published: true,
-        published_at: (@page.published_at if @page.editorial?) || Time.current
+        published_at: (@page.published_at if @page.editorial?) || publication_time,
+        updated_at: publication_time
       )
     end
   end

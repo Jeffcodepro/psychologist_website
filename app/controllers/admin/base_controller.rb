@@ -1,6 +1,7 @@
 class Admin::BaseController < ApplicationController
   before_action :authenticate_user!
   before_action :require_admin!
+  before_action :require_site_host!
   include SafeUploads
   before_action :prevent_admin_caching
   before_action -> { @admin_site_setting = current_tenant.site_setting }
@@ -27,6 +28,10 @@ class Admin::BaseController < ApplicationController
 
   def require_admin!
     head :forbidden unless current_user&.admin? && current_tenant.active?
+  end
+
+  def require_site_host!
+    head :not_found unless PublicHost.matches_tenant?(request.host, current_tenant)
   end
 
   def prevent_admin_caching

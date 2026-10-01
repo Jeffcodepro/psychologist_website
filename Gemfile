@@ -82,3 +82,6 @@ end
 gem "json", "= 2.21.2"
 
 gem "image_processing", "~> 1.2"
+
+# Cloudinary storage and CDN image delivery.
+gem "cloudinary", "~> 2.0"

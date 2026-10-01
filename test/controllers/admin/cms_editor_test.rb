@@ -71,7 +71,7 @@ class Admin::CmsEditorTest < ActionDispatch::IntegrationTest
     assert_not card.reload.image.attached?
     assert published.reload.image.attached?
     sign_out :user
-    get public_page_path(slug: @page.slug)
+    get public_page_path(slug: @page.slug, locale: nil)
     assert_response :success
     assert_select ".psychology-card__image", count: 1
     assert_includes response.body, "--card-image-zoom: 1.4"

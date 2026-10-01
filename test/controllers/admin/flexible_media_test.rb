@@ -50,7 +50,7 @@ class Admin::FlexibleMediaTest < ActionDispatch::IntegrationTest
     assert_equal BigDecimal("1.7"), published_slide.image_zoom
     assert_equal "120", published_slide.media_adjustment("image", "brightness")
     sign_out :user
-    get public_page_path(slug: @page.slug)
+    get public_page_path(slug: @page.slug, locale: nil)
     assert_response :success
     assert_select '.section-frame--background .media-sequence', count: 2
     assert_select '.media-sequence__slide', count: 4

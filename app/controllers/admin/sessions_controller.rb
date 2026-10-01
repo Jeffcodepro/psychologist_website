@@ -5,7 +5,7 @@ class Admin::SessionsController < Devise::SessionsController
 
   def private_entry!
     @login_tenant = Tenant.from_access_key(params[:access_key])
-    raise ActiveRecord::RecordNotFound unless @login_tenant
+    raise ActiveRecord::RecordNotFound unless @login_tenant && PublicHost.matches_tenant?(request.host, @login_tenant)
     session[:admin_access_key] = params[:access_key]
     if action_name == "create"
       params.require(:user)[:tenant_id] = @login_tenant.id.to_s

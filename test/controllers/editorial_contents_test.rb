@@ -74,16 +74,18 @@ class EditorialContentsTest < ActionDispatch::IntegrationTest
     get public_page_path(slug: @page.slug, site_slug: @tenant.slug)
     assert_response :success
     assert_select '.compact-card__link', count: 0
-    get public_page_path(slug: article.slug, site_slug: @tenant.slug, locale: 'pt-BR')
+    get public_page_path(slug: article.slug, site_slug: @tenant.slug)
     assert_response :not_found
     PagePublicationService.new(page: article).call
     get public_page_path(slug: @page.slug, site_slug: @tenant.slug, locale: 'en')
+    assert_response :see_other
+    follow_redirect!
     assert_select '.compact-card__link', count: 1
-    assert_select "a[href='#{public_page_path(slug: article.slug, site_slug: @tenant.slug, locale: 'en')}']"
-    get public_page_path(slug: article.slug, site_slug: @tenant.slug, locale: 'en')
+    assert_select "a[href='#{public_page_path(slug: article.slug, site_slug: @tenant.slug)}']"
+    get public_page_path(slug: article.slug, site_slug: @tenant.slug)
     assert_includes response.body, 'Article summary.'
     article.sections.draft.find_by!(section_type: 'text').update!(body_en: 'New unpublished text')
-    get public_page_path(slug: article.slug, site_slug: @tenant.slug, locale: 'en')
+    get public_page_path(slug: article.slug, site_slug: @tenant.slug)
     assert_not_includes response.body, 'New unpublished text'
     assert_select 'a[href*="/admin/"]', count: 0
   end
@@ -164,9 +166,10 @@ class EditorialContentsTest < ActionDispatch::IntegrationTest
 
     PagePublicationService.new(page: @page).call
     sign_out @user
-    get public_page_path(slug: article.slug, site_slug: @tenant.slug, locale: 'pt-BR')
+    get public_page_path(slug: article.slug, site_slug: @tenant.slug, locale: nil)
+    assert_response :success
     assert_select '.article-publication time[datetime=?]', first_release.iso8601, text: '27/09/2026'
-    get public_page_path(slug: @page.slug, site_slug: @tenant.slug, locale: 'pt-BR')
+    get public_page_path(slug: @page.slug, site_slug: @tenant.slug)
     assert_select '.article-publication-header', count: 0
     assert_select '.compact-card .article-publication time', text: '27/09/2026'
   end

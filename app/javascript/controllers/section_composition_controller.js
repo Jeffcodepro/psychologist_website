@@ -139,8 +139,10 @@ export default class extends Controller {
 
     if (!frame) return
     frame.dataset.layoutDesktop = layout
-    const radius = { rectangle: "0px", rounded: "24px", square: "4px", circle: "50%", oval: "50%", arch: "50% 50% 16px 16px" }[shape]
+    const radius = { rectangle: "0px", rounded: "24px", square: "4px", circle: "50%", oval: "50%", arch: "50% 50% 16px 16px", cutout: "0px" }[shape]
     frame.style.setProperty("--desktop-image-radius", radius)
+    frame.style.setProperty("--desktop-image-overflow", shape === "cutout" ? "visible" : "hidden")
+    frame.style.setProperty("--desktop-image-tint-display", shape === "cutout" ? "none" : "block")
     frame.style.setProperty("--desktop-image-ratio", ["square", "circle"].includes(shape) ? "1 / 1" : "4 / 5")
     frame.style.setProperty("--desktop-image-width", { small: "250px", medium: "350px", large: "460px" }[size])
     frame.style.setProperty("--desktop-layout-columns", !["text_left", "text_right"].includes(layout) ? "minmax(0, 1fr)" : "minmax(0, 1.15fr) minmax(0, 0.85fr)")

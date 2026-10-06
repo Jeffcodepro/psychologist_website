@@ -64,6 +64,39 @@ class Admin::FlexibleMediaTest < ActionDispatch::IntegrationTest
     assert published_slide.reload.image.attached?
   end
 
+  test "zoom out and image presentation persist for all devices and published slides" do
+    patch admin_page_section_path(@page, @section), params: { section: {
+      image: image_upload, banner: image_upload, image_zoom: 0.25, banner_zoom: 0.6, image_shape: "cutout",
+      media_adjustments: { image: { fit: "contain", shadow: 32, remove_background: 0 } },
+      responsive_settings: { tablet: { image_zoom: 0.7 }, mobile: { image_zoom: 0.5, banner_zoom: 0.8, image_shape: "rounded" } },
+      section_slides_attributes: { "0" => { role: "image", image: image_upload, image_zoom: 0.4,
+        media_adjustments: { image: { fit: "contain", shadow: 20 } } } }
+    } }
+    assert_response :redirect
+    assert_equal 0.25, @section.reload.image_zoom
+    assert_equal "contain", @section.media_adjustment("image", "fit")
+    assert_equal "cutout", @section.image_shape
+    assert_equal "0.5", @section.responsive_settings.dig("mobile", "image_zoom")
+    PagePublicationService.new(page: @page).call
+    published = @page.sections.published.first
+    assert_equal 0.25, published.image_zoom
+    assert_equal "32", published.media_adjustment("image", "shadow")
+    assert_equal BigDecimal("0.4"), published.section_slides.first.image_zoom
+    get edit_admin_page_section_path(@page, @section)
+    assert_response :success
+    assert_select 'input[data-image-cropper-target="zoom"][min="0.25"]', minimum: 1
+    assert_select 'input[name="section[image_shape]"][value="cutout"][checked]'
+  end
+
+  test "invalid presentation and out of range zoom do not alter the saved section" do
+    patch admin_page_section_path(@page, @section), params: { section: {
+      image_zoom: 0.1, media_adjustments: { image: { fit: "invalid", shadow: 90, remove_background: 0.5 } }
+    } }, as: :json
+    assert_response :unprocessable_entity
+    assert_equal 1, @section.reload.image_zoom
+    assert_equal({}, @section.media_adjustments)
+  end
+
   test "cards and questions coexist in a FAQ without forced numbering" do
     @section.update!(section_type: "faq")
     @section.section_items.create!(title: "Como começar?", body: "Uma conversa.")

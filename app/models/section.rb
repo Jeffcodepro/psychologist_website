@@ -35,6 +35,7 @@ class Section < ApplicationRecord
     circle
     oval
     arch
+    cutout
   ].freeze
 
   MEDIA_LAYOUTS = %w[
@@ -205,7 +206,7 @@ class Section < ApplicationRecord
   validates :image_zoom,
             :banner_zoom,
             numericality: {
-              greater_than_or_equal_to: 1.0,
+              greater_than_or_equal_to: 0.25,
               less_than_or_equal_to: 3.0
             }
 

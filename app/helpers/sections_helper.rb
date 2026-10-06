@@ -3,13 +3,13 @@ module SectionsHelper
   FONT_STACKS = FontCatalog::STACKS
 
   SHAPE_OPTIONS = [["Retangular", "rectangle"], ["Arredondada", "rounded"], ["Quadrada", "square"],
-                   ["Circular", "circle"], ["Oval", "oval"], ["Arco", "arch"]].freeze
+                   ["Circular", "circle"], ["Oval", "oval"], ["Arco", "arch"], ["Sem moldura · foto recortada", "cutout"]].freeze
   LAYOUT_OPTIONS = [["Texto à esquerda", "text_left"], ["Texto à direita", "text_right"],
                     ["Imagem acima", "media_top"], ["Imagem abaixo", "media_bottom"],
                     ["Entre título e parágrafo", "media_between"], ["Entre parágrafo e botões", "media_before_buttons"],
                     ["Imagem de fundo", "media_background"]].freeze
   SHAPE_RADII = { "rectangle" => "0px", "rounded" => "24px", "square" => "4px", "circle" => "50%",
-                  "oval" => "50%", "arch" => "50% 50% 16px 16px" }.freeze
+                  "oval" => "50%", "arch" => "50% 50% 16px 16px", "cutout" => "0px" }.freeze
 
   def section_media_layout(section, device)
     layout = section.visual_value("media_layout", device)
@@ -71,6 +71,8 @@ module SectionsHelper
       end
       shape = section.visual_value("image_shape", device)
       values["image-radius"] = SHAPE_RADII.fetch(shape)
+      values["image-overflow"] = shape == "cutout" ? "visible" : "hidden"
+      values["image-tint-display"] = shape == "cutout" ? "none" : "block"
       values["image-ratio"] = %w[square circle].include?(shape) ? "1 / 1" : "4 / 5"
       values["image-width"] = { "small" => "250px", "medium" => "350px", "large" => "460px" }.fetch(section.visual_value("media_size", device))
       layout = section_media_layout(section, device)
@@ -106,7 +108,7 @@ module SectionsHelper
       value = record.media_adjustment(media, key).to_f
       unit = key == "rotation" ? "deg" : (%w[brightness contrast saturation].include?(key) ? "%" : "")
       "--media-#{key.tr('_', '-')}: #{value}#{unit}"
-    end.join("; ")
+    end.join("; ") + "; --media-fit: #{record.media_adjustment(media, 'fit')}; --media-shadow-opacity: #{record.media_adjustment(media, 'shadow').to_f / 100}"
   end
 
   def section_media_entries(section, role)

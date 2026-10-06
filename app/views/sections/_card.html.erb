@@ -15,9 +15,9 @@
     <div class="compact-card__media" <%= 'hidden' unless has_image %>><div class="compact-card__image-frame" data-shape="<%= item.image_shape %>"
       <% if editor_preview %>data-image-cropper-target="frame" data-action="pointerdown->image-cropper#start pointermove->image-cropper#move pointerup->image-cropper#stop pointercancel->image-cropper#stop"<% end %>>
       <% if editor_preview %>
-        <%= tag.img src: (url_for(attachment) if has_image), alt: item.localized_title, class: "psychology-card__image compact-card__image", draggable: false, data: { image_cropper_target: "image", action: "load->image-cropper#loaded" } %>
+        <%= tag.img src: (media_editor_image_url(attachment, item) if has_image), alt: item.localized_title, class: "psychology-card__image compact-card__image", draggable: false, data: { image_cropper_target: "image", action: "load->image-cropper#loaded" } %>
       <% else %>
-        <%= display_image_tag attachment, alt: item.localized_title, class: "psychology-card__image compact-card__image", loading: "lazy" %>
+        <%= display_image_tag attachment, remove_background: item.remove_media_background?, alt: item.localized_title, class: "psychology-card__image compact-card__image", loading: "lazy" %>
       <% end %>
     </div></div>
   <% end %>

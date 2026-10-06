@@ -70,39 +70,23 @@
   data-controller="site-navbar"
 >
   <div class="container site-navbar__container">
-    <%= link_to(
-          brand_path,
-          class: "site-navbar__brand",
-          target: preview_frame ? "_top" : nil
-        ) do %>
-
-      <% if @site_setting&.logo&.attached? %>
-        <span
-          class="site-navbar__logo-frame"
-          style="
-            --site-logo-zoom: <%= logo_zoom %>;
-            --site-logo-x: <%= logo_x %>%;
-            --site-logo-y: <%= logo_y %>%;
-          "
-        >
-          <%= display_image_tag(
-                @site_setting.logo,
-                profile: :logo, sizes: "220px", eager: true,
-                alt: professional_name,
-                class: "site-navbar__logo"
-              ) %>
+    <% if @site_setting&.logo&.attached? %>
+      <div class="site-navbar__brand" data-controller="logo-link">
+        <span class="site-navbar__logo-frame" data-logo-link-target="frame"
+          style="--site-logo-zoom: <%= logo_zoom %>; --site-logo-x: <%= logo_x %>%; --site-logo-y: <%= logo_y %>%;">
+          <%= display_image_tag @site_setting.logo, profile: :logo, sizes: "220px", eager: true,
+                alt: "", class: "site-navbar__logo", data: { logo_link_target: "image", action: "load->logo-link#resize" } %>
+          <%= link_to brand_path, class: "site-navbar__logo-link", target: preview_frame ? "_top" : nil,
+                aria: { label: "#{professional_name} — #{I18n.locale == :en ? 'Home' : 'Página inicial'}" },
+                data: { logo_link_target: "link" } do %>
+            <span class="visually-hidden"><%= professional_name %></span>
+          <% end %>
         </span>
-      <% else %>
-        <span class="site-navbar__brand-copy">
-          <strong>
-            <%= professional_name %>
-          </strong>
-
-          <small>
-            <%= I18n.locale == :en ?
-                  "Psychology & Human Development" :
-                  "Psicologia & Desenvolvimento Humano" %>
-          </small>
+      </div>
+    <% else %>
+      <%= link_to brand_path, class: "site-navbar__brand", target: preview_frame ? "_top" : nil do %>
+        <span class="site-navbar__brand-copy"><strong><%= professional_name %></strong>
+          <small><%= I18n.locale == :en ? "Psychology & Human Development" : "Psicologia & Desenvolvimento Humano" %></small>
         </span>
       <% end %>
     <% end %>

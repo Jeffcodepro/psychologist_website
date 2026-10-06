@@ -3,16 +3,24 @@ module MediaAdjustable
 
   ADJUSTMENTS = { "rotation" => -180..180, "brightness" => 0..200,
                   "contrast" => 0..200, "saturation" => 0..200,
-                  "flip_x" => -1..1, "flip_y" => -1..1 }.freeze
-  PARAMS = { image: ADJUSTMENTS.keys, banner: ADJUSTMENTS.keys }.freeze
+                  "flip_x" => -1..1, "flip_y" => -1..1,
+                  "shadow" => 0..60, "remove_background" => 0..1 }.freeze
+  ENUMS = { "fit" => %w[cover contain] }.freeze
+  DEFAULTS = { "rotation" => 0, "brightness" => 100, "contrast" => 100,
+               "saturation" => 100, "flip_x" => 1, "flip_y" => 1,
+               "shadow" => 0, "remove_background" => 0, "fit" => "cover" }.freeze
+  PARAMS = { image: DEFAULTS.keys, banner: DEFAULTS.keys }.freeze
 
   included do
     validate :validate_media_adjustments
   end
 
   def media_adjustment(media, key)
-    media_adjustments.dig(media.to_s, key.to_s).presence ||
-      (key.to_s.start_with?("flip") ? 1 : (key.to_s == "rotation" ? 0 : 100))
+    media_adjustments.dig(media.to_s, key.to_s).presence || DEFAULTS.fetch(key.to_s)
+  end
+
+  def remove_media_background?(media = "image")
+    media_adjustment(media, "remove_background").to_i == 1
   end
 
   private
@@ -28,9 +36,14 @@ module MediaAdjustable
         next
       end
       values.each do |key, value|
-        number = Float(value, exception: false)
-        valid = number && ADJUSTMENTS[key]&.cover?(number)
-        valid &&= [-1, 1].include?(number) if key.start_with?("flip")
+        if ENUMS.key?(key)
+          valid = ENUMS[key].include?(value)
+        else
+          number = Float(value, exception: false)
+          valid = number && ADJUSTMENTS[key]&.cover?(number)
+          valid &&= [-1, 1].include?(number) if key.start_with?("flip")
+          valid &&= [0, 1].include?(number) if key == "remove_background"
+        end
         errors.add(:media_adjustments, "#{key} inválido") unless valid
       end
     end

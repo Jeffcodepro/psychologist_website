@@ -96,7 +96,7 @@ export default class extends Controller {
 
   changeZoom(change) {
     const current = Number(this.zoomTarget.value || 1)
-    const next = this.clamp(current + change, 0.5, 3)
+    const next = this.clamp(current + change, 0.25, 3)
 
     this.zoomTarget.value = next.toFixed(2)
 

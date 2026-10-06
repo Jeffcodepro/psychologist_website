@@ -16,7 +16,7 @@
       </label>
     <% end %>
     <%= render "admin/sections/media_overlay", f: f, section: section, role: role %>
-    <div data-media-library-target="primary"><%= render "admin/shared/image_cropper", f: f, record: section, media: role, title: role == "banner" ? "Banner principal" : "Fotografia principal" %></div>
+    <div data-media-library-target="primary"><%= render "admin/shared/image_cropper", f: f, record: section, attachment: section_media_entries(section, role).find { |entry| entry[:primary] }&.fetch(:attachment) || section.public_send(role), media: role, title: role == "banner" ? "Banner principal" : "Fotografia principal" %></div>
     <% if section.persisted? && section.public_send(role).attached? %>
       <%= f.hidden_field "remove_#{role}", value: "0", data: { media_library_target: "removeFlag" } %>
       <button type="button" class="media-remove-button" data-media-library-target="removeButton" data-action="media-library#removePrimary" data-label="<%= role == 'banner' ? 'Remover este banner' : 'Remover esta fotografia' %>"><%= role == 'banner' ? 'Remover este banner' : 'Remover esta fotografia' %></button>

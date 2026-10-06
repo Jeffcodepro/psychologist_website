@@ -14,8 +14,9 @@ class ImageDelivery
     blob&.service_name == "cloudinary"
   end
 
-  def self.cloudinary_url(blob, width:)
-    blob.service.url(blob.key, filename: blob.filename, content_type: blob.content_type,
+  def self.cloudinary_url(blob, width:, remove_background: false)
+    effects = remove_background ? { transformation: [{ effect: "background_removal" }] } : {}
+    blob.service.url(blob.key, **effects, filename: blob.filename, content_type: blob.content_type,
       secure: true, sign_url: true, crop: "limit", width: width,
       quality: "auto:good", fetch_format: "auto")
   end

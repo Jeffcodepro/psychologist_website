@@ -1,0 +1,22 @@
+// Shared image treatments, used by the public site and the editor preview.
+.media-sequence__image, .card-collection .compact-card__image, .gallery-grid .gallery-image {
+  object-fit: var(--media-fit, cover);
+  filter: brightness(var(--media-brightness, 100%)) contrast(var(--media-contrast, 100%)) saturate(var(--media-saturation, 100%)) drop-shadow(0px 12px 16px rgba(20, 35, 28, var(--media-shadow-opacity, 0)));
+}
+.flexible-section__image-frame {
+  overflow: var(--section-image-overflow, hidden);
+  .media-sequence__slide { overflow: var(--section-image-overflow, hidden); }
+}
+.section-frame .flexible-section__image-frame::after { display: var(--section-image-tint-display, block); }
+// Cutouts let the section or banner show through. Card bounds stay fixed.
+.card-collection .compact-card__media:has([data-shape="cutout"]) { background: transparent; }
+.image-cropper__frame[data-shape="cutout"] { background: transparent; box-shadow: none; outline: 1px dashed #829b8c; overflow: visible; }
+.image-cropper__frame[data-shape="cutout"] .image-cropper__grid { display: none; }
+.image-cropper__presentation { display: grid; gap: 12px; padding: 14px 0; border: 0; border-top: 1px solid #d6dfd9; }
+.image-cropper__presentation legend { float: none; width: auto; margin: 0; padding: 0; font: 600 15px/1.5 $body-font; color: #314f3e; }
+.image-cropper__adjustments [role="status"] { font: 400 12px/1.6 $body-font; margin: 10px 0 0; }
+.image-cropper__tools button:disabled { opacity: .55; cursor: not-allowed; }
+.section-shape-preview--cutout { border: 0; background: linear-gradient(145deg, #9abeab, #54816b); border-radius: 45% 45% 18% 18%; filter: drop-shadow(2px 4px 3px #54716080); }
+
+.gallery-image-frame { position: relative; overflow: hidden; aspect-ratio: var(--card-image-ratio, 16 / 10); border-radius: var(--card-image-radius, 0); }
+.gallery-grid .gallery-image { width: 100%; height: 100%; object-position: var(--card-image-x) var(--card-image-y); transform-origin: var(--card-image-x) var(--card-image-y); transform: scale(var(--card-image-zoom)) rotate(var(--media-rotation, 0deg)) scale(var(--media-flip-x, 1), var(--media-flip-y, 1)); }

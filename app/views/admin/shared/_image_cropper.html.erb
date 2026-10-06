@@ -18,9 +18,11 @@
          data-card-preview-locale-value="<%= I18n.locale %>"
          data-action="image-cropper:changed->card-preview#render"
          data-image-cropper-shape-value="<%= shape %>"
-         data-image-cropper-adjustments-value="<%= MediaAdjustable::ADJUSTMENTS.keys.to_h { |key| [key, record.media_adjustment(media, key)] }.to_json %>"
+         data-image-cropper-adjustments-value="<%= MediaAdjustable::DEFAULTS.keys.to_h { |key| [key, record.media_adjustment(media, key)] }.to_json %>"
+         data-image-cropper-original-url-value="<%= url_for(attachment) if attachment.attached? %>"
+         data-image-cropper-cutout-url-value="<%= ImageDelivery.cloudinary_url(attachment.blob, width: 1600, remove_background: true) if attachment.attached? && ImageDelivery.cloudinary?(attachment.blob) %>"
          data-image-cropper-base-shape-value="<%= record.image_shape %>"
-         data-image-cropper-shape-field-value="<%= scope %>[image_shape]"
+         data-image-cropper-shape-field-value="<%= record.is_a?(SectionSlide) ? 'section' : scope %>[image_shape]"
          data-image-cropper-kind-value="<%= is_card ? 'card' : kind %>"
          data-image-cropper-x-value="<%= record.public_send("#{media}_position_x") %>"
          data-image-cropper-y-value="<%= record.public_send("#{media}_position_y") %>"
@@ -38,7 +40,7 @@
       <div class="image-cropper__stage">
         <div class="image-cropper__frame" data-image-cropper-target="frame"
              data-action="pointerdown->image-cropper#start pointermove->image-cropper#move pointerup->image-cropper#stop pointercancel->image-cropper#stop">
-          <%= image_tag(attachment.attached? ? url_for(attachment) : "", alt: "Prévia do enquadramento", class: attachment.attached? ? "" : "is-hidden", draggable: false, loading: "lazy", decoding: "async", data: { image_cropper_target: "image", action: "load->image-cropper#loaded" }) %>
+          <%= image_tag(attachment.attached? ? media_editor_image_url(attachment, record, media) : "", alt: "Prévia do enquadramento", class: attachment.attached? ? "" : "is-hidden", draggable: false, loading: "lazy", decoding: "async", data: { image_cropper_target: "image", action: "load->image-cropper#loaded error->image-cropper#imageFailed" }) %>
           <div class="image-cropper__empty <%= 'is-hidden' if attachment.attached? %>" data-image-cropper-target="empty">Selecione uma imagem para começar</div>
           <div class="image-cropper__grid" aria-hidden="true"></div>
         </div>
@@ -55,14 +57,32 @@
         <%= f.label :image_shape, "Formato da imagem" %>
         <%= f.select :image_shape, SectionsHelper::SHAPE_OPTIONS, {}, data: { image_cropper_target: "shape", action: "change->image-cropper#shapeChanged" } %>
       <% end %>
-      <% [["zoom", "Zoom", 1, 3, 0.01], ["position_x", "Posição horizontal", 0, 100, 1], ["position_y", "Posição vertical", 0, 100, 1]].each do |suffix, label, min, max, step| %>
+      <% [["zoom", "Tamanho / zoom", 0.25, 3, 0.01], ["position_x", "Posição horizontal", 0, 100, 1], ["position_y", "Posição vertical", 0, 100, 1]].each do |suffix, label, min, max, step| %>
         <% field = "#{media}_#{suffix}"; target = { "zoom" => "zoom", "position_x" => "x", "position_y" => "y" }.fetch(suffix) %>
         <label for="<%= input_id %>_<%= suffix %>"><%= label %> <output data-image-cropper-target="<%= target %>Label"></output></label>
         <input type="range" id="<%= input_id %>_<%= suffix %>" min="<%= min %>" max="<%= max %>" step="<%= step %>" value="<%= crop_value.call(field) %>" data-image-cropper-target="<%= target %>" data-action="input->image-cropper#changed">
         <%= hidden_field_tag "#{scope}[#{field}]", input_value.call(field), id: "#{input_id}_stored_#{suffix}", data: { image_cropper_target: "#{target}Field" } %>
       <% end %>
+      <small>De 25% a 300%. Abaixo de 100%, a imagem diminui e deixa o fundo aparecer.</small>
       <small data-image-cropper-target="positionHint" role="status" hidden></small>
       <% unless device %>
+        <fieldset class="image-cropper__presentation">
+          <legend>Encaixe e relevo</legend>
+          <label for="<%= input_id %>_fit">Como encaixar a foto</label>
+          <%= select_tag "#{scope}[media_adjustments][#{media}][fit]", options_for_select([["Preencher a área (recortar bordas)", "cover"], ["Mostrar a imagem inteira", "contain"]], record.media_adjustment(media, "fit")), id: "#{input_id}_fit", data: { image_cropper_target: "adjustment", adjustment: "fit", action: "change->image-cropper#render" } %>
+          <% if kind != "banner" %>
+            <button type="button" class="admin-button-secondary" data-action="image-cropper#cutoutPreset">Aplicar efeito foto recortada</button>
+            <small>Retira a moldura e acrescenta uma sombra de relevo. Para destacar só a pessoa, use uma foto com fundo transparente ou remova o fundo abaixo.</small>
+          <% end %>
+          <label for="<%= input_id %>_shadow">Intensidade do relevo <output data-image-cropper-target="shadowLabel"></output></label>
+          <%= range_field_tag "#{scope}[media_adjustments][#{media}][shadow]", record.media_adjustment(media, "shadow"), min: 0, max: 60, id: "#{input_id}_shadow", data: { image_cropper_target: "adjustment", adjustment: "shadow", action: "input->image-cropper#render" } %>
+        </fieldset>
+        <details class="image-cropper__adjustments">
+          <summary>Remover fundo com IA</summary>
+          <%= hidden_field_tag "#{scope}[media_adjustments][#{media}][remove_background]", record.media_adjustment(media, "remove_background"), id: "#{input_id}_remove_background", data: { image_cropper_target: "adjustment", adjustment: "remove_background" } %>
+          <button type="button" class="admin-button-secondary" data-image-cropper-target="backgroundButton" data-action="image-cropper#toggleBackground" <%= 'disabled' unless attachment.attached? && ImageDelivery.cloudinary?(attachment.blob) %>>Remover fundo</button>
+          <p data-image-cropper-target="backgroundStatus" role="status"><%= attachment.attached? && ImageDelivery.cloudinary?(attachment.blob) ? "O original é preservado. O processamento utiliza créditos de transformação do Cloudinary e depende da disponibilidade na sua conta." : "Salve a imagem no Cloudinary para habilitar o recorte por IA. Você também pode enviar um PNG ou WebP já sem fundo." %></p>
+        </details>
         <details class="image-cropper__adjustments" open>
           <summary>Girar e espelhar</summary>
           <label for="<%= input_id %>_rotation">Rotação</label>

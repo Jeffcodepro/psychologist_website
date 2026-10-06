@@ -25,7 +25,7 @@
         <% if images.any? %>
           <div class="flexible-section__media" data-preview-field="image">
             <% if interactive_preview %><%= render "admin/page_previews/element_handle", field: "image", label: "Imagem" %><% end %>
-            <div class="flexible-section__image-frame"><%= render "sections/media_sequence", section: section, role: "image", entries: images %></div>
+            <div class="flexible-section__image-frame" data-image-presentation="<%= section.image_shape %>"><%= render "sections/media_sequence", section: section, role: "image", entries: images %></div>
           </div>
         <% end %>
       </div>

@@ -45,6 +45,26 @@ class CloudinaryDeliveryTest < ActionDispatch::IntegrationTest
     assert_not_includes response.headers['Content-Security-Policy'], 'api.cloudinary.com'
   end
 
+  test "background removal uses a signed derivative and keeps an unprocessed fallback" do
+    @blob.update!(service_name: "cloudinary")
+    @section.update!(image_zoom: 0.6, image_shape: "cutout", media_adjustments: { image: { fit: "contain", shadow: 24, remove_background: 1 } })
+    original_key = @blob.key
+    PagePublicationService.new(page: @page).call
+    get root_path
+    assert_response :success
+    image = Nokogiri::HTML(response.body).at_css(".media-sequence__image")
+    assert_includes image["src"], "e_background_removal/"
+    assert_includes image["src"], "/s--"
+    assert_includes image["srcset"], "e_background_removal/"
+    assert_equal "processed-image", image["data-controller"]
+    assert_not_includes image["data-processed-image-original-value"], "background_removal"
+    assert_includes response.body, "--media-fit: contain"
+    assert_includes response.body, "--media-shadow-opacity: 0.24"
+    assert_includes response.body, "--desktop-image-zoom: 0.6"
+    assert_equal original_key, @section.reload.image.blob.key
+    assert_not_includes response.body, "test-only-secret"
+  end
+
   test "publishing existing disk images does not repeat preprocessing" do
     clear_enqueued_jobs
     assert_no_enqueued_jobs only: ActiveStorage::TransformJob do

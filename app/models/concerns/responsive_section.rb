@@ -7,7 +7,7 @@ module ResponsiveSection
     "buttons_alignment" => %w[left center right],
     "media_layout" => %w[text_left text_right media_top media_bottom media_between media_before_buttons media_background],
     "media_size" => %w[small medium large],
-    "image_shape" => %w[rectangle rounded square circle oval arch],
+    "image_shape" => %w[rectangle rounded square circle oval arch cutout],
     "banner_layout" => %w[top background bottom],
     "text_alignment" => %w[left center right],
     "title_alignment" => %w[left center right],
@@ -23,7 +23,7 @@ module ResponsiveSection
     "title_font_size" => 10..120, "body_font_size" => 10..120,
     "image_position_x" => 0..100, "image_position_y" => 0..100,
     "banner_position_x" => 0..100, "banner_position_y" => 0..100,
-    "image_zoom" => 1..3, "banner_zoom" => 1..3, "banner_overlay" => 0..90
+    "image_zoom" => 0.25..3, "banner_zoom" => 0.25..3, "banner_overlay" => 0..90
   }).freeze
   FONT_FIELDS = %w[title_font_family body_font_family].freeze
   COLOR_FIELDS = (%w[title_color body_color background_color accent_color overlay_color] + SectionMediaOverlay::COLOR_FIELDS).freeze

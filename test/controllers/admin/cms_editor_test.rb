@@ -14,7 +14,8 @@ class Admin::CmsEditorTest < ActionDispatch::IntegrationTest
   test "editor and preview render fonts, responsive controls and cropping without errors" do
     get edit_admin_page_section_path(@page, @section)
     assert_response :success
-    assert_select ".font-picker__option", count: FontCatalog::NAMES.size * 2
+    assert_select ".font-picker select option[data-font-stack]", count: FontCatalog::NAMES.size * 2
+    assert_select ".font-picker details", count: 0
     assert_select 'select[name="section[responsive_settings][mobile][media_layout]"]'
     assert_select 'input[type="file"][hidden][name="section[image]"]', count: 1
     assert_select 'input[type="file"][hidden][name="section[banner]"]', count: 1
@@ -65,7 +66,7 @@ class Admin::CmsEditorTest < ActionDispatch::IntegrationTest
     assert_equal card.image_zoom, published.image_zoom
     get edit_admin_page_section_section_item_path(@page, @section, card)
     assert_response :success
-    assert_select '[data-controller="image-cropper"]'
+    assert_select '[data-controller~="image-cropper"]'
     patch admin_page_section_section_item_path(@page, @section, card), params: { section_item: { remove_image: "1" } }
     assert_response :redirect
     assert_not card.reload.image.attached?

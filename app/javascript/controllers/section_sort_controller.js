@@ -74,11 +74,10 @@ export default class extends Controller {
   }
 
   async drop(event) {
-    if (!this.sourceSectionId) {
-      return
-    }
+    if (!this.sourceSectionId || this.saving) return
 
     event.preventDefault()
+    event.stopPropagation()
 
     const target =
       event.currentTarget
@@ -97,12 +96,17 @@ export default class extends Controller {
       return
     }
 
+    const sourceId = this.sourceSectionId
+    this.saving = true
+    this.dragEnd()
     try {
       const response =
         await fetch(
           this.urlValue,
           {
             method: "PATCH",
+            credentials: "same-origin",
+            redirect: "error",
 
             headers: {
               "Content-Type":
@@ -117,7 +121,7 @@ export default class extends Controller {
 
             body: JSON.stringify({
               first_id:
-                this.sourceSectionId,
+                sourceId,
 
               second_id:
                 targetId
@@ -133,8 +137,10 @@ export default class extends Controller {
 
       window.location.reload()
 
-    } catch (error) {
-      alert(error.message)
+    } catch (_error) {
+      alert("Não foi possível mover a seção. Recarregue a prévia e tente novamente.")
+    } finally {
+      this.saving = false
     }
   }
 

@@ -1,7 +1,9 @@
 <div
   class="admin-preview-workspace"
   data-controller="admin-page-preview"
-  data-admin-page-preview-frame-url-value="<%= admin_page_preview_frame_path(@page) %>"
+  data-admin-page-preview-locale-value="<%= @preview_locale %>"
+  data-admin-page-preview-language-url-value="<%= admin_language_preference_path %>"
+  data-admin-page-preview-frame-url-value="<%= admin_page_preview_frame_path(@page, anchor: @focus_anchor) %>"
 >
 
   <!-- ==================================================
@@ -59,11 +61,12 @@
 
 
     <div class="admin-preview-header__actions">
+      <%= link_to "Publicar site…", new_admin_site_publication_path, class: "admin-button-secondary" %>
       <% if @page.editorial? %><%= link_to 'Card em Conteúdos', edit_admin_article_card_path(@page), class: 'admin-button-secondary' %><% end %>
 
       <%= link_to(
             "Editar conteúdo",
-            admin_page_sections_path(@page),
+            (@page.editorial? ? edit_admin_article_path(@page) : admin_page_sections_path(@page)),
             class: "admin-button-secondary"
           ) %>
 
@@ -77,7 +80,7 @@
             form: {
               data: {
                 turbo_confirm:
-                  "Publicar todas as alterações atuais?"
+                  "Publicar o rascunho salvo desta página? Para publicar várias páginas juntas, use Publicar site."
               }
             }
           ) %>
@@ -232,10 +235,10 @@
       </div>
 
 
+      <p role="status" data-admin-page-preview-target="status"></p>
       <iframe
         src="<%= admin_page_preview_frame_path(
-                   @page,
-                   locale: @preview_locale
+                   @page, anchor: @focus_anchor
                  ) %>"
         class="admin-preview-device__iframe"
         data-admin-page-preview-target="iframe"

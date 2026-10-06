@@ -1,0 +1,70 @@
+<%= simple_form_for @page, url: (@page.persisted? ? admin_article_path(@page) : admin_articles_path), html: { class: "admin-page-form article-writing-form" } do |f| %>
+  <%= f.error_notification %>
+  <%= f.error_notification message: @page.errors[:base].to_sentence if @page.errors[:base].any? %>
+  <section class="admin-settings-section" data-controller="translation" data-translation-url-value="<%= admin_translation_path %>">
+    <header class="admin-settings-section__header">
+      <span class="admin-settings-section__number">01</span>
+      <div><h2>Escreva seu texto</h2><p>O conteúdo abaixo aparece no artigo completo. Use os botões de formatação e separe os parágrafos com uma linha em branco.</p></div>
+    </header>
+    <%= f.input :content_kind, collection: Page::EDITORIAL_KINDS, include_blank: false, label: "Tipo de texto" %>
+    <%= f.input :name, label: "Título do texto", input_html: { data: { translation_target: "titlePt" } } %>
+    <%= fields_for :article_content, @editor.body_section do |content| %>
+      <div class="article-writing-form__body">
+        <%= content.label :body, "Texto completo" %>
+        <%= render layout: "admin/shared/formatted_text" do %>
+        <%= content.text_area :body, rows: 16, class: "form-control", placeholder: "Comece a escrever seu artigo ou reflexão aqui…", data: { translation_target: "bodyPt" } %>
+        <% end %>
+      </div>
+      <details class="admin-optional-fields">
+        <summary>Versão em inglês</summary>
+        <p>Traduza o título e o texto com IA ou escreva a versão em inglês. Revise antes de salvar.</p>
+        <button type="button" class="admin-button-secondary" data-translation-target="button" data-action="translation#translate">Traduzir com IA</button>
+        <p class="section-translation-feedback" data-translation-target="status" role="status" hidden></p>
+        <div class="mb-3">
+          <%= label_tag :article_content_title_en, "Título em inglês" %>
+          <%= text_field_tag "article_content[title_en]", @editor.heading.title_en, id: "article_content_title_en", class: "form-control", data: { translation_target: "titleEn" } %>
+        </div>
+        <%= content.label :body_en, "Texto completo em inglês" %>
+        <%= render layout: "admin/shared/formatted_text" do %>
+        <%= content.text_area :body_en, rows: 14, class: "form-control", data: { translation_target: "bodyEn" } %>
+        <% end %>
+      </details>
+    <% end %>
+    <% if @page.persisted? && @page.sections.draft.where.not(id: [@editor.heading.id, @editor.body_section.id].compact).exists? %>
+      <p class="article-writing-form__note">Este artigo também possui outros blocos, preservados ao salvar. Use <%= link_to "Ajustar blocos e imagens", admin_page_sections_path(@page) %> para editá-los.</p>
+    <% end %>
+  </section>
+
+  <section class="admin-settings-section">
+    <header class="admin-settings-section__header"><span class="admin-settings-section__number">02</span><div><h2>Apresentação do artigo</h2><p>O card em Conteúdos leva o visitante até o texto completo.</p></div></header>
+    <% if @page.new_record? %>
+      <% placement = ArticleCardService.new(article: @page) %>
+      <%= label_tag :card_section, "Onde o card deve aparecer?" %>
+      <%= select_tag :card_section, options_for_select([["Automático — Artigos ou Reflexões", ""]] + placement.section_options, params[:card_section]), class: "form-select" %>
+      <%= f.input :description, as: :text, label: "Resumo do card (opcional)", hint: "Se ficar vazio, usaremos o início do texto completo.", input_html: { rows: 3 } %>
+      <details class="admin-optional-fields"><summary>Resumo em inglês</summary><%= f.input :description_en, as: :text, label: "Resumo do card em inglês", input_html: { rows: 3 } %></details>
+    <% else %>
+      <p>Personalize o título, o resumo e a imagem do card na sua própria tela.</p>
+      <%= link_to "Editar card em Conteúdos", edit_admin_article_card_path(@page), class: "admin-button-secondary" %>
+    <% end %>
+    <p class="article-writing-form__note">A data de publicação é registrada na primeira aprovação. O card aparece no site após publicar também a página Conteúdos.</p>
+    <details class="admin-optional-fields">
+      <summary>Endereço do artigo</summary>
+      <%= f.input :slug, label: "Endereço do texto (opcional)", required: false, hint: @page.persisted? ? "Mantenha este endereço para preservar os links já compartilhados." : "Se ficar vazio, será gerado a partir do título. Ex.: caminhos-do-autoconhecimento." %>
+    </details>
+  </section>
+
+  <section class="admin-settings-section">
+    <details class="admin-optional-fields">
+      <summary>Como o texto aparece no Google (opcional)</summary>
+      <p>Defina o título e a descrição para as buscas ou use os modelos como ponto de partida.</p>
+      <%= render "admin/shared/seo_fields", f: f %>
+      <details class="admin-optional-fields"><summary>SEO em inglês</summary><%= render "admin/shared/seo_fields", f: f, language: "en" %></details>
+    </details>
+  </section>
+  <div class="admin-settings-actions">
+    <%= link_to "Voltar aos textos", admin_articles_path, class: "admin-button-secondary" %>
+    <% if @page.persisted? %><%= link_to "Ajustar blocos e imagens", admin_page_sections_path(@page), class: "admin-button-quiet" %><% end %>
+    <%= f.button :submit, "Salvar rascunho", class: "admin-button admin-button--primary", data: { turbo_submits_with: "Salvando…" } %>
+  </div>
+<% end %>

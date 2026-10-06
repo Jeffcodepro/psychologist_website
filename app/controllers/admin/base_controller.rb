@@ -4,6 +4,7 @@ class Admin::BaseController < ApplicationController
   before_action :require_site_host!
   include SafeUploads
   before_action :prevent_admin_caching
+  before_action :remove_legacy_locale
   before_action -> { @admin_site_setting = current_tenant.site_setting }
   helper_method :current_tenant
 
@@ -39,11 +40,19 @@ class Admin::BaseController < ApplicationController
     response.headers["X-Robots-Tag"] = "noindex, nofollow"
   end
 
+  def remove_legacy_locale
+    return unless (request.get? || request.head?) && request.query_parameters.key?("locale")
+    query = request.query_parameters.except("locale").to_query
+    redirect_to request.path + (query.present? ? "?#{query}" : ""), status: :see_other
+  end
+
   def safe_preview_return_path
     candidate = params[:return_to].to_s
     uri = URI.parse(candidate)
     expected = URI.parse(admin_page_preview_frame_path(@page)).path
-    candidate if uri.host.nil? && uri.scheme.nil? && uri.path == expected && !candidate.start_with?("//")
+    return unless uri.host.nil? && uri.scheme.nil? && uri.path == expected && !candidate.start_with?("//")
+    query = URI.decode_www_form(uri.query.to_s).reject { |key, _| key == "locale" || key.start_with?("locale[") }
+    uri.path + (query.any? ? "?#{URI.encode_www_form(query)}" : "")
   rescue URI::InvalidURIError
     nil
   end
@@ -51,6 +60,6 @@ class Admin::BaseController < ApplicationController
   public
 
   def default_url_options
-    { locale: I18n.locale }
+    {}
   end
 end

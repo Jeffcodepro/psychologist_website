@@ -28,7 +28,7 @@ module ApplicationHelper
   def card_destination(item)
     page = item.linked_page
     return unless page && page.tenant_id == current_tenant.id
-    return admin_page_preview_path(page, locale: I18n.locale) if cms_preview?
+    return admin_page_preview_path(page) if cms_preview?
     return unless page.published?
     page.home? ? root_path : public_page_path(slug: page.slug)
   end
@@ -50,10 +50,10 @@ module ApplicationHelper
     request.path + (query.present? ? "?#{query}" : "")
   end
 
-  def contact_destination(locale: I18n.locale)
+  def contact_destination
     if cms_preview?
       page = current_tenant.contact_page
-      page ? admin_page_preview_path(page, locale: locale) : admin_pages_path(locale: locale)
+      page ? admin_page_preview_path(page) : admin_pages_path
     else
       contact_path
     end
@@ -63,6 +63,20 @@ module ApplicationHelper
     page = current_tenant.pages.find_by(slug: "home") || current_tenant.pages.ordered.first
     page ? admin_page_preview_path(page) : admin_pages_path
   end
+  def button_destination_sections
+    @button_destination_sections ||= current_tenant.pages.ordered.includes(:sections).flat_map do |page|
+      page.sections.select { |section| section.draft? && section.visible? }.sort_by { |section| [section.position || 0, section.id] }.map do |section|
+        published = page.sections.any? { |candidate| candidate.published? && candidate.navigation_key == section.navigation_key }
+        ["#{page.name} · #{section.title.presence || section.editor_type_label}#{' (publique para ativar)' unless published}", section.navigation_key]
+      end
+    end
+  end
+
+  def configured_button_style(button)
+    return unless button['style'] == 'custom' && ActionButtonSchema.valid_appearance?(button)
+    "--button-background: #{button['background_color']}; --button-text: #{button['text_color']}"
+  end
+
   def configured_button_path(button)
     value = button['value'].to_s
     case button['action']
@@ -72,6 +86,15 @@ module ApplicationHelper
       page = pages.find_by(id: value)
       return unless page
       cms_preview? ? admin_page_preview_path(page) : (page.home? ? root_path : public_page_path(slug: page.slug))
+    when 'section'
+      sections = cms_preview? ? current_tenant.sections.draft.visible : current_tenant.sections.published.visible.joins(:page).where(pages: { published: true })
+      target = sections.find_by(navigation_key: value)
+      return unless target
+      if cms_preview?
+        @page&.id == target.page_id ? "##{target.navigation_anchor}" : admin_page_preview_path(target.page, focus: target.navigation_key)
+      else
+        target.page.home? ? root_path(anchor: target.navigation_anchor) : public_page_path(slug: target.page.slug, anchor: target.navigation_anchor)
+      end
     when 'anchor' then "##{value.delete_prefix('#')}"
     when 'whatsapp' then "https://wa.me/#{value.gsub(/\D/, '')}"
     when 'phone' then "tel:#{value.gsub(/[^\d+]/, '')}"

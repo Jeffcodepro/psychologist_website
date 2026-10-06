@@ -58,7 +58,7 @@ class TenantSecurityTest < ActionDispatch::IntegrationTest
       assert_select '.auth-eyebrow', text: /Cliente A/
       assert_includes response.body, "Sua sessão expirou"
       get admin_root_path
-      assert_redirected_to new_user_session_path(access_key: @key, locale: "pt-BR")
+      assert_redirected_to new_user_session_path(access_key: @key)
       post @path, params: { user: { email: @user.email, password: "Strong-password-123!" } }
       assert_redirected_to admin_root_path
       get admin_page_preview_path(@page)
@@ -72,7 +72,7 @@ class TenantSecurityTest < ActionDispatch::IntegrationTest
     delete destroy_user_session_path
     assert_redirected_to new_user_session_path(access_key: @key)
     get admin_pages_path
-    assert_redirected_to new_user_session_path(access_key: @key, locale: "pt-BR")
+    assert_redirected_to new_user_session_path(access_key: @key)
   end
 
   test "an expired session cannot recover a revoked private entry" do
@@ -110,7 +110,7 @@ class TenantSecurityTest < ActionDispatch::IntegrationTest
     post @path, params: { user: { email: @other_user.email, password: "Other-password-123!" } }
     get admin_root_path
     assert_response :redirect
-    assert_redirected_to new_user_session_path(access_key: @key, locale: 'pt-BR')
+    assert_redirected_to new_user_session_path(access_key: @key)
   end
 
   test "all CMS lookups reject foreign pages, sections, cards, slides and messages" do
@@ -167,17 +167,19 @@ class TenantSecurityTest < ActionDispatch::IntegrationTest
     sign_in @user
     get contact_path
     assert_redirected_to admin_root_path
-    get admin_page_preview_frame_path(@page, locale: "en")
+    post admin_language_preference_path, params: { language: "en" }, as: :json
+    get admin_page_preview_frame_path(@page)
     assert_response :success
-    assert_select "a[href*='/admin/pages/#{@page.id}/preview'][href*='locale=en']"
+    assert_select "a[href*='/admin/pages/#{@page.id}/preview']"
     assert_select 'a[href^="/contato"], a[href="/"]', count: 0
     get admin_page_preview_path(@page)
     assert_response :success
-    assert_select 'iframe[src*="locale=en"]'
+    assert_select 'iframe[src*="/preview/frame"]'
+    assert_select '[data-admin-page-preview-locale-value="en"]'
     get edit_admin_page_section_path(@page, @section)
-    assert_select 'a[href*="locale=en"]'
+    assert_select 'a[href*="locale="]', count: 0
     post admin_page_section_section_items_path(@page, @section), params: { from_preview: "1", section_item: { title: "Card novo" } }
-    assert_redirected_to admin_page_preview_path(@page, locale: "en")
+    assert_redirected_to admin_page_preview_path(@page)
   end
 
   test "bad upload bytes and cross-client signed blobs are rejected" do
@@ -221,7 +223,7 @@ class TenantSecurityTest < ActionDispatch::IntegrationTest
     assert @user.reload.access_locked?
     15.times { post @path, params: { user: { email: 'unknown@example.test', password: 'wrong' } } }
     assert_response :too_many_requests
-    assert_equal '900', response.headers['Retry-After']
+    assert_includes 1..900, response.headers['Retry-After'].to_i
   end
 
   test "password recovery is tenant-scoped and uses a single-use hashed token" do

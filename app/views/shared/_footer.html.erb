@@ -98,7 +98,7 @@
         <nav class="site-footer__links" aria-label="<%= I18n.locale == :en ? 'Footer navigation' : 'Navegação do rodapé' %>">
           <% Array(@navigation_pages).each do |page| %>
             <% destination = if preview_frame
-              admin_page_preview_path(page, locale: I18n.locale)
+              admin_page_preview_path(page)
             elsif page.home?
               root_path
             else

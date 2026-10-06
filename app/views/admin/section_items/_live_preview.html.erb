@@ -1,0 +1,33 @@
+<% preview_section = record.section || (@placement&.sections&.find_by(id: @section_choice) if defined?(@placement)) || Section.new %>
+<% section_styles = defined?(@placement) && @placement ? @placement.sections.to_h { |section| [section.id.to_s, section_style_variables(section)] } : {} %>
+<% linked_bodies = current_tenant.pages.editorial.includes(:sections).to_h do |page|
+  [page.id.to_s, %w[pt-BR en].to_h do |locale|
+    body = I18n.with_locale(locale) { page.sections.select { |section| section.draft? && section.visible? }.sort_by(&:position).detect { |section| section.localized_body.present? }&.localized_body }
+    [locale, FormattedContent.plain(body)]
+  end]
+end %>
+<div class="card-editor-preview article-card-preview" data-card-preview-target="preview" data-device="desktop" data-linked-bodies="<%= linked_bodies.to_json %>" data-linked-page-id="<%= record.linked_page_id %>" data-section-styles="<%= section_styles.to_json %>" data-default-style="<%= section_style_variables(Section.new) %>">
+  <% linked_bodies = current_tenant.pages.editorial.includes(:sections).to_h do |page|
+  [page.id.to_s, %w[pt-BR en].to_h do |locale|
+    body = I18n.with_locale(locale) { page.sections.select { |section| section.draft? && section.visible? }.sort_by(&:position).detect { |section| section.localized_body.present? }&.localized_body }
+    [locale, FormattedContent.plain(body)]
+  end]
+end %>
+<div class="card-editor-preview__toolbar" role="group" aria-label="Prévia por dispositivo">
+    <% { desktop: "Desktop", tablet: "Tablet", mobile: "Mobile" }.each do |device, label| %>
+      <button type="button" data-device="<%= device %>" data-action="card-preview#deviceChanged" aria-pressed="<%= device == :desktop %>"><%= label %></button>
+    <% end %>
+  </div>
+  <% linked_bodies = current_tenant.pages.editorial.includes(:sections).to_h do |page|
+  [page.id.to_s, %w[pt-BR en].to_h do |locale|
+    body = I18n.with_locale(locale) { page.sections.select { |section| section.draft? && section.visible? }.sort_by(&:position).detect { |section| section.localized_body.present? }&.localized_body }
+    [locale, FormattedContent.plain(body)]
+  end]
+end %>
+<div class="card-editor-preview__canvas section-frame" data-card-preview-target="canvas" style="<%= section_style_variables(preview_section) %>">
+    <div class="card-collection"><%= render 'sections/card', item: record, editor_preview: true, attachment: attachment %></div>
+  </div>
+  <output class="card-editor-preview__size" data-card-preview-target="size" aria-live="polite">Até 360 × 440 px</output>
+  <label class="card-editor-preview__width">Largura da prévia <input type="range" min="240" max="360" value="360" step="1" data-action="input->card-preview#widthChanged" aria-label="Largura da prévia"></label>
+  <p data-image-cropper-target="empty" class="<%= 'is-hidden' if attachment.attached? %>">Escolha uma imagem para visualizar o recorte no card.</p>
+</div>

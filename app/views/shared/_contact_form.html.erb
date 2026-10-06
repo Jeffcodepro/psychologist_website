@@ -1,12 +1,22 @@
 <% english = I18n.locale == :en %>
+<% receipt_wait = local_assigns[:preview] ? 0 : contact_form_retry_after %>
+<% retry_after = local_assigns.fetch(:retry_after, 0) %>
 <%= turbo_frame_tag "contact_form_#{form_section.id}" do %>
-  <% if sent %>
+  <% if sent || receipt_wait.positive? %>
     <div class="appointment-form__success" role="status" tabindex="-1">
       <span aria-hidden="true">✓</span><h3><%= english ? "Message received" : "Mensagem recebida" %></h3>
       <p><%= english ? "Thank you for reaching out. I will get back to you using the details provided." : "Obrigada pelo contato. Retornarei pelos dados que você informou." %></p>
+      <% if receipt_wait.positive? %>
+        <p><%= english ? "You can send another message in #{(receipt_wait / 60.0).ceil} minutes." : "Você poderá enviar outra mensagem em #{(receipt_wait / 60.0).ceil} minutos." %></p>
+      <% end %>
+    </div>
+  <% elsif retry_after.positive? %>
+    <div class="appointment-form__success appointment-form__cooldown" role="status" tabindex="-1">
+      <h3><%= english ? "Please wait before sending again" : "Aguarde para enviar novamente" %></h3>
+      <p><%= english ? "Please try again in #{(retry_after / 60.0).ceil} minutes." : "Tente novamente em #{(retry_after / 60.0).ceil} minutos." %></p>
     </div>
   <% else %>
-    <%= form_with model: contact_request, url: contact_requests_path, class: "appointment-form" do |f| %>
+    <%= form_with model: contact_request, url: contact_requests_path, class: "appointment-form", data: { controller: "contact-validation", action: "submit->contact-validation#submit", contact_validation_language_value: english ? "en" : "pt" } do |f| %>
       <% if contact_request.errors.any? %>
         <div class="appointment-form__errors" role="alert"><strong><%= english ? "Please check your details:" : "Confira seus dados:" %></strong><ul><% contact_request.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul></div>
       <% end %>
@@ -18,12 +28,23 @@
           <% field_id = "contact_#{form_section.id}_#{field['key']}"; name = "contact_request[answers][#{field['key']}]"; value = contact_request.answers[field['key']]; label = ContactFormSchema.label(field) %>
           <div class="appointment-form__field contact-fields__<%= field['width'] %>">
             <%= label_tag field_id, "#{label}#{field['required'] ? ' *' : ''}" %>
-            <% options = { id: field_id, required: field['required'], maxlength: field['type'] == 'textarea' ? 5000 : 254 } %>
+            <% validation_kind = field['key'] == 'full_name' ? 'name' : field['type'] %>
+            <% options = { id: field_id, required: field['required'], maxlength: field['type'] == 'textarea' ? 5000 : 254,
+              aria: { describedby: "#{field_id}_error" }, data: { contact_validation_target: 'field', validation_kind: validation_kind, action: 'input->contact-validation#input blur->contact-validation#blur change->contact-validation#change' } } %>
             <% if field['type'] == 'textarea' %><%= text_area_tag name, value, **options, rows: 5 %>
             <% elsif field['type'] == 'select' %><%= select_tag name, options_for_select(field['options'], value), **options.except(:maxlength), include_blank: english ? 'Select' : 'Selecione' %>
+            <% elsif field['type'] == 'tel' %>
+              <div class="contact-phone" data-phone-group>
+                <div class="contact-phone__country">
+                  <%= label_tag "#{field_id}_country", english ? 'Country' : 'País', class: 'visually-hidden' %>
+                  <%= select_tag "contact_request[phone_countries][#{field['key']}]", options_for_select(contact_country_options, contact_request.phone_country(field['key'], value)), id: "#{field_id}_country", required: field['required'], data: { phone_country: true, action: 'change->contact-validation#countryChanged' } %>
+                </div>
+                <%= telephone_field_tag name, value, **options.merge(maxlength: 32), autocomplete: 'tel', inputmode: 'tel', placeholder: english ? 'Phone number' : 'DDD e telefone' %>
+              </div>
             <% elsif field['type'] == 'checkbox' %><%= check_box_tag name, '1', value == '1', **options.except(:maxlength) %>
-            <% else %><%= text_field_tag name, value, **options, type: field['type'], autocomplete: { 'email' => 'email', 'tel' => 'tel' }.fetch(field['type'], field['key'] == 'full_name' ? 'name' : 'off') %>
+            <% else %><%= text_field_tag name, value, **options, type: field['type'] == 'name' ? 'text' : field['type'], autocomplete: { 'email' => 'email', 'tel' => 'tel' }.fetch(field['type'], validation_kind == 'name' ? 'name' : 'off') %>
             <% end %>
+            <small id="<%= field_id %>_error" class="contact-field-error" data-field-error aria-live="polite" hidden></small>
           </div>
         <% end %>
       </div>

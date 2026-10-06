@@ -85,3 +85,9 @@ gem "image_processing", "~> 1.2"
 
 # Cloudinary storage and CDN image delivery.
 gem "cloudinary", "~> 2.0"
+
+# International phone validation using libphonenumber metadata.
+gem "phonelib", "~> 0.10.27"
+
+# Markdown formatting for editorial content.
+gem "redcarpet", "~> 3.6"

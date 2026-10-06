@@ -1,0 +1,41 @@
+// Fine spacing uses the same values in the public page and editor preview.
+.section-frame {
+  .flexible-section { padding-inline: var(--section-section-padding-inline, 0px); }
+  .flexible-section__layout { gap: var(--section-image-text-gap, var(--section-column-gap)); }
+  .flexible-section__contact-layout { gap: var(--section-form-gap, var(--section-column-gap)); }
+  .flexible-section__copy > .preview-movable--title { margin-top: var(--section-copy-title-offset, 0px); }
+  .flexible-section__copy > .preview-movable--body { margin-top: var(--section-copy-body-offset, 0px); }
+  .flexible-section__copy > .section-actions { margin-top: var(--section-copy-buttons-offset, 0px); }
+  .flexible-section__container > .card-collection { margin-top: var(--section-collection-cards-offset, 0px); }
+  .flexible-section__container > .flexible-section__layout,
+  .flexible-section__container > .flexible-section__contact-layout { margin-top: var(--section-collection-content-offset, 0px); }
+  .flexible-section__container > .section-actions--collection { margin-top: var(--section-collection-buttons-offset, 0px); }
+  .question__answer p + p { margin-top: var(--section-paragraph-spacing); }
+}
+@mixin detailed-inline-spacing($device) {
+  .section-frame[data-layout-#{$device}="media_between"], .section-frame[data-layout-#{$device}="media_before_buttons"] {
+    .flexible-section__layout--with-image {
+      gap: var(--section-content-gap);
+      .section-actions { margin-top: var(--section-copy-buttons-offset, 0px); }
+      .flexible-section__media { margin-top: var(--section-copy-media-offset, 0px); }
+    }
+  }
+}
+@media (min-width: 1025px) { @include detailed-inline-spacing(desktop); }
+@media (min-width: 601px) and (max-width: 1024px) { @include detailed-inline-spacing(tablet); }
+@media (max-width: 600px) { @include detailed-inline-spacing(mobile); }
+.spacing-settings .compact-range-field { gap: 12px; }
+.spacing-settings input[type="range"] { accent-color: #36785a; min-width: 0; }
+.spacing-settings .compact-range-field input[type="number"] { width: 85px; flex: 0 0 85px; padding-inline: 10px; }
+
+.spacing-live__layout { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 24px; align-items: start; }
+.spacing-live__preview { position: sticky; top: 12px; min-width: 0; padding: 16px; border: 1px solid #dce3df; border-radius: 12px; background: white; }
+.spacing-live__preview p { font-size: 12px; line-height: 1.5; color: #66736e; margin-block: 8px; }
+.spacing-live__viewport { position: relative; height: 300px; overflow: auto; background: #f8f6f0; border: 1px solid #e3e7e4; border-radius: 8px; }
+.spacing-live__viewport iframe { display: block; border: 0; transform-origin: top left; pointer-events: none; max-width: none; }
+.spacing-live .spacing-settings { grid-template-columns: minmax(0, 1fr); }
+@media (max-width: 700px) {
+  .spacing-live__layout { grid-template-columns: minmax(0, 1fr); }
+  .spacing-live__preview { position: static; grid-row: 1; }
+  .spacing-live__viewport { max-height: 340px; }
+}

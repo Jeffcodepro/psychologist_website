@@ -1,7 +1,7 @@
 <div class="admin-section-editor admin-article-card-editor" data-controller="translation" data-translation-url-value="<%= admin_translation_path %>">
-  <div class="admin-breadcrumb"><%= link_to 'Blog e textos', admin_articles_path %><span>/</span><%= link_to @article.name, admin_page_sections_path(@article) %><span>/</span><strong>Card em Conteúdos</strong></div>
-  <header class="admin-section-editor__heading"><div><span class="admin-page-eyebrow">Apresentação do texto</span><h1>Card em Conteúdos</h1><p>Escolha onde o card aparece e personalize a imagem, o título e o resumo. “Saiba mais” e o clique no card abrem o texto completo.</p></div><%= link_to 'Editar texto completo', admin_page_sections_path(@article), class: 'admin-button-secondary' %></header>
-  <div class="article-card-layout">
+  <div class="admin-breadcrumb"><%= link_to 'Blog e textos', admin_articles_path %><span>/</span><%= link_to @article.name, edit_admin_article_path(@article) %><span>/</span><strong>Card em Conteúdos</strong></div>
+  <header class="admin-section-editor__heading"><div><span class="admin-page-eyebrow">Apresentação do texto</span><h1>Card em Conteúdos</h1><p>Escolha onde o card aparece e personalize a imagem, o título e o resumo. “Saiba mais” e o clique no card abrem o texto completo.</p></div><%= link_to 'Editar texto completo', edit_admin_article_path(@article), class: 'admin-button-secondary' %></header>
+  <div class="article-card-editor-form">
     <%= simple_form_for @card, as: :article_card, url: admin_article_card_path(@article), method: :patch, html: { class: 'admin-section-editor__form' } do |f| %>
       <%= f.error_notification %>
       <section class="admin-section-editor__panel is-active">
@@ -17,16 +17,11 @@
         </details>
         <% attachment = @card.image.attached? && !@card.image.blob.persisted? ? SectionItem.new.image : @card.image %>
         <%= render 'admin/shared/image_cropper', f: f, record: @card, attachment: attachment, title: 'Imagem do card (opcional)' %>
+        <%= render "admin/section_items/presentation", f: f %>
         <div class="admin-section-editor__input-grid"><%= f.input :position, label: 'Ordem na seção', input_html: { min: 0 } %><%= f.input :visible, as: :boolean, label: 'Exibir card' %></div>
       </section>
       <footer class="admin-section-editor__actions"><%= link_to 'Voltar aos textos', admin_articles_path, class: 'admin-button-quiet' %><%= f.button :submit, 'Salvar card', class: 'admin-button admin-button--primary', data: { turbo_submits_with: 'Salvando…' } %></footer>
     <% end %>
-    <aside class="article-card-preview">
-      <h2>Prévia do card</h2><p>Salve para atualizar esta prévia. Clique no card para conferir o texto completo.</p>
-      <% preview_card = @placement.build %>
-      <div class="card-collection" style="--section-title-font: 'Playfair Display', serif; --section-body-font: 'DM Sans', sans-serif; --section-text-align: left"><%= render 'sections/card', item: preview_card %></div>
-      <% if @placement.contents_page %><%= link_to 'Pré-visualizar Conteúdos', admin_page_preview_path(@placement.contents_page), class: 'admin-button-secondary' %><% end %>
-      <p>Para aparecer no site, publique o texto e a página Conteúdos. As alterações ficam em rascunho até a publicação.</p>
-    </aside>
+
   </div>
 </div>

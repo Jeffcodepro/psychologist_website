@@ -1,0 +1,59 @@
+<% device = local_assigns.fetch(:device, "desktop") %>
+<div class="section-setting-group layout-settings">
+  <% if section.section_type == "contact" %>
+    <div class="section-setting-group__heading"><strong>Formulário</strong></div>
+    <% effective_position = section.visual_value("form_position", device) %>
+    <% effective_position = "after_text" if device == "mobile" && section.responsive_settings.dig(device, "form_position").blank? && %w[left right].include?(effective_position) %>
+    <div data-controller="form-placement" data-form-placement-position-value="<%= effective_position %>" data-form-placement-alignment-value="<%= section.visual_value('form_alignment', device) %>">
+      <div class="form-placement-map" role="group" aria-label="Posição visual do formulário">
+        <% [["before_text", "left", "Acima · esquerda"], ["before_text", "center", "Acima · centro"], ["before_text", "right", "Acima · direita"], ["left", "left", "Ao lado · esquerda"], ["right", "right", "Ao lado · direita"], ["after_text", "left", "Abaixo · esquerda"], ["after_text", "center", "Abaixo · centro"], ["after_text", "right", "Abaixo · direita"]].each do |position, alignment, label| %>
+          <button type="button" data-form-placement-target="choice" data-position="<%= position %>" data-alignment="<%= alignment %>" data-action="form-placement#choose" aria-pressed="false"><i aria-hidden="true"></i><span><%= label %></span></button>
+        <% end %>
+        <span class="form-placement-map__text" aria-hidden="true">Título<br>Parágrafo</span>
+      </div>
+    <div class="admin-section-editor__input-grid" data-action="change->form-placement#refresh">
+      <% SectionLayout::FORM_OPTIONS.each do |field, (label, choices)| %>
+        <% input_id = "layout_#{section.id || 'new'}_#{device}_#{field}" %>
+        <div>
+          <%= label_tag input_id, label %>
+          <% if device == "desktop" %>
+            <%= f.select field, options_for_select(choices, section.visual_value(field)), {}, id: input_id, class: "form-select", data: { form_placement_target: { "form_position" => "position", "form_alignment" => "alignment" }[field] } %>
+          <% else %>
+            <%= select_tag "section[responsive_settings][#{device}][#{field}]", options_for_select([["Usar padrão", ""]] + choices, section.responsive_settings.dig(device, field)), id: input_id, class: "form-select", data: { form_placement_target: { "form_position" => "position", "form_alignment" => "alignment" }[field] } %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+    </div>
+  <% end %>
+  <div class="spacing-live" data-controller="spacing-preview" data-spacing-preview-url-value="<%= section.persisted? ? layout_preview_admin_page_section_path(@page, section) : layout_preview_admin_page_sections_path(@page) %>" data-spacing-preview-device-value="<%= device %>">
+  <div class="section-setting-group__heading"><strong>Espaçamentos</strong><span>px</span></div>
+  <div class="spacing-live__layout">
+  <div>
+  <div class="admin-section-editor__input-grid spacing-settings">
+    <% SectionLayout::SPACING.each do |field, (label, _, range)| %>
+      <% next if field == "form_gap" && section.section_type != "contact" %>
+      <% input_id = "layout_#{section.id || 'new'}_#{device}_#{field}" %>
+      <% effective = section.visual_value(field, device) %>
+      <% raw = device == "desktop" ? (SectionLayout::INHERITED_SPACING.key?(field) ? section.public_send(field) : effective) : section.responsive_settings.dig(device, field) %>
+      <div data-controller="paired-input" data-paired-input-default-value="<%= effective %>">
+        <%= label_tag input_id, label %>
+        <div class="compact-range-field">
+          <input type="range" min="<%= range.begin %>" max="<%= range.end %>" step="1" value="<%= effective %>" aria-label="<%= label %> · <%= device %>" data-paired-input-target="picker" data-action="input->paired-input#pick">
+          <%= number_field_tag(device == "desktop" ? "section[#{field}]" : "section[responsive_settings][#{device}][#{field}]", raw, id: input_id, class: "form-control", min: range.begin, max: range.end, step: 1, placeholder: effective, data: { paired_input_target: "field", action: "input->paired-input#sync" }) %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+  </div>
+  <aside class="spacing-live__preview">
+    <strong>Prévia antes de salvar</strong>
+    <p><%= { "desktop" => "Desktop · 1200 px", "tablet" => "Tablet · 800 px", "mobile" => "Mobile · 390 px" }.fetch(device) %> · reduzida para caber neste painel</p>
+      <div class="spacing-live__viewport" data-spacing-preview-target="viewport"><iframe title="Prévia de espaçamento · <%= device %>" sandbox="allow-same-origin" data-spacing-preview-target="frame" data-action="load->spacing-preview#resize"></iframe></div>
+      <p role="status" data-spacing-preview-target="status">Ajuste um controle para visualizar.</p>
+      <button type="button" class="admin-button-quiet" data-action="spacing-preview#refresh">Atualizar prévia</button>
+
+  </aside>
+  </div>
+  </div>
+</div>

@@ -23,6 +23,7 @@
     </div>
 
     <div class="admin-page-builder__header-actions">
+      <%= link_to "Adicionar botões", new_admin_page_section_path(@page, preset: "buttons"), class: "admin-button-secondary" %>
       <%= link_to(
             "Pré-visualizar",
             admin_page_preview_path(@page),
@@ -39,6 +40,7 @@
 
   <% if @page.editorial? %>
     <div class="admin-article-origins">
+      <%= link_to "Escrever texto completo", edit_admin_article_path(@page), class: "admin-button-secondary" %>
       <span>O card apresenta um resumo e abre este texto em “Saiba mais”. Edite o texto aqui e personalize sua apresentação em Conteúdos.</span>
       <%= link_to 'Card em Conteúdos', edit_admin_article_card_path(@page), class: 'admin-button-secondary' %>
       <% @page.linking_cards.joins(:section).where(sections: { publication_state: 'draft' }).includes(section: :page).each do |card| %>

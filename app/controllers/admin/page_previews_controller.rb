@@ -5,6 +5,7 @@ class Admin::PagePreviewsController < Admin::BaseController
 
   def show
     @preview_locale = I18n.locale.to_s
+    @focus_anchor = @page.sections.draft.visible.find_by(navigation_key: params[:focus])&.navigation_anchor if params[:focus].to_s.match?(/\A[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}\z/)
   end
 
   def frame

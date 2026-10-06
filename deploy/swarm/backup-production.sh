@@ -17,7 +17,7 @@ app_container=$(one_container psychologist-app_web)
 db_container=$(one_container psychologist-db_postgres)
 backup_root=${1:-/opt/rosemarydias/backups}
 mkdir -p "$backup_root"
-backup_dir=$(mktemp -d "$backup_root/pre-1.1.1-$(date -u +%Y%m%dT%H%M%SZ)-XXXXXX")
+backup_dir=$(mktemp -d "$backup_root/pre-update-$(date -u +%Y%m%dT%H%M%SZ)-XXXXXX")
 trap 'echo "Backup incompleto em $backup_dir. Não prossiga com a atualização." >&2' ERR
 
 docker inspect --format '{{.Config.Image}}' "$app_container" > "$backup_dir/image.txt"

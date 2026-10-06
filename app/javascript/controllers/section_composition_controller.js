@@ -138,11 +138,12 @@ export default class extends Controller {
       this.findRealFrame()
 
     if (!frame) return
+    frame.dataset.layoutDesktop = layout
     const radius = { rectangle: "0px", rounded: "24px", square: "4px", circle: "50%", oval: "50%", arch: "50% 50% 16px 16px" }[shape]
     frame.style.setProperty("--desktop-image-radius", radius)
     frame.style.setProperty("--desktop-image-ratio", ["square", "circle"].includes(shape) ? "1 / 1" : "4 / 5")
     frame.style.setProperty("--desktop-image-width", { small: "250px", medium: "350px", large: "460px" }[size])
-    frame.style.setProperty("--desktop-layout-columns", ["media_top", "media_bottom"].includes(layout) ? "minmax(0, 1fr)" : "minmax(0, 1.15fr) minmax(0, 0.85fr)")
+    frame.style.setProperty("--desktop-layout-columns", !["text_left", "text_right"].includes(layout) ? "minmax(0, 1fr)" : "minmax(0, 1.15fr) minmax(0, 0.85fr)")
     frame.style.setProperty("--desktop-copy-order", ["text_right", "media_top"].includes(layout) ? 2 : 1)
     frame.style.setProperty("--desktop-media-order", ["text_right", "media_top"].includes(layout) ? 1 : 2)
 

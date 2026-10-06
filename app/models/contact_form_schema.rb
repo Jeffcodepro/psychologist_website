@@ -1,5 +1,5 @@
 class ContactFormSchema
-  TYPES = %w[text textarea email tel select checkbox date].freeze
+  TYPES = %w[text name textarea email tel select checkbox date].freeze
   DEFAULT_FIELDS = [
     { "key" => "full_name", "label" => "Nome completo", "label_en" => "Full name", "type" => "text", "required" => true, "width" => "full" },
     { "key" => "phone", "label" => "Telefone com DDD", "label_en" => "Phone number", "type" => "tel", "required" => true, "width" => "half" },

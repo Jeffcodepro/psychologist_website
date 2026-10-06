@@ -1,30 +1,51 @@
+<% editor_preview = local_assigns.fetch(:editor_preview, false) %>
+<% attachment = local_assigns.fetch(:attachment, item.image) %>
 <% destination = card_destination(item) %>
 <% preview_body = card_preview_body(item, linked: destination.present?) %>
-<article class="psychology-card compact-card <%= 'compact-card--linked' if destination %> <%= 'compact-card--with-image' if item.image.attached? %>" data-controller="<%= 'card-reader' unless destination %>" data-card-id="<%= item.id %>" style="<%= card_image_style(item) %>; <%= media_adjustment_style(item) %>">
-  <% if item.image.attached? %>
-    <div class="compact-card__media"><div class="compact-card__image-frame" data-shape="<%= item.image_shape %>">
-      <%= display_image_tag item.image, alt: item.localized_title, class: "psychology-card__image compact-card__image", loading: "lazy" %>
+<% plain_body = FormattedContent.plain(preview_body) %>
+<% summary = truncate(plain_body, length: destination ? 240 : 360, separator: " ") %>
+<% has_image = attachment.attached? %>
+<article class="psychology-card compact-card <%= 'compact-card--linked' if destination %> <%= 'compact-card--with-image' if has_image %>" data-controller="card-reader" data-card-reader-truncated-value="<%= summary != plain_body %>" data-action="card-preview:refresh->card-reader#refresh" data-card-id="<%= item.id %>"
+  <% CardPresentation::DEVICES.each do |device| %>
+    data-card-layout-<%= device %>="<%= item.card_value('image_layout', device) %>"
+    data-card-button-<%= device %>="<%= item.card_value('button_position', device) %>"
+    data-card-align-<%= device %>="<%= item.card_value('button_alignment', device) %>"
+  <% end %> style="<%= card_image_style(item) %>; <%= media_adjustment_style(item) %>; <%= card_overlay_style(item) %>">
+  <% if has_image || editor_preview %>
+    <div class="compact-card__media" <%= 'hidden' unless has_image %>><div class="compact-card__image-frame" data-shape="<%= item.image_shape %>"
+      <% if editor_preview %>data-image-cropper-target="frame" data-action="pointerdown->image-cropper#start pointermove->image-cropper#move pointerup->image-cropper#stop pointercancel->image-cropper#stop"<% end %>>
+      <% if editor_preview %>
+        <%= tag.img src: (url_for(attachment) if has_image), alt: item.localized_title, class: "psychology-card__image compact-card__image", draggable: false, data: { image_cropper_target: "image", action: "load->image-cropper#loaded" } %>
+      <% else %>
+        <%= display_image_tag attachment, alt: item.localized_title, class: "psychology-card__image compact-card__image", loading: "lazy" %>
+      <% end %>
     </div></div>
   <% end %>
   <div class="compact-card__content">
     <div class="compact-card__excerpt" data-card-reader-target="excerpt">
-    <h3 class="compact-card__title"><%= item.localized_title %></h3>
-    <% if destination && item.linked_page %><%= render "shared/article_publication", page: item.linked_page %><% end %>
-    <% if preview_body.present? %><div class="compact-card__body"><%= simple_format(destination ? truncate(strip_tags(preview_body).squish, length: 240, separator: ' ') : preview_body) %></div><% end %>
+      <div class="compact-card__heading"><h3 class="compact-card__title" data-card-reader-target="title"><%= item.localized_title %></h3>
+        <% if destination && item.linked_page %><%= render "shared/article_publication", page: item.linked_page %><% end %>
+      </div>
+      <div class="compact-card__body" data-card-reader-target="body"><p class="compact-card__summary" data-card-reader-target="summary"><%= summary %></p></div>
     </div>
-    <% if destination %>
-      <%= link_to destination, class: 'compact-card__link', target: (cms_preview? ? '_top' : nil), data: { turbo_frame: '_top' }, aria: { label: "#{I18n.locale == :en ? 'Learn more' : 'Saiba mais'}: #{item.localized_title}" } do %>
-        <%= I18n.locale == :en ? 'Learn more' : 'Saiba mais' %> <span aria-hidden="true">→</span>
+    <div class="compact-card__actions">
+      <% if editor_preview %>
+        <button type="button" class="compact-card__link" data-preview-destination <%= 'hidden' unless destination %>><%= I18n.locale == :en ? 'Learn more' : 'Saiba mais' %> <span aria-hidden="true">→</span></button>
+      <% elsif destination %>
+        <%= link_to destination, class: 'compact-card__link', target: (cms_preview? ? '_top' : nil), data: { turbo_frame: '_top' }, aria: { label: "#{I18n.locale == :en ? 'Learn more' : 'Saiba mais'}: #{item.localized_title}" } do %>
+          <%= I18n.locale == :en ? 'Learn more' : 'Saiba mais' %> <span aria-hidden="true">→</span>
+        <% end %>
       <% end %>
-    <% else %>
-      <button type="button" class="compact-card__read-more" data-card-reader-target="button" data-action="card-reader#open" aria-haspopup="dialog" hidden><%= I18n.locale == :en ? "Read more" : "Ler mais" %> <span aria-hidden="true">↗</span></button>
-    <% end %>
+      <% if !destination || editor_preview %>
+        <button type="button" class="compact-card__read-more" data-card-reader-target="button" data-action="card-reader#open" aria-haspopup="dialog" hidden><%= I18n.locale == :en ? "Read more" : "Ler mais" %> <span aria-hidden="true">↗</span></button>
+      <% end %>
+    </div>
   </div>
-  <% unless destination %>
-  <dialog class="card-reader-dialog" data-card-reader-target="dialog" data-action="click->card-reader#backdrop" aria-labelledby="card-title-<%= item.id %>">
-    <button type="button" class="card-reader-dialog__close" data-action="card-reader#close" aria-label="<%= I18n.locale == :en ? 'Close' : 'Fechar' %>">×</button>
-    <h2 id="card-title-<%= item.id %>"><%= item.localized_title %></h2>
-    <div class="card-reader-dialog__body"><%= simple_format(item.localized_body) %></div>
-  </dialog>
+  <% if !destination || editor_preview %>
+    <dialog class="card-reader-dialog" data-card-reader-target="dialog" data-action="click->card-reader#backdrop" aria-label="<%= item.localized_title %>">
+      <button type="button" class="card-reader-dialog__close" data-action="card-reader#close" aria-label="<%= I18n.locale == :en ? 'Close' : 'Fechar' %>">×</button>
+      <h2><%= item.localized_title %></h2>
+      <div class="card-reader-dialog__body"><%= formatted_content(preview_body) %></div>
+    </dialog>
   <% end %>
 </article>

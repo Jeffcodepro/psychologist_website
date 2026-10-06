@@ -63,7 +63,7 @@ class ArticleCardService
   private
 
   def excerpt(value)
-    ActionView::Base.full_sanitizer.sanitize(value.to_s).squish.truncate(240, separator: ' ')
+    FormattedContent.plain(value).truncate(240, separator: ' ')
   end
 
   def area_section(key)

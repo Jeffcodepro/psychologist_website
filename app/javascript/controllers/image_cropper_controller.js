@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["frame", "image", "empty", "file", "dimensions", "shape", "x", "y", "zoom", "xField", "yField", "zoomField", "xLabel", "yLabel", "zoomLabel", "positionHint", "error", "adjustment"]
-  static values = { shape: String, baseShape: String, shapeField: String, kind: String, adjustments: Object, x: Number, y: Number, zoom: Number }
+  static values = { cardPreview: Boolean, shape: String, baseShape: String, shapeField: String, kind: String, adjustments: Object, x: Number, y: Number, zoom: Number }
 
   connect() {
     this.form = this.element.closest("form")
@@ -170,12 +170,18 @@ export default class extends Controller {
     const radius = { rectangle: "0", rounded: "24px", square: "4px", circle: "50%", oval: "50%", arch: "50% 50% 16px 16px" }[shape]
     const ratio = ["square", "circle"].includes(shape) ? "1 / 1" :
       (this.kindValue === "banner" ? "1920 / 760" : (this.kindValue === "card" && !["oval", "arch"].includes(shape) ? "16 / 10" : "4 / 5"))
-    this.frameTarget.style.borderRadius = radius
-    this.frameTarget.style.aspectRatio = ratio
+    if (this.cardPreviewValue) {
+      this.frameTarget.closest(".compact-card").style.setProperty("--card-image-radius", radius)
+    } else {
+      this.frameTarget.style.borderRadius = radius
+      this.frameTarget.style.aspectRatio = ratio
+    }
+    this.frameTarget.dataset.shape = shape
     Object.assign(this.imageTarget.style, { objectPosition: `${x}% ${y}%`, transform: `scale(${zoom}) rotate(${this.adjustment("rotation", 0)}deg) scale(${this.adjustment("flip_x", 1)}, ${this.adjustment("flip_y", 1)})`, filter: `brightness(${this.adjustment("brightness", 100)}%) contrast(${this.adjustment("contrast", 100)}%) saturate(${this.adjustment("saturation", 100)}%)`, transformOrigin: `${x}% ${y}%` })
     this.xLabelTarget.value = `${Math.round(x)}%`
     this.yLabelTarget.value = `${Math.round(y)}%`
     this.zoomLabelTarget.value = `${Math.round(zoom * 100)}%`
+    if (this.cardPreviewValue) this.dispatch("changed")
   }
 
   clamp(value) { return Math.max(0, Math.min(100, value)) }

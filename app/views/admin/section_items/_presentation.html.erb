@@ -1,0 +1,59 @@
+<fieldset class="card-presentation">
+  <legend>Composição do card</legend>
+  <% { "desktop" => "Desktop · padrão", "tablet" => "Tablet", "mobile" => "Mobile" }.each do |device, label| %>
+    <details class="admin-optional-fields" <%= "open" if device == "desktop" %>>
+      <summary><%= label %></summary>
+      <div class="responsive-settings__fields">
+        <% { "image_layout" => "Posição da imagem", "button_alignment" => "Alinhamento do botão", "button_position" => "Posição do botão" }.each do |field, title| %>
+          <% input_id = "#{f.object_name}_#{device}_#{field}" %>
+          <div>
+            <%= label_tag input_id, title %>
+            <%= select_tag "#{f.object_name}[card_settings][#{device}][#{field}]",
+              options_for_select((device == "desktop" ? [] : [["Usar padrão", ""]]) + CardPresentation::OPTIONS.fetch(field),
+                device == "desktop" ? f.object.card_value(field) : f.object.card_settings.dig(device, field)),
+              id: input_id, class: "form-select" %>
+          </div>
+        <% end %>
+      </div>
+      <div class="card-spacing-settings spacing-settings">
+        <h4>Espaçamentos do card (px)</h4>
+        <div class="responsive-settings__fields">
+          <% CardPresentation::SPACING.each do |field, (label, default)| %>
+            <% effective = f.object.card_value(field, device) || default; input_id = "#{f.object_name}_#{device}_#{field}" %>
+            <div data-controller="paired-input" data-paired-input-default-value="<%= effective %>">
+              <%= label_tag input_id, label %>
+              <div class="compact-range-field">
+                <input type="range" min="0" max="40" step="1" value="<%= effective %>" aria-label="<%= label %> · <%= device %>" data-paired-input-target="picker" data-action="input->paired-input#pick">
+                <%= number_field_tag "#{f.object_name}[card_settings][#{device}][#{field}]", f.object.card_settings.dig(device, field), id: input_id, min: 0, max: 40, step: 1, placeholder: "Auto", data: { paired_input_target: "field", action: "input->paired-input#sync" } %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+      <div class="card-overlay-settings">
+        <h4>Imagem de fundo</h4>
+        <div class="responsive-settings__fields">
+          <% { "overlay_color" => "Cor da camada", "background_text_color" => "Cor do texto sobre a imagem" }.each do |field, label| %>
+            <% name = "#{f.object_name}[card_settings][#{device}][#{field}]"; input_id = "#{f.object_name}_#{device}_#{field}"; effective = f.object.card_value(field, device) %>
+            <div data-controller="paired-input" data-paired-input-default-value="<%= effective %>">
+              <%= label_tag input_id, label %>
+              <div class="compact-color-field">
+                <input type="color" value="<%= effective %>" aria-label="<%= label %> · seletor · <%= device %>" data-paired-input-target="picker" data-action="input->paired-input#pick">
+                <%= text_field_tag name, device == "desktop" ? effective : f.object.card_settings.dig(device, field), id: input_id, placeholder: "Padrão: #{effective}", pattern: '#[0-9a-fA-F]{6}', maxlength: 7, data: { paired_input_target: "field", action: "input->paired-input#sync" } %>
+              </div>
+            </div>
+          <% end %>
+          <% field = "overlay_opacity"; effective = f.object.card_value(field, device); input_id = "#{f.object_name}_#{device}_#{field}" %>
+          <div class="card-overlay-settings__intensity" data-controller="paired-input" data-paired-input-default-value="<%= effective %>">
+            <%= label_tag input_id, "Intensidade da camada (%)" %>
+            <div class="compact-range-field">
+              <input type="range" min="0" max="100" step="1" value="<%= effective %>" aria-label="Intensidade da camada · <%= device %>" data-paired-input-target="picker" data-action="input->paired-input#pick">
+              <%= number_field_tag "#{f.object_name}[card_settings][#{device}][#{field}]", device == "desktop" ? effective : f.object.card_settings.dig(device, field), id: input_id, min: 0, max: 100, step: 1, placeholder: effective, data: { paired_input_target: "field", action: "input->paired-input#sync" } %>
+            </div>
+            <small>0% deixa a imagem sem camada de cor. <%= "Campos vazios usam o padrão do desktop." unless device == "desktop" %></small>
+          </div>
+        </div>
+      </div>
+    </details>
+  <% end %>
+</fieldset>

@@ -8,7 +8,7 @@
           "body_font_style" => ["Estilo do texto", [["Normal", "normal"], ["Itálico", "italic"]]],
           "title_font_weight" => ["Peso do título", [300, 400, 500, 600, 700, 800]],
           "body_font_weight" => ["Peso do texto", [300, 400, 500, 600, 700, 800]],
-          "buttons_position" => ["Posição dos botões", [["Antes dos textos", "before_text"], ["Entre título e parágrafo", "between_text"], ["Depois dos textos", "after_text"]]],
+          "buttons_position" => ["Posição dos botões", SectionLayout::BUTTON_POSITIONS],
           "buttons_alignment" => ["Alinhamento dos botões", [["Esquerda", "left"], ["Centro", "center"], ["Direita", "right"]]],
           "text_order" => ["Ordem do texto", [["Título acima do parágrafo", "title_first"], ["Parágrafo acima do título", "body_first"]]],
           "title_alignment" => ["Alinhamento do título", [["Esquerda", "left"], ["Centro", "center"], ["Direita", "right"]]],
@@ -39,7 +39,7 @@
             <% if font_field %><span class="font-picker__sample" data-font-picker-target="sample">Cuidar de você · Aa Bb Çç 123</span><% end %>
           </div>
         <% end %>
-        <% { "title_font_size" => "Título (px)", "body_font_size" => "Texto (px)", "title_line_height" => "Entrelinhas do título", "body_line_height" => "Entrelinhas do texto", "title_letter_spacing" => "Espaço entre letras do título (px)", "body_letter_spacing" => "Espaço entre letras do texto (px)", "banner_overlay" => "Escurecimento do banner (%)" }.each do |field, title| %>
+        <% { "title_font_size" => "Título (px)", "body_font_size" => "Texto (px)", "title_line_height" => "Entrelinhas do título", "body_line_height" => "Entrelinhas do texto", "title_letter_spacing" => "Espaço entre letras do título (px)", "body_letter_spacing" => "Espaço entre letras do texto (px)" }.each do |field, title| %>
           <% input_id = "responsive_#{section.id}_#{device}_#{field}"; range = ResponsiveSection::NUMBER_FIELDS.fetch(field) %>
           <div>
             <%= label_tag input_id, title %>
@@ -54,6 +54,7 @@
           </div>
         <% end %>
       </div>
+      <%= render "admin/sections/layout_settings", f: f, section: section, device: device %>
       <% %w[image banner].each do |media| %>
         <% attachment = section.public_send(media) %>
         <% if attachment.attached? %>

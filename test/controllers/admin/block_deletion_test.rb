@@ -13,14 +13,14 @@ class Admin::BlockDeletionTest < ActionDispatch::IntegrationTest
   end
 
   test "preview delete is a form and returns to the same preview with a GET" do
-    destination = admin_page_preview_frame_path(@page, locale: :en)
+    destination = admin_page_preview_frame_path(@page)
     get destination
-    assert_select "form[action='#{admin_page_section_path(@page, @section, locale: :en)}'][method='post']" do
+    assert_select "form[action='#{admin_page_section_path(@page, @section)}'][method='post']" do
       assert_select "input[name='_method'][value='delete']"
       assert_select "input[name='return_to'][value='#{destination}']"
       assert_select "button", text: "Excluir bloco"
     end
-    delete admin_page_section_path(@page, @section, locale: :en), params: { return_to: destination }
+    delete admin_page_section_path(@page, @section), params: { return_to: destination }
     assert_response :see_other
     assert_redirected_to destination
     follow_redirect!
@@ -35,7 +35,7 @@ class Admin::BlockDeletionTest < ActionDispatch::IntegrationTest
   test "a crafted return URL cannot leave the current tenant preview" do
     delete admin_page_section_path(@page, @section), params: { return_to: "https://external.example/admin/pages/#{@page.id}/preview/frame" }
     assert_response :see_other
-    assert_redirected_to admin_page_sections_path(@page, locale: "pt-BR")
+    assert_redirected_to admin_page_sections_path(@page)
   end
 
   test "published and foreign blocks cannot be deleted through a crafted request" do
@@ -53,10 +53,10 @@ class Admin::BlockDeletionTest < ActionDispatch::IntegrationTest
 
   test "full editor and card deletion use forms with safe redirects" do
     get edit_admin_page_section_path(@page, @section)
-    assert_select "form[action='#{admin_page_section_path(@page, @section, locale: 'pt-BR')}'] input[name='_method'][value='delete']"
+    assert_select "form[action='#{admin_page_section_path(@page, @section)}'] input[name='_method'][value='delete']"
     card = @section.section_items.create!(title: "Card")
     get admin_page_section_section_items_path(@page, @section)
-    assert_select "form[action='#{admin_page_section_section_item_path(@page, @section, card, locale: 'pt-BR')}'] input[name='_method'][value='delete']"
+    assert_select "form[action='#{admin_page_section_section_item_path(@page, @section, card)}'] input[name='_method'][value='delete']"
     delete admin_page_section_section_item_path(@page, @section, card)
     assert_response :see_other
     follow_redirect!

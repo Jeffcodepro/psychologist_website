@@ -1,0 +1,7 @@
+<% visible_here = %w[desktop tablet mobile].any? { |device| %w[before_cards after_cards].include?(section.visual_value("buttons_position", device)) == (placement == "collection") } %>
+<% if preview_mode || visible_here %>
+<div class="section-actions section-actions--<%= placement %>" data-preview-field="buttons">
+  <% if preview_mode && section.action_buttons.any? %><%= render "admin/page_previews/element_handle", field: "buttons", label: "Botões" %><% end %>
+  <%= render "shared/action_buttons", buttons: section.action_buttons %>
+</div>
+<% end %>

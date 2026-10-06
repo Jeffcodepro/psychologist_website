@@ -30,7 +30,7 @@ class BlockDeletionTest < ApplicationSystemTestCase
       assert_selector "[data-preview-section-id='#{@remaining.id}']"
       assert_no_selector ".admin-navbar"
     end
-    assert_current_path admin_page_preview_path(@content_page, locale: :en)
+    assert_current_path admin_page_preview_path(@content_page)
     assert_not Section.exists?(@section.id)
     assert_equal 1, @remaining.reload.position
     assert_equal 2, @content_page.sections.published.count
@@ -69,7 +69,7 @@ class BlockDeletionTest < ApplicationSystemTestCase
   test "deleting from the full editor returns to the block list" do
     visit edit_admin_page_section_path(@content_page, @section)
     accept_confirm { click_on "Excluir bloco" }
-    assert_current_path admin_page_sections_path(@content_page, locale: "pt-BR")
+    assert_current_path admin_page_sections_path(@content_page)
     assert_text "Bloco removido."
     assert_not Section.exists?(@section.id)
     assert_text "Bloco preservado"

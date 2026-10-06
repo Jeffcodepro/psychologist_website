@@ -1,10 +1,12 @@
 class Section < ApplicationRecord
   include EditableButtons
   editable_buttons :action_buttons
-  validates :buttons_position, inclusion: { in: %w[before_text between_text after_text] }
+  validates :buttons_position, inclusion: { in: SectionLayout::BUTTON_POSITIONS.map(&:last) }
   validates :buttons_alignment, inclusion: { in: %w[left center right] }
   include ImageAttachments
   validates_image_attachments :image, :banner
+  include SectionLayout
+  include SectionMediaOverlay
   include ResponsiveSection
   include MediaAdjustable
   SECTION_TYPES = %w[
@@ -40,6 +42,9 @@ class Section < ApplicationRecord
     text_right
     media_top
     media_bottom
+    media_between
+    media_before_buttons
+    media_background
   ].freeze
 
   MEDIA_SIZES = %w[
@@ -54,6 +59,8 @@ class Section < ApplicationRecord
     bottom
   ].freeze
 
+  before_validation { self.anchor = anchor.to_s.strip.presence }
+
   belongs_to :page
   delegate :tenant, :tenant_id, to: :page
   validate do
@@ -66,6 +73,10 @@ class Section < ApplicationRecord
 
   def form_fields_json
     (form_fields.is_a?(Array) ? effective_form_fields : ContactFormSchema::DEFAULT_FIELDS).to_json
+  end
+
+  def navigation_anchor
+    anchor.presence || "bloco-#{navigation_key}"
   end
 
   def form_fields_json=(value)

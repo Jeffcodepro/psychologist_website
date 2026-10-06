@@ -142,24 +142,10 @@
           </div>
         </header>
 
-        <%= f.input(
-              :seo_title,
-              label: "Título SEO"
-            ) %>
-
-        <%= f.input(
-              :seo_description,
-              as: :text,
-              label: "Descrição SEO",
-              input_html: {
-                rows: 4
-              }
-            ) %>
-
-        <%= f.input(
-              :seo_keywords,
-              label: "Palavras-chave"
-            ) %>
+        <%= render "admin/shared/seo_fields", f: f %>
+        <%= f.input :seo_keywords, label: "Termos de referência (opcional)",
+          placeholder: "psicologia, psicoterapia, nome da profissional",
+          hint: "Estes termos não são usados pelo Google para determinar posições." %>
       </section>
     <% end %>
 

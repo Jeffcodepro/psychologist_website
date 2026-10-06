@@ -1,7 +1,10 @@
-Novo contato pelo site
+<%= @contact.tenant.site_setting&.professional_name.presence || @contact.tenant.name %>
+Um novo contato para você
+Mensagem #<%= @contact.id %> · <%= @contact.created_at.in_time_zone.strftime('%d/%m/%Y às %H:%M') %>
 
-<% @contact.response_fields.each do |label, value| %>
-<%= label %>: <%= value == '1' ? 'Sim' : value %>
+<% @contact.response_fields.each_with_index do |(label, value), index| %>
+<%= label %>: <%= @contact.form_snapshot&.[](index)&.dig('type') == 'checkbox' ? (value == '1' ? 'Sim' : 'Não') : value.presence || 'Não informado' %>
 
 <% end %>
-O contato também está salvo no painel administrativo.
+<% if @contact.email.present? %>Responder: <%= @contact.email %><% end %>
+Uma cópia está disponível em Mensagens no painel administrativo.

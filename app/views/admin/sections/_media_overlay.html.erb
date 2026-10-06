@@ -1,0 +1,37 @@
+<% entry = section_media_entries(section, role).first %>
+<div class="media-overlay-editor" data-controller="device-appearance media-overlay" data-media-overlay-role-value="<%= role %>"
+     data-action="input->media-overlay#refresh change->media-overlay#refresh">
+  <h4>Overlay <%= role == "banner" ? "do banner" : "da fotografia" %></h4>
+  <%= render "admin/sections/device_selector" %>
+  <% %w[desktop tablet mobile].each do |device| %>
+    <% color_field = "#{role}_overlay_color"; opacity_field = "#{role}_overlay_opacity"
+       color = device == "desktop" ? section.public_send(color_field) : section.responsive_settings.dig(device, color_field)
+       opacity = device == "desktop" ? section.public_send(opacity_field) : section.responsive_settings.dig(device, opacity_field)
+       field_name = ->(field) { device == "desktop" ? "section[#{field}]" : "section[responsive_settings][#{device}][#{field}]" }
+       input_id = "overlay_#{section.id || 'new'}_#{role}_#{device}"
+       default_color = section.media_overlay_value(role, "color", device)
+       default_opacity = section.media_overlay_value(role, "opacity", device) %>
+    <div class="media-overlay-editor__panel" data-device-appearance-target="panel" data-device="<%= device %>" <%= "hidden" unless device == "desktop" %>>
+      <div class="media-overlay-editor__fields">
+        <div data-controller="paired-input" data-paired-input-default-value="<%= default_color %>">
+          <%= label_tag "#{input_id}_color", "Cor do overlay" %>
+          <div class="media-overlay-editor__color">
+            <%= color_field_tag nil, default_color, id: "#{input_id}_picker", aria: { label: "Escolher cor do overlay" }, data: { paired_input_target: "picker", action: "input->paired-input#pick" } %>
+            <%= text_field_tag field_name.call(color_field), color, id: "#{input_id}_color", pattern: "#[0-9a-fA-F]{6}", maxlength: 7, placeholder: "Padrão: #{default_color}", data: { paired_input_target: "field", overlay_property: "color", overlay_default: default_color, action: "input->paired-input#sync" } %>
+          </div>
+        </div>
+        <div data-controller="paired-input" data-paired-input-default-value="<%= default_opacity %>">
+          <%= label_tag "#{input_id}_opacity", "Intensidade (%)" %>
+          <div class="media-overlay-editor__intensity">
+            <%= range_field_tag nil, default_opacity, min: 0, max: 100, step: 1, id: "#{input_id}_slider", aria: { label: "Ajustar intensidade do overlay" }, data: { paired_input_target: "picker", action: "input->paired-input#pick" } %>
+            <%= number_field_tag field_name.call(opacity_field), opacity, min: 0, max: 100, step: 1, id: "#{input_id}_opacity", placeholder: default_opacity, data: { paired_input_target: "field", overlay_property: "opacity", overlay_default: default_opacity, action: "input->paired-input#sync" } %>
+          </div>
+        </div>
+        <small>0% sem camada · 100% cor sólida. Vazio usa o padrão.</small>
+      </div>
+      <div class="media-overlay-editor__sample" data-overlay-sample aria-label="Prévia do overlay">
+        <% if entry %><%= display_image_tag entry[:attachment], profile: :content, sizes: "280px", alt: "" %><% end %>
+      </div>
+    </div>
+  <% end %>
+</div>

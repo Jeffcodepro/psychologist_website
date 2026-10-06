@@ -4,23 +4,24 @@
        style="--cards-desktop: <%= section.cards_columns_desktop %>; --cards-tablet: <%= section.cards_columns_tablet %>; --cards-mobile: <%= section.cards_columns_mobile %>">
     <% if section.cards_carousel? %>
       <% english = I18n.locale == :en %>
-      <div class="compact-carousel" data-controller="cards-carousel" data-cards-carousel-autoplay-value="<%= section.cards_autoplay? %>" data-cards-carousel-delay-value="<%= section.cards_autoplay_seconds * 1000 %>" data-action="focusin->cards-carousel#focusEntered focusout->cards-carousel#focusLeft">
+      <div class="compact-carousel" data-controller="cards-carousel" data-cards-carousel-page-label-value="<%= english ? 'Page' : 'Página' %>" data-cards-carousel-autoplay-value="<%= section.cards_autoplay? %>" data-cards-carousel-delay-value="<%= section.cards_autoplay_seconds * 1000 %>" data-action="focusin->cards-carousel#focusEntered focusout->cards-carousel#focusLeft keydown.esc->cards-carousel#pause">
         <div class="compact-carousel__stage">
-          <button type="button" class="compact-carousel__arrow compact-carousel__arrow--previous" aria-label="<%= english ? 'Previous card' : 'Card anterior' %>" data-action="cards-carousel#previous">
+          <button type="button" class="compact-carousel__arrow compact-carousel__arrow--previous" aria-label="<%= english ? 'Previous card' : 'Card anterior' %>" data-action="cards-carousel#previous" hidden>
             <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m14 6-6 6 6 6" /></svg>
           </button>
-          <div class="compact-carousel__viewport" data-cards-carousel-target="viewport">
+          <div class="compact-carousel__viewport" id="cards-viewport-<%= section.id %>" data-cards-carousel-target="viewport" data-action="scroll->cards-carousel#scrolled">
             <div class="compact-carousel__track" data-cards-carousel-target="track"><%= render partial: "sections/card", collection: items, as: :item %></div>
           </div>
-          <button type="button" class="compact-carousel__arrow compact-carousel__arrow--next" aria-label="<%= english ? 'Next card' : 'Próximo card' %>" data-action="cards-carousel#next">
+          <button type="button" class="compact-carousel__arrow compact-carousel__arrow--next" aria-label="<%= english ? 'Next card' : 'Próximo card' %>" data-action="cards-carousel#next" hidden>
             <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m10 6 6 6-6 6" /></svg>
           </button>
         </div>
-        <button type="button" class="compact-carousel__playback" data-cards-carousel-target="autoplayControl" data-action="cards-carousel#toggleAutoplay" aria-pressed="false" aria-label="<%= english ? 'Pause automatic playback' : 'Pausar avanço automático' %>"
-                data-pause-label="<%= english ? 'Pause automatic playback' : 'Pausar avanço automático' %>" data-resume-label="<%= english ? 'Resume automatic playback' : 'Retomar avanço automático' %>" data-pause-text="<%= english ? 'Pause' : 'Pausar' %>" data-resume-text="<%= english ? 'Resume' : 'Retomar' %>" hidden>
-          <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path class="compact-carousel__pause-icon" d="M5 3v10M11 3v10" /><path class="compact-carousel__play-icon" d="m5 3 7 5-7 5Z" /></svg>
-          <span data-cards-carousel-target="autoplayLabel"><%= english ? 'Pause' : 'Pausar' %></span>
-        </button>
+        <div class="compact-carousel__pagination" data-cards-carousel-target="pagination" role="group" aria-label="<%= english ? 'Carousel pages' : 'Páginas do carrossel' %>" hidden></div>
+        <div class="compact-carousel__position" data-cards-carousel-target="position" hidden>
+          <input class="compact-carousel__range" type="range" min="0" max="0" value="0" step="1" data-cards-carousel-target="range" data-action="input->cards-carousel#seek" aria-label="<%= english ? 'Carousel position' : 'Posição do carrossel' %>" aria-controls="cards-viewport-<%= section.id %>">
+          <span class="compact-carousel__counter" data-cards-carousel-target="counter" aria-hidden="true"></span>
+        </div>
+
       </div>
     <% else %>
       <div class="card-collection__grid"><%= render partial: "sections/card", collection: items, as: :item %></div>

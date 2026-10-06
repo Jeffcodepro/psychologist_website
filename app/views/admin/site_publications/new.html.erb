@@ -1,0 +1,16 @@
+<div class="admin-page-settings">
+  <header class="admin-page-heading"><div><span class="admin-page-eyebrow">Publicação do site</span><h1>Publicar páginas juntas</h1><p>Revise a seleção abaixo para publicar as páginas, incluindo o contato e os cards de Conteúdos, em uma única operação.</p></div></header>
+  <%= form_with url: admin_site_publication_path, class: "admin-page-form" do %>
+    <section class="admin-settings-section publication-selection">
+      <p><strong>Somente rascunhos já salvos serão publicados.</strong> Salve primeiro os formulários abertos no editor. Desmarque os textos que ainda não estão prontos.</p>
+      <% @pages.each do |site_page| %>
+        <label class="publication-selection__row">
+          <%= check_box_tag "page_ids[]", site_page.id, true, id: "publish_page_#{site_page.id}" %>
+          <span><strong><%= site_page.name %></strong><small><%= site_page.content_label %> · <%= site_page.published? ? "Atualizar publicação" : "Primeira publicação" %></small></span>
+          <%= link_to "Revisar", admin_page_preview_path(site_page), target: "_blank", rel: "noopener", class: "admin-button-quiet" %>
+        </label>
+      <% end %>
+    </section>
+    <div class="admin-settings-actions"><%= link_to "Voltar ao painel", admin_root_path, class: "admin-button-secondary" %><%= submit_tag "Publicar páginas selecionadas", class: "admin-button admin-button--primary", data: { turbo_confirm: "Publicar todos os rascunhos salvos das páginas selecionadas?", turbo_submits_with: "Publicando…" } %></div>
+  <% end %>
+</div>

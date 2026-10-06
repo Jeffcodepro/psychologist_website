@@ -96,7 +96,7 @@ class Admin::FlexibleMediaTest < ActionDispatch::IntegrationTest
       assert_select 'input[name="section[image]"]', count: 1
       assert_select 'input[name="section[banner]"]', count: 1
       assert_select '[data-tab="items"]'
-      assert_select 'input[name="section[media_layout]"]', count: 4
+      assert_select 'input[name="section[media_layout]"]', count: Section::MEDIA_LAYOUTS.size
     end
   end
 
@@ -110,7 +110,7 @@ class Admin::FlexibleMediaTest < ActionDispatch::IntegrationTest
   test "moving a paragraph also moves its translation" do
     target = @page.sections.create!(section_type: "cta", body: "Outro texto", body_en: "Other text")
     patch swap_fields_admin_page_sections_path(@page), params: { source_id: @section.id, target_id: target.id, field: "body" }, as: :json
-    assert_response :redirect
+    assert_response :no_content
     assert_equal "Other text", @section.reload.body_en
     assert_equal "Meu parágrafo", target.reload.body
     assert_equal "My paragraph", target.body_en

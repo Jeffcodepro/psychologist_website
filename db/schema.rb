@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_28_150000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_02_180000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -58,6 +58,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_28_150000) do
     t.jsonb "answers", default: {}, null: false
     t.jsonb "form_snapshot", default: [], null: false
     t.index ["request_fingerprint", "created_at"], name: "index_contact_requests_on_request_fingerprint_and_created_at"
+    t.index ["tenant_id", "email", "created_at"], name: "index_contact_requests_on_site_email_time"
     t.index ["tenant_id"], name: "index_contact_requests_on_tenant_id"
   end
 
@@ -103,6 +104,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_28_150000) do
     t.jsonb "media_adjustments", default: {}, null: false
     t.string "item_kind", default: "card", null: false
     t.bigint "linked_page_id"
+    t.jsonb "card_settings", default: {}, null: false
     t.index ["linked_page_id"], name: "index_section_items_on_linked_page_id"
     t.index ["section_id"], name: "index_section_items_on_section_id"
   end
@@ -191,7 +193,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_28_150000) do
     t.jsonb "action_buttons", default: [], null: false
     t.string "buttons_position", default: "after_text", null: false
     t.string "buttons_alignment", default: "left", null: false
+    t.jsonb "layout_settings", default: {}, null: false
+    t.uuid "navigation_key", default: -> { "gen_random_uuid()" }, null: false
     t.index ["page_id", "publication_state", "anchor"], name: "index_sections_on_page_state_anchor", unique: true, where: "(anchor IS NOT NULL)"
+    t.index ["page_id", "publication_state", "navigation_key"], name: "index_sections_on_navigation_key", unique: true
     t.index ["page_id", "publication_state", "position"], name: "index_sections_on_page_state_position"
     t.index ["page_id"], name: "index_sections_on_page_id"
   end

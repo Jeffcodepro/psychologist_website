@@ -4,6 +4,7 @@
   device = local_assigns[:device]
   attachment = local_assigns.fetch(:attachment) { record.public_send(media) }
   is_card = record.is_a?(SectionItem)
+  full_card = is_card && record.item_kind == "card"
   shape = kind == "banner" ? "rectangle" : (device ? record.visual_value("image_shape", device) : record.image_shape)
   shape = local_assigns.fetch(:shape, shape) || "rounded"
   scope = device ? "section[responsive_settings][#{device}]" : f.object_name
@@ -11,7 +12,11 @@
   input_value = ->(field) { device ? record.responsive_settings.dig(device, field) : record.public_send(field) }
   input_id = "crop_#{f.object_name}_#{record.id || 'new'}_#{device || 'desktop'}_#{media}"
 %>
-<article class="image-cropper" data-controller="image-cropper"
+<article class="image-cropper" data-controller="image-cropper<%= ' card-preview' if full_card %>"
+         data-image-cropper-card-preview-value="<%= full_card %>"
+         data-card-preview-scope-value="<%= f.object_name %>"
+         data-card-preview-locale-value="<%= I18n.locale %>"
+         data-action="image-cropper:changed->card-preview#render"
          data-image-cropper-shape-value="<%= shape %>"
          data-image-cropper-adjustments-value="<%= MediaAdjustable::ADJUSTMENTS.keys.to_h { |key| [key, record.media_adjustment(media, key)] }.to_json %>"
          data-image-cropper-base-shape-value="<%= record.image_shape %>"
@@ -27,6 +32,9 @@
   </header>
   <div class="image-cropper__workspace">
     <div>
+      <% if full_card %>
+        <%= render 'admin/section_items/live_preview', record: record, attachment: attachment %>
+      <% else %>
       <div class="image-cropper__stage">
         <div class="image-cropper__frame" data-image-cropper-target="frame"
              data-action="pointerdown->image-cropper#start pointermove->image-cropper#move pointerup->image-cropper#stop pointercancel->image-cropper#stop">
@@ -35,6 +43,7 @@
           <div class="image-cropper__grid" aria-hidden="true"></div>
         </div>
       </div>
+      <% end %>
       <p class="image-cropper__dimensions" data-image-cropper-target="dimensions" aria-live="polite">JPG, PNG ou WebP · <%= kind == "banner" ? "sugestão: 1920 × 760 px" : (is_card ? "sugestão: 1200 × 750 px" : "sugestão: 1200 × 1500 px") %></p>
       <% unless device %>
         <button type="button" class="admin-button-secondary" data-action="image-cropper#choose"><%= attachment.attached? ? "Trocar imagem" : "Escolher imagem" %></button>

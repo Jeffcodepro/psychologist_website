@@ -1,0 +1,5 @@
+<%= render "admin/shared/button_designer", f: f, field: :action_buttons_json, heading: "Botões deste bloco" %>
+<div class="admin-section-editor__input-grid">
+  <%= f.input :buttons_position, collection: SectionLayout::BUTTON_POSITIONS, include_blank: false, label: "Posição dos botões" %>
+  <%= f.input :buttons_alignment, collection: [["Esquerda", "left"], ["Centro", "center"], ["Direita", "right"]], include_blank: false, label: "Alinhamento dos botões" %>
+</div>

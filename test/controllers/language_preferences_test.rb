@@ -129,10 +129,10 @@ class LanguagePreferencesTest < ActionDispatch::IntegrationTest
     post language_preference_path, params: { language: "en", return_to: "/" }
     user = @tenant.users.create!(admin: true, email: "language@example.test", password: "Language-test-password-123!")
     sign_in user
-    get admin_page_preview_frame_path(@home, locale: "pt-BR")
+    get admin_page_preview_frame_path(@home)
     assert_select 'html[lang="pt-BR"]'
-    assert_select 'a.site-navbar__language[href*="locale=en"][target="_top"]'
-    assert_select 'form.site-language-form', count: 0
+    assert_select 'form.site-language-form[action="/admin/idioma"][target="_top"]', count: 6
+    assert_select 'a[href*="locale="]', count: 0
     post language_preference_path, params: { language: "pt-BR", return_to: "/" }
     assert_redirected_to admin_root_path
     sign_out user

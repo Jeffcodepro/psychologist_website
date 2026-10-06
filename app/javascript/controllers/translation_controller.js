@@ -1,124 +1,69 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["button", "status", "titlePt", "bodyPt", "titleEn", "bodyEn"]
+  static targets = ["button", "status", "titlePt", "bodyPt", "titleEn", "bodyEn", "textPt", "textEn"]
 
   static values = {
     url: String
   }
 
-  async translate() {
-    const form = this.element.matches("form") ? this.element : this.element.querySelector("form")
+  disconnect() { this.request?.abort() }
 
+  async translate() {
+    if (this.loading) return
+    const form = this.element.matches("form") ? this.element : this.element.closest("form") || this.element.querySelector("form")
     if (!form) return
 
-    const titleInput = this.hasTitlePtTarget ? this.titlePtTarget : form.querySelector('[name$="[title]"]')
-
-    const bodyInput = this.hasBodyPtTarget ? this.bodyPtTarget : form.querySelector('[name$="[body]"]')
-
-    const titleEnInput = this.hasTitleEnTarget ? this.titleEnTarget : form.querySelector('[name$="[title_en]"]')
-
-    const bodyEnInput = this.hasBodyEnTarget ? this.bodyEnTarget : form.querySelector('[name$="[body_en]"]')
-
-    if (!titleInput || !bodyInput) {
-      this.showStatus(
-        "Não encontrei o conteúdo em português.",
-        true
-      )
-
-      return
-    }
-
-    const title = titleInput.value.trim()
-    const body = bodyInput.value.trim()
-
+    const singleText = this.hasTextPtTarget
+    const titleInput = singleText ? this.textPtTarget : this.hasTitlePtTarget ? this.titlePtTarget : form.querySelector('[name$="[title]"]')
+    const bodyInput = singleText ? null : this.hasBodyPtTarget ? this.bodyPtTarget : form.querySelector('[name$="[body]"]')
+    const titleEnInput = singleText ? this.textEnTarget : this.hasTitleEnTarget ? this.titleEnTarget : form.querySelector('[name$="[title_en]"]')
+    const bodyEnInput = singleText ? null : this.hasBodyEnTarget ? this.bodyEnTarget : form.querySelector('[name$="[body_en]"]')
+    const title = titleInput?.value.trim() || ""
+    const body = bodyInput?.value.trim() || ""
     if (!title && !body) {
-      this.showStatus(
-        "Preencha o título ou o conteúdo em português antes de traduzir.",
-        true
-      )
-
+      this.showStatus(singleText ? "Preencha o texto do botão antes de traduzir." : "Preencha o título ou o conteúdo em português antes de traduzir.", true)
       return
     }
 
+    const fields = [titleInput, bodyInput, titleEnInput, bodyEnInput].filter(Boolean)
+    const originals = fields.map(field => field.value)
+    this.loading = true
+    this.request = new AbortController()
     this.setLoading(true)
-
     try {
-      const response = await fetch(
-        this.urlValue,
-        {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            "X-CSRF-Token": this.csrfToken()
-          },
-          credentials: "same-origin",
-          body: JSON.stringify({
-            translation: {
-              title: title,
-              body: body
-            }
-          })
-        }
-      )
-
+      const response = await fetch(this.urlValue, {
+        method: "POST", credentials: "same-origin", signal: this.request.signal,
+        headers: { Accept: "application/json", "Content-Type": "application/json", "X-CSRF-Token": this.csrfToken() },
+        body: JSON.stringify({ translation: { title, body } })
+      })
       const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(
-          data.error ||
-          data.message ||
-          "Não foi possível gerar a tradução."
-        )
+      if (!response.ok) throw new Error(data.error || data.message || "Não foi possível gerar a tradução.")
+      const translatedTitle = data.title_en ?? data.translated_title ?? data.translation?.title_en ?? data.translation?.title
+      const translatedBody = data.body_en ?? data.translated_body ?? data.translation?.body_en ?? data.translation?.body
+      if ((title && (typeof translatedTitle !== "string" || !translatedTitle.trim())) ||
+          (body && (typeof translatedBody !== "string" || !translatedBody.trim()))) {
+        throw new Error("A tradução retornou um formato inválido. Tente novamente.")
       }
-
-      const translatedTitle =
-        data.title_en ||
-        data.translated_title ||
-        data.translation?.title_en ||
-        data.translation?.title
-
-      const translatedBody =
-        data.body_en ||
-        data.translated_body ||
-        data.translation?.body_en ||
-        data.translation?.body
-
-      if (titleEnInput && translatedTitle) {
+      if (!this.element.isConnected || fields.some((field, index) => field.value !== originals[index])) {
+        throw new Error("O texto mudou durante a tradução. Clique novamente para traduzir a versão atual.")
+      }
+      if (singleText && titleEnInput.maxLength > 0 && translatedTitle.length > titleEnInput.maxLength) {
+        throw new Error("A tradução ficou longa demais para o botão. Encurte o texto em português e tente novamente.")
+      }
+      if (titleEnInput && typeof translatedTitle === "string") {
         titleEnInput.value = translatedTitle
-        titleEnInput.dispatchEvent(
-          new Event("input", {
-            bubbles: true
-          })
-        )
+        titleEnInput.dispatchEvent(new Event("input", { bubbles: true }))
       }
-
-      if (bodyEnInput && translatedBody) {
+      if (bodyEnInput && typeof translatedBody === "string") {
         bodyEnInput.value = translatedBody
-        bodyEnInput.dispatchEvent(
-          new Event("input", {
-            bubbles: true
-          })
-        )
+        bodyEnInput.dispatchEvent(new Event("input", { bubbles: true }))
       }
-
-      if (!translatedTitle && !translatedBody) {
-        throw new Error(
-          "A tradução foi recebida, mas o formato da resposta não foi reconhecido."
-        )
-      }
-
-      this.showStatus(
-        "Versão em inglês gerada. Revise o texto antes de salvar."
-      )
+      this.showStatus("Versão em inglês gerada. Revise o texto antes de salvar.")
     } catch (error) {
-      this.showStatus(
-        error.message ||
-        "Não foi possível gerar a tradução.",
-        true
-      )
+      if (error.name !== "AbortError") this.showStatus(error.message || "Não foi possível gerar a tradução.", true)
     } finally {
+      this.loading = false
       this.setLoading(false)
     }
   }

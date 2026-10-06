@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   web:
-    image: ${APP_IMAGE:-psychologist-website:1.1.1}
+    image: ${APP_IMAGE:-psychologist-website:1.2.7}
     environment:
       RAILS_ENV: production
       CLOUDINARY_URL_FILE: /run/secrets/cloudinary_url

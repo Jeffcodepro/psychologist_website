@@ -2,10 +2,10 @@ module ResponsiveSection
   extend ActiveSupport::Concern
 
   DEVICES = %w[tablet mobile].freeze
-  ENUM_FIELDS = {
-    "buttons_position" => %w[before_text between_text after_text],
+  ENUM_FIELDS = SectionLayout::FORM_OPTIONS.transform_values { |(_, options)| options.map(&:last) }.merge({
+    "buttons_position" => SectionLayout::BUTTON_POSITIONS.map(&:last),
     "buttons_alignment" => %w[left center right],
-    "media_layout" => %w[text_left text_right media_top media_bottom],
+    "media_layout" => %w[text_left text_right media_top media_bottom media_between media_before_buttons media_background],
     "media_size" => %w[small medium large],
     "image_shape" => %w[rectangle rounded square circle oval arch],
     "banner_layout" => %w[top background bottom],
@@ -16,17 +16,17 @@ module ResponsiveSection
     "title_font_style" => %w[normal italic], "body_font_style" => %w[normal italic],
     "title_font_weight" => %w[300 400 500 600 700 800], "body_font_weight" => %w[300 400 500 600 700 800],
     "visible" => %w[true false]
-  }.freeze
-  NUMBER_FIELDS = {
+  }).freeze
+  NUMBER_FIELDS = SectionLayout::SPACING.transform_values { |(_, _, range)| range }.merge(SectionMediaOverlay::NUMBER_FIELDS).merge({
     "title_line_height" => 1..2.5, "body_line_height" => 1..2.5,
     "title_letter_spacing" => -1..4, "body_letter_spacing" => -1..4,
     "title_font_size" => 10..120, "body_font_size" => 10..120,
     "image_position_x" => 0..100, "image_position_y" => 0..100,
     "banner_position_x" => 0..100, "banner_position_y" => 0..100,
     "image_zoom" => 1..3, "banner_zoom" => 1..3, "banner_overlay" => 0..90
-  }.freeze
+  }).freeze
   FONT_FIELDS = %w[title_font_family body_font_family].freeze
-  COLOR_FIELDS = %w[title_color body_color background_color accent_color overlay_color].freeze
+  COLOR_FIELDS = (%w[title_color body_color background_color accent_color overlay_color] + SectionMediaOverlay::COLOR_FIELDS).freeze
   FIELDS = (ENUM_FIELDS.keys + NUMBER_FIELDS.keys + FONT_FIELDS + COLOR_FIELDS).freeze
 
   included do
@@ -48,6 +48,15 @@ module ResponsiveSection
     end
 
     return visible? if field.to_s == "visible"
+
+    if SectionLayout::INHERITED_SPACING.key?(field.to_s)
+      base = public_send(field).presence
+      return base if base
+      fallback = SectionLayout::INHERITED_SPACING.fetch(field.to_s)
+      fallback = "content_gap" if field.to_s == "image_text_gap" && %w[media_between media_before_buttons].include?(visual_value("media_layout", device))
+      fallback = "column_gap" if field.to_s == "buttons_gap" && %w[before_cards after_cards].include?(visual_value("buttons_position", device))
+      return visual_value(fallback, device)
+    end
 
     effective = "effective_#{field}"
     respond_to?(effective) ? public_send(effective) : public_send(field)

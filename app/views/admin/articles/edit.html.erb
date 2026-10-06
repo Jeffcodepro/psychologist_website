@@ -1,0 +1,8 @@
+<div class="admin-page-settings">
+  <div class="admin-breadcrumb"><%= link_to "Blog e textos", admin_articles_path %><span>/</span><strong>Editar texto</strong></div>
+  <header class="admin-page-heading">
+    <div><span class="admin-page-eyebrow">Blog e textos</span><h1>Editar texto</h1><p>Escreva e salve seu rascunho. Depois, confira a prévia e aprove a publicação.</p><%= render "shared/article_publication", page: @page %></div>
+    <%= link_to "Pré-visualizar e publicar", admin_page_preview_path(@page), class: "admin-button-secondary" %>
+  </header>
+  <%= render "form" %>
+</div>

@@ -2,6 +2,7 @@ class SectionItem < ApplicationRecord
   include ImageAttachments
   validates_image_attachments :image
   include MediaAdjustable
+  include CardPresentation
   KINDS = %w[card question gallery].freeze
   attribute :item_kind, :string, default: nil
   before_validation do

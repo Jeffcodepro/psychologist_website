@@ -1,0 +1,44 @@
+@import "../vendor/tom_select";
+
+// Native fields remain a working fallback before JavaScript connects.
+.selection-control.ts-wrapper {
+  width: 100%; min-width: 0; padding: 0; border: 0; background: transparent; box-shadow: none;
+  font: inherit; text-align: left;
+  .ts-control {
+    width: 100%; min-height: 46px; padding: 11px 38px 11px 14px !important;
+    border: 1px solid #ccd8d1; border-radius: 10px; background: #fff !important;
+    color: #2d463a; font: 400 14px/1.5 var(--body-font, sans-serif); box-shadow: 0 1px 3px #244c3610;
+    align-items: center; cursor: pointer; flex-wrap: nowrap;
+    &:focus-visible { outline: 2px solid #4b8067; outline-offset: 2px; }
+    &::after {
+      content: ""; position: absolute; right: 16px; top: 50%; width: 8px; height: 8px;
+      border: solid #526f60; border-width: 0 2px 2px 0; transform: translateY(-65%) rotate(45deg);
+      margin: 0;
+    }
+    .item { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  }
+  &.focus .ts-control { border-color: #4b8067; box-shadow: 0 0 0 3px #4b80671f; }
+  &.disabled { opacity: .6; }
+}
+.ts-dropdown.selection-menu {
+  z-index: 10050; border: 1px solid #cbd9d1; border-radius: 12px; padding: 6px;
+  background: #fff; color: #294236; box-shadow: 0 12px 32px #17342424;
+  font: 400 14px/1.5 var(--body-font, sans-serif);
+  .ts-dropdown-content { overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; touch-action: pan-y; }
+  .dropdown-input-wrap { padding: 0 0 6px; }
+  .dropdown-input { width: 100%; padding: 9px 10px; border: 1px solid #d9e1dc; border-radius: 7px; color: inherit; background: #f7f9f7; }
+  .option { padding: 10px 12px; border-radius: 7px; overflow-wrap: anywhere; }
+  .active { background: #edf4ef; color: #254735; }
+  .selected { background: #dcece2; color: #1b4932; font-weight: 600; }
+}
+.contact-phone {
+  display: grid; grid-template-columns: minmax(100px, .55fr) minmax(140px, 1fr); gap: 8px; align-items: stretch;
+  > input { min-width: 0; width: 100%; }
+  .contact-phone__country { min-width: 0; display: grid; }
+  .selection-control, .ts-control { height: 100%; }
+  .ts-control { font-size: 14px; }
+}
+.contact-field-error { display: block; color: #a52d2d; font-size: 13px; line-height: 1.5; margin-top: 6px; }
+.contact-field-error[hidden] { display: none; }
+.appointment-form [aria-invalid="true"] { border-color: #b84343; }
+@media (max-width: 360px) { .contact-phone { grid-template-columns: 1fr; } }

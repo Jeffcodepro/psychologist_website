@@ -1,0 +1,8 @@
+<% settings = @site_setting || @admin_site_setting || @login_tenant&.site_setting %>
+<% if settings&.logo&.attached? %>
+  <% site = settings.tenant
+     scope = PublicHost.canonical(request.host) == site.domain || site.primary? ? nil : site.slug
+     icon_path = site_favicon_path(site_slug: scope) %>
+  <%= tag.link rel: "icon", type: "image/png", sizes: "192x192", href: icon_path %>
+  <%= tag.link rel: "apple-touch-icon", sizes: "192x192", href: icon_path %>
+<% end %>

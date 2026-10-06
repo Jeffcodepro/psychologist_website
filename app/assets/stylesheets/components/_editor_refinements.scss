@@ -1,0 +1,79 @@
+// A single visual treatment for admin selects, including the preview drawer.
+.admin-body, .preview-editor {
+  select:not([multiple]) {
+    appearance: none; width: 100%; max-width: 100%; min-width: 0; min-height: 44px;
+    border: 1px solid #ccd8d1; border-radius: 10px; background-color: #fff;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='m4 6 4 4 4-4' fill='none' stroke='%234c6859' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-position: right 14px center; background-repeat: no-repeat; background-size: 16px;
+    padding: 11px 42px 11px 14px; color: #2c4337; font: 400 14px/1.5 $body-font;
+    box-shadow: 0 1px 2px rgba(26, 52, 37, .03); cursor: pointer;
+    &:hover { border-color: #8da99a; }
+    &:focus-visible { outline: 2px solid #36785a; outline-offset: 2px; border-color: #36785a; }
+    &:disabled { background-color: #edf1ee; color: #78877d; cursor: not-allowed; }
+    &.is-invalid { border-color: #b84a47; }
+  }
+  input.form-control:not(.is-invalid), textarea.form-control:not(.is-invalid) { border-color: #ccd8d1; background-image: none; }
+  .font-picker { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; margin-bottom: 18px; }
+  .font-picker > label { font: 600 13px/1.4 $body-font; margin: 0; color: #425b4d; }
+  .font-picker__sample { display: block; height: 46px; margin: 0; padding: 6px 2px; font-size: 23px; line-height: 34px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .admin-section-editor__content-grid, .preview-editor__settings-grid { align-items: start; }
+  .responsive-settings__fields > div, .admin-section-editor__input-grid > div, .preview-editor__two-columns > div { min-width: 0; }
+}
+.compact-carousel__pagination { display: flex; justify-content: center; align-items: center; gap: 4px; flex-wrap: wrap; margin-top: 14px; }
+.compact-carousel__pagination[hidden] { display: none; }
+.compact-carousel__dot { width: 30px; height: 30px; min-height: 30px; display: grid; place-items: center; padding: 0; border: 0; background: transparent; border-radius: 50%; }
+.compact-carousel__dot::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #c1d0c6; transition: width .2s, background .2s; }
+.compact-carousel__dot[aria-current="true"]::before { width: 22px; border-radius: 6px; background: #355746; }
+.compact-carousel__dot:focus-visible { outline: 2px solid #36785a; outline-offset: 1px; }
+.compact-carousel__track { gap: var(--section-cards-gap, 20px); }
+
+// Layout controls share the same variables in the public page and preview.
+.public-page > .section-frame > .section-frame__content > section:not(.hero-section),
+.section-frame > .section-frame__content > .flexible-section {
+  padding-top: var(--section-section-padding-top);
+  padding-bottom: var(--section-section-padding-bottom);
+}
+.section-frame {
+  .flexible-section__container { gap: var(--section-column-gap); }
+  .flexible-section__layout { gap: var(--section-column-gap); }
+  .flexible-section__copy { gap: var(--section-content-gap); }
+  .flexible-section__copy > .preview-movable,
+  .flexible-section__copy .section-heading,
+  .flexible-section__copy .section-body,
+  .flexible-section__copy > .section-actions { margin-top: 0; margin-bottom: 0; }
+  .section-body p, .compact-card__body p { margin: 0; }
+  .section-body p + p, .compact-card__body p + p { margin-top: var(--section-paragraph-spacing); }
+  .card-collection { gap: var(--section-cards-gap); }
+  .compact-card__title, .compact-card__body { margin: 0; }
+  .flexible-section__contact-layout {
+    display: grid;
+    grid-template-columns: var(--section-contact-columns);
+    align-items: start;
+    gap: var(--section-column-gap);
+    min-width: 0;
+    > .flexible-section__layout { order: 1; min-width: 0; }
+  }
+  .flexible-section__form {
+    position: relative;
+    min-width: 0;
+    width: 100%;
+    max-width: var(--section-form-width);
+    justify-self: var(--section-form-align);
+    order: var(--section-form-order);
+    .appointment-form { max-width: none; margin: 0; width: 100%; }
+  }
+}
+.section-frame--preview .flexible-section__form { padding-top: 34px; }
+.layout-settings {
+  .section-setting-group__heading { margin: 20px 0 12px; }
+  label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+  .admin-section-editor__input-grid { gap: 16px; }
+}
+
+.seo-editor__templates {
+  display: flex; flex-wrap: wrap; align-items: end; gap: 12px; margin-bottom: 24px;
+  > div { flex: 1 1 230px; }
+  label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+  button { min-height: 44px; flex: 0 0 auto; }
+}
+.section-frame .card-collection__grid { gap: var(--section-cards-gap); }

@@ -3,7 +3,7 @@ version: "3.8"
 # Stack temporária: execute após restaurar o banco, antes de subir/atualizar web.
 services:
   migrate:
-    image: ${APP_IMAGE:-psychologist-website:1.1.1}
+    image: ${APP_IMAGE:-psychologist-website:1.2.7}
     command: ["bin/rails", "db:environment:set", "db:migrate"]
     environment:
       RAILS_ENV: production

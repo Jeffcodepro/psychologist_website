@@ -1,32 +1,36 @@
 class ContactRequestsController < PublicController
   def create
     @form_section = current_tenant.sections.published.visible.where(section_type: "contact").joins(:page).where(pages: { published: true }).find(params[:form_section_id])
-    @contact_request = current_tenant.contact_requests.new(website: params.dig(:contact_request, :website))
-    submitted = params.require(:contact_request).permit(:website, answers: @form_section.effective_form_fields.map { |f| f["key"] }).fetch(:answers, {})
-    @contact_request.assign_form(@form_section, submitted)
+    fields = @form_section.effective_form_fields
+    payload = params.require(:contact_request)
+    return head :bad_request unless payload.is_a?(ActionController::Parameters)
+
+    submitted = payload.permit(:website,
+      answers: fields.map { |field| field["key"] },
+      phone_countries: fields.select { |field| field["type"] == "tel" }.map { |field| field["key"] }).to_h
+    return head :bad_request unless submitted.fetch(:answers, {}).is_a?(Hash) && submitted.fetch(:phone_countries, {}).is_a?(Hash)
+
+    @contact_request = current_tenant.contact_requests.new(website: submitted[:website])
+    @contact_request.assign_form(@form_section, submitted.fetch(:answers, {}), countries: submitted[:phone_countries] || {})
     @contact_request.source_path = params[:source_path].to_s.truncate(200)
-    @contact_request.request_fingerprint = OpenSSL::HMAC.hexdigest("SHA256", Rails.application.secret_key_base, request.remote_ip.to_s)
+    @contact_request.request_fingerprint = ContactSubmissionGuard.fingerprint(request.remote_ip)
     @contact_request.validate
+    retry_after = 0
+
     if @contact_request.website.present?
       @sent = true
     elsif @contact_request.errors.empty?
-      if too_many_requests?
-        @contact_request.errors.add(:base, "Aguarde alguns minutos antes de enviar uma nova mensagem.")
-      else
-        @sent = @contact_request.save
-        session[:contact_sent_at] = Time.current.to_i if @sent
-        EmailDelivery.call(@contact_request) if @sent
-      end
+      result = ContactSubmissionGuard.new(contact_request: @contact_request, session: session).save
+      @sent = result.accepted?
+      retry_after = result.retry_after
+      EmailDelivery.call(@contact_request) if @sent
     end
-    render partial: "shared/contact_form", locals: { contact_request: @contact_request, sent: @sent, form_section: @form_section }, status: @sent ? :ok : :unprocessable_entity
+
+    response.headers["Cache-Control"] = "no-store, private"
+    response.headers["Retry-After"] = retry_after.to_s if retry_after.positive?
+    status = @sent ? :ok : (retry_after.positive? ? :too_many_requests : :unprocessable_entity)
+    render partial: "shared/contact_form", formats: [:html], locals: {
+      contact_request: @contact_request, sent: @sent, form_section: @form_section, retry_after: retry_after
+    }, status: status
   end
-
-  private
-
-  def too_many_requests?
-    session[:contact_sent_at].to_i > 1.minute.ago.to_i ||
-      current_tenant.contact_requests.where(request_fingerprint: @contact_request.request_fingerprint)
-        .where(created_at: 1.hour.ago..).count >= 5
-  end
-
 end

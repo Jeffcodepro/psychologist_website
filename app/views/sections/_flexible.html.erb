@@ -1,38 +1,43 @@
-<% preview_mode = local_assigns[:preview_mode] %>
-<section class="flexible-section flexible-section--<%= section.section_type %>" id="<%= section.anchor.presence %>" data-section-id="<%= section.id %>">
+<% preview_mode = local_assigns[:preview_mode]; interactive_preview = local_assigns.fetch(:interactive_preview, preview_mode) %>
+<section class="flexible-section flexible-section--<%= section.section_type %>" id="<%= section.navigation_anchor %>" data-section-id="<%= section.id %>">
   <div class="container flexible-section__container">
     <% if section.cards_placement == "before" %><%= render "sections/card_collection", section: section %><% end %>
     <% if section.localized_title.present? || section.localized_body.present? || images.any? || section.action_buttons.any? || %w[faq gallery contact].include?(section.section_type) %>
+      <% if section.section_type == "contact" %><div class="flexible-section__contact-layout"><% end %>
       <div class="flexible-section__layout <%= 'flexible-section__layout--with-image' if images.any? %>">
         <div class="flexible-section__copy">
           <% if section.localized_title.present? %>
             <div class="preview-movable preview-movable--title" data-preview-field="title">
-              <% if preview_mode %><%= render "admin/page_previews/element_handle", field: "title", label: "Título" %><% end %>
+              <% if interactive_preview %><%= render "admin/page_previews/element_handle", field: "title", label: "Título" %><% end %>
               <%= content_tag(section.section_type == "hero" ? :h1 : :h2, section.localized_title, class: "section-heading") %>
             </div>
           <% end %>
           <% if section.localized_body.present? %>
             <div class="preview-movable preview-movable--body" data-preview-field="body">
-              <% if preview_mode %><%= render "admin/page_previews/element_handle", field: "body", label: "Parágrafo" %><% end %>
-              <div class="section-body"><%= simple_format(section.localized_body) %></div>
+              <% if interactive_preview %><%= render "admin/page_previews/element_handle", field: "body", label: "Parágrafo" %><% end %>
+              <div class="section-body"><%= formatted_content(section.localized_body) %></div>
             </div>
           <% end %>
-          <% if section.section_type == "contact" %><%= render "shared/contact_form", contact_request: ContactRequest.new, sent: false, form_section: section, preview: preview_mode %><% end %>
           <% if section.section_type == "faq" %><%= render "sections/questions", section: section %><% end %>
           <% if section.section_type == "gallery" %><%= render "sections/gallery_items", section: section %><% end %>
-          <div class="section-actions" data-preview-field="buttons">
-            <% if preview_mode && section.action_buttons.any? %><%= render "admin/page_previews/element_handle", field: "buttons", label: "Botões" %><% end %>
-            <%= render "shared/action_buttons", buttons: section.action_buttons %>
-          </div>
+          <%= render "sections/section_actions", section: section, preview_mode: interactive_preview, placement: "inline" %>
         </div>
         <% if images.any? %>
           <div class="flexible-section__media" data-preview-field="image">
-            <% if preview_mode %><%= render "admin/page_previews/element_handle", field: "image", label: "Imagem" %><% end %>
+            <% if interactive_preview %><%= render "admin/page_previews/element_handle", field: "image", label: "Imagem" %><% end %>
             <div class="flexible-section__image-frame"><%= render "sections/media_sequence", section: section, role: "image", entries: images %></div>
           </div>
         <% end %>
       </div>
+      <% if section.section_type == "contact" %>
+        <div class="flexible-section__form" data-preview-field="form">
+          <% if interactive_preview %><%= render "admin/page_previews/element_handle", field: "form", label: "Formulário" %><% end %>
+          <%= render "shared/contact_form", contact_request: ContactRequest.new, sent: false, form_section: section, preview: preview_mode %>
+        </div>
+      </div>
+      <% end %>
     <% end %>
+    <%= render "sections/section_actions", section: section, preview_mode: interactive_preview, placement: "collection" %>
     <% if section.cards_placement == "after" %><%= render "sections/card_collection", section: section %><% end %>
   </div>
 </section>

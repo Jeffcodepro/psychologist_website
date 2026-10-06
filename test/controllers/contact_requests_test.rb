@@ -27,7 +27,7 @@ class ContactRequestsTest < ActionDispatch::IntegrationTest
     assert_no_difference "ContactRequest.count" do
       submit valid_details
     end
-    assert_response :unprocessable_entity
+    assert_response :too_many_requests
   end
 
   test "invalid details remain editable and spam does not create a request" do
@@ -57,6 +57,6 @@ class ContactRequestsTest < ActionDispatch::IntegrationTest
     assert_difference "ContactRequest.count", -1 do
       delete admin_contact_request_path(request)
     end
-    assert_redirected_to admin_contact_requests_path(locale: "pt-BR")
+    assert_redirected_to admin_contact_requests_path
   end
 end

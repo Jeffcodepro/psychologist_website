@@ -1,0 +1,11 @@
+<div class="formatted-text" data-controller="formatted-text" data-formatted-text-url-value="<%= admin_text_preview_path %>">
+  <div class="formatted-text__toolbar" role="toolbar" aria-label="Formatação do texto">
+    <% [["bold", "Negrito", "B"], ["italic", "Itálico", "I"], ["heading", "Subtítulo", "H2"], ["list", "Lista", "• Lista"], ["ordered", "Lista numerada", "1. Lista"], ["quote", "Citação", "❝"], ["link", "Inserir link", "Link"]].each do |format, label, icon| %>
+      <button type="button" aria-label="<%= label %>" title="<%= label %>" data-format="<%= format %>" data-action="formatted-text#format"><%= icon %></button>
+    <% end %>
+    <button type="button" class="formatted-text__preview-toggle" data-formatted-text-target="toggle" data-action="formatted-text#toggle" aria-pressed="false">Ver formatação</button>
+  </div>
+  <%= yield %>
+  <div class="formatted-text__preview section-body" data-formatted-text-target="preview" hidden></div>
+  <small data-formatted-text-target="status" role="status">Selecione um trecho e use os botões. Também aceita **negrito**, *itálico* e ## subtítulos.</small>
+</div>

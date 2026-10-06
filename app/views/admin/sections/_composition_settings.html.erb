@@ -23,12 +23,7 @@
       </div>
 
       <div class="section-choice-grid section-choice-grid--layout">
-        <% [
-          ["text_left", "Texto à esquerda"],
-          ["text_right", "Texto à direita"],
-          ["media_top", "Imagem acima"],
-          ["media_bottom", "Imagem abaixo"]
-        ].each do |value, label| %>
+        <% SectionsHelper::LAYOUT_OPTIONS.each do |label, value| %>
           <label class="section-choice">
             <%= f.radio_button(
                   :media_layout,
@@ -193,22 +188,9 @@
         </strong>
       </label>
 
-      <label class="section-color-control">
-        <span>Overlay</span>
 
-        <%= f.color_field(
-              :overlay_color,
-              value: section.effective_overlay_color,
-              data: {
-                color_role: "overlay",
-                action: "input->section-composition#refreshColors"
-              }
-            ) %>
-
-        <strong>
-          <%= section.effective_overlay_color %>
-        </strong>
-      </label>
     </div>
   </div>
 </div>
+
+<%= render "admin/sections/layout_settings", f: f, section: section %>

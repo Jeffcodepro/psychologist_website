@@ -3,6 +3,7 @@
 <html lang="<%= I18n.locale %>">
 
   <head>
+    <%= render "shared/favicon" %>
 
     <title>
       Preview | <%= @page.name %>
@@ -26,7 +27,7 @@
   </head>
 
 
-  <body class="preview-frame-body">
+  <body class="preview-frame-body" data-controller="select-menus">
 
     <%= yield %>
 

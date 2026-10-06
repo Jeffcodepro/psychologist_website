@@ -36,7 +36,7 @@ class Admin::SectionItemsController < Admin::BaseController
 
     if save_section_item
       redirect_to(
-        @article ? admin_page_sections_path(@article) : after_save_path,
+        @article ? edit_admin_article_path(@article) : after_save_path,
         notice: "Conteúdo criado com sucesso."
       )
     else
@@ -52,7 +52,7 @@ class Admin::SectionItemsController < Admin::BaseController
     @section_item.assign_attributes(section_item_params)
     if save_section_item
       redirect_to(
-        @article ? admin_page_sections_path(@article) : after_save_path,
+        @article ? edit_admin_article_path(@article) : after_save_path,
         notice: "Conteúdo atualizado com sucesso."
       )
     else
@@ -133,12 +133,12 @@ class Admin::SectionItemsController < Admin::BaseController
         :image_position_y,
         :image_zoom,
         :image_shape,
-        media_adjustments: MediaAdjustable::PARAMS
+        card_settings: CardPresentation::PARAMS, media_adjustments: MediaAdjustable::PARAMS
       )
   end
 
   def after_save_path
-    return admin_page_preview_path(@page, locale: I18n.locale) if params[:from_preview] == "1"
+    return admin_page_preview_path(@page) if params[:from_preview] == "1"
     admin_page_section_section_items_path(@page, @section, kind: @section_item.item_kind)
   end
 

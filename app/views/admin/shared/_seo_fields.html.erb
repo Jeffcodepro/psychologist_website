@@ -1,0 +1,23 @@
+<% language = local_assigns.fetch(:language, "pt-BR"); suffix = language == "en" ? "_en" : ""; templates = seo_templates(f.object, language); example = templates.first %>
+<div class="seo-editor" data-controller="seo-editor" data-seo-editor-templates-value="<%= templates.to_json %>" data-seo-editor-title-value="<%= example[:title] %>" data-seo-editor-description-value="<%= example[:description] %>">
+  <div class="seo-editor__templates">
+    <% template_id = "seo_template_#{f.object.model_name.param_key}_#{language}" %>
+    <div>
+      <%= label_tag template_id, "Modelo de apresentação" %>
+      <%= select_tag template_id, options_for_select(templates.each_with_index.map { |template, index| [template[:label], index] }), id: template_id, class: "form-select", data: { seo_editor_target: "template", action: "change->seo-editor#refresh" } %>
+    </div>
+    <button type="button" class="admin-button-secondary" data-action="seo-editor#applyTemplate">Aplicar modelo</button>
+  </div>
+  <%= f.input "seo_title#{suffix}", label: "Título SEO#{' em inglês' if language == 'en'}", placeholder: example[:title],
+        input_html: { data: { seo_editor_target: "title", action: "input->seo-editor#refresh" } } %>
+  <button type="button" class="admin-button-quiet" data-action="seo-editor#useTitle">Usar modelo de título</button>
+  <%= f.input "seo_description#{suffix}", as: :text, label: "Descrição SEO#{' em inglês' if language == 'en'}", placeholder: example[:description],
+        input_html: { rows: 3, data: { seo_editor_target: "description", action: "input->seo-editor#refresh" } } %>
+  <button type="button" class="admin-button-quiet" data-action="seo-editor#useDescription">Usar modelo de descrição</button>
+  <div class="seo-editor__snippet" aria-label="Exemplo de resultado de busca">
+    <small>Exemplo de resultado de busca</small>
+    <strong data-seo-editor-target="previewTitle"></strong>
+    <p data-seo-editor-target="previewDescription"></p>
+  </div>
+  <small data-seo-editor-target="count"></small>
+</div>

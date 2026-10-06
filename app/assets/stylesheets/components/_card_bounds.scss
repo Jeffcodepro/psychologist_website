@@ -1,0 +1,119 @@
+// One bounded box is shared by the public card and the live crop editor.
+@mixin bounded-card-base {
+  display: flex; flex-direction: column; width: 100%; max-width: 360px;
+  height: 440px; min-height: 440px; max-height: 440px; padding: 0;
+  position: relative; isolation: isolate; overflow: hidden;
+  .compact-card__content, .compact-card__excerpt { display: contents; }
+  .compact-card__media {
+    display: flex; position: relative; inset: auto; z-index: auto; align-items: center;
+    align-self: stretch; justify-content: center; flex: 0 0 190px; width: 100%; height: 190px;
+    min-height: 0; margin: 0; order: -10;
+    &::after { content: none; }
+    &[hidden] { display: none; }
+  }
+  .compact-card__image-frame, .compact-card__image-frame[data-shape] {
+    position: relative; width: 100%; max-width: 100%; height: 100%; aspect-ratio: auto;
+    align-self: auto; border-radius: var(--card-image-radius, 0); overflow: hidden;
+  }
+  .compact-card__image-frame[data-shape="square"], .compact-card__image-frame[data-shape="circle"] { width: 190px; }
+  .compact-card__image-frame[data-shape="oval"], .compact-card__image-frame[data-shape="arch"] { width: 152px; }
+  .compact-card__image { position: absolute; inset: 0; }
+  .compact-card__heading { flex: 0 1 auto; order: 10; min-width: 0; min-height: 0; max-height: 136px; overflow: hidden; padding: 18px var(--card-text-padding, 22px) 0; }
+  .compact-card__title { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; margin: 0; }
+  .compact-card__body { order: 30; flex: 1 1 0; min-width: 0; min-height: 0; overflow: hidden; padding: var(--card-title-body-gap, 12px) var(--card-text-padding, 22px) 0; }
+  .compact-card__summary { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: var(--card-summary-lines, 3); overflow: hidden; margin: 0; }
+  .compact-card__actions {
+    display: flex; flex: 0 0 calc(56px + var(--card-button-gap, 12px)); min-width: 0; min-height: calc(56px + var(--card-button-gap, 12px)); order: 50;
+    align-items: center; justify-content: flex-start; margin: 0; padding: var(--card-button-gap, 12px) var(--card-text-padding, 22px) 18px;
+  }
+  .compact-card__link, .compact-card__read-more { flex: none; align-self: center; margin: 0; }
+  .compact-card__link[hidden], .compact-card__read-more[hidden] { display: none; }
+  .article-publication { margin: 6px 0 0; font-size: 12px; }
+}
+@mixin bounded-card-device($device) {
+  @each $spacing in text-padding, title-body-gap, image-text-gap, button-gap {
+    --card-#{$spacing}: var(--card-#{$device}-#{$spacing});
+  }
+  // Reset first, so the editor can switch simulated devices without stale layouts.
+  @include bounded-card-base;
+  &.compact-card--with-image[data-card-layout-#{$device}="top"] .compact-card__heading { padding-top: var(--card-image-text-gap, 18px); }
+  &.compact-card--with-image[data-card-layout-#{$device}="between_text"] .compact-card__body { padding-top: var(--card-image-text-gap, 12px); }
+  &[data-card-layout-#{$device}="bottom"] > .compact-card__media { order: 60; margin-top: var(--card-image-text-gap, 0px); }
+  &[data-card-layout-#{$device}="between_text"] > .compact-card__media { order: 20; margin-top: var(--card-image-text-gap, 12px); }
+  &[data-card-layout-#{$device}="before_button"] > .compact-card__media { order: 40; margin-top: var(--card-image-text-gap, 12px); }
+  &[data-card-layout-#{$device}="before_button"][data-card-button-#{$device}="top"] > .compact-card__media { order: -1; }
+  &[data-card-layout-#{$device}="before_button"][data-card-button-#{$device}="center"] > .compact-card__media { order: 24; }
+  &[data-card-button-#{$device}="top"] .compact-card__actions { order: 0; }
+  &[data-card-button-#{$device}="center"] .compact-card__actions { order: 25; }
+  &[data-card-align-#{$device}="center"] .compact-card__actions { justify-content: center; }
+  &[data-card-align-#{$device}="right"] .compact-card__actions { justify-content: flex-end; }
+  &.compact-card--with-image[data-card-layout-#{$device}="left"], &.compact-card--with-image[data-card-layout-#{$device}="right"] {
+    display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); grid-template-rows: auto minmax(0, 1fr) calc(56px + var(--card-button-gap, 12px)); column-gap: var(--card-image-text-gap, 0px);
+    > .compact-card__media { grid-column: 1; grid-row: 1 / 4; height: 100%; }
+    .compact-card__heading, .compact-card__body, .compact-card__actions { grid-column: 2; }
+    .compact-card__heading { grid-row: 1; } .compact-card__body { grid-row: 2; } .compact-card__actions { grid-row: 3; }
+    .compact-card__heading, .compact-card__body { padding-inline: var(--card-text-padding, 14px); }
+    .compact-card__actions { padding-inline: var(--card-text-padding, 10px); }
+    .compact-card__image-frame[data-shape="square"], .compact-card__image-frame[data-shape="circle"] { height: auto; aspect-ratio: 1; }
+    .compact-card__image-frame[data-shape="oval"], .compact-card__image-frame[data-shape="arch"] { height: auto; aspect-ratio: 4 / 5; }
+    &[data-card-button-#{$device}="top"] {
+      grid-template-rows: calc(56px + var(--card-button-gap, 12px)) auto minmax(0, 1fr);
+      .compact-card__actions { grid-row: 1; } .compact-card__heading { grid-row: 2; } .compact-card__body { grid-row: 3; padding-bottom: 18px; }
+    }
+    &[data-card-button-#{$device}="center"] {
+      grid-template-rows: auto calc(56px + var(--card-button-gap, 12px)) minmax(0, 1fr);
+      .compact-card__actions { grid-row: 2; } .compact-card__body { grid-row: 3; padding-bottom: 18px; }
+    }
+  }
+  &.compact-card--with-image[data-card-layout-#{$device}="right"] {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    > .compact-card__media { grid-column: 2; }
+    .compact-card__heading, .compact-card__body, .compact-card__actions { grid-column: 1; }
+  }
+  &.compact-card--with-image[data-card-layout-#{$device}="background"] {
+    > .compact-card__media { position: absolute; inset: 0; height: 100%; z-index: -1; margin: 0; }
+    .compact-card__image-frame[data-shape] { width: 100%; height: 100%; aspect-ratio: auto; border-radius: 0; }
+    > .compact-card__media::after { content: ""; position: absolute; inset: 0; background: var(--card-#{$device}-overlay-color, #0c1b15); opacity: var(--card-#{$device}-overlay-opacity, .68); pointer-events: none; }
+    .compact-card__title, .compact-card__body, .compact-card__body p, .article-publication, .compact-card__read-more { color: var(--card-#{$device}-background-text-color, #fff) !important; }
+  }
+}
+@media (min-width: 1025px) { .card-collection .compact-card { @include bounded-card-device(desktop); } }
+@media (min-width: 601px) and (max-width: 1024px) { .card-collection .compact-card { @include bounded-card-device(tablet); } }
+@media (max-width: 600px) {
+  .card-collection .compact-card { @include bounded-card-device(mobile); }
+  .card-collection .compact-carousel { max-width: 404px; }
+}
+.card-collection__grid { grid-auto-rows: 440px; justify-items: var(--cards-justify, center); }
+.card-editor-preview {
+  &.article-card-preview { position: static; margin: 0; padding: 0; min-width: 0; background: transparent; border: 0; }
+  &__toolbar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+  &__toolbar button { padding: 6px 12px; border: 1px solid #c8d6ce; border-radius: 8px; color: #355d49; background: #fff; font: 600 13px/1.5 $body-font; }
+  &__toolbar button[aria-pressed="true"] { color: #fff; background: #355d49; }
+  &__canvas.section-frame { display: block; width: var(--preview-card-width, 360px); max-width: 100%; margin-inline: auto; padding: 0; overflow: visible; background: transparent; }
+  &__size { display: block; margin: 12px 0; color: #53665c; font: 500 13px/1.5 $body-font; text-align: center; }
+  &__width { display: flex; align-items: center; gap: 10px; font-size: 13px; margin-block: 12px; }
+  &__width input { min-width: 0; width: 100%; }
+  .compact-card__link::after { content: none; }
+  .compact-card__media { cursor: grab; touch-action: none; }
+  .compact-card__media:has(.is-dragging) { cursor: grabbing; }
+  .compact-card__image-frame { touch-action: none; }
+  .compact-card__image { transition: none; }
+  // Cropping a background must remain possible without moving the text.
+  .compact-card[data-editor-background="true"] .compact-card__heading,
+  .compact-card[data-editor-background="true"] .compact-card__body { pointer-events: none; }
+  .compact-card[data-editor-background="true"] > .compact-card__media { z-index: 0; }
+  .compact-card[data-editor-background="true"] .compact-card__heading,
+  .compact-card[data-editor-background="true"] .compact-card__body,
+  .compact-card[data-editor-background="true"] .compact-card__actions { z-index: 1; }
+}
+@each $device in desktop, tablet, mobile {
+  .card-editor-preview[data-device="#{$device}"] .section-frame { @include section-device($device); }
+  .card-editor-preview[data-device="#{$device}"] .card-collection .compact-card { @include bounded-card-device($device); }
+}
+
+.card-editor-preview .card-reader-dialog__body { white-space: pre-line; }
+
+// Hover must preserve the rotation and flips selected in the crop editor.
+.card-collection .compact-card:hover .compact-card__image {
+  transform: scale(var(--card-image-zoom, 1)) rotate(var(--media-rotation, 0deg)) scale(var(--media-flip-x, 1), var(--media-flip-y, 1));
+}

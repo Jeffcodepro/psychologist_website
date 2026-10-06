@@ -13,8 +13,9 @@ Rails.application.routes.draw do
   end
 
   namespace :admin do
+    post "idioma", to: "language_preferences#update", as: :language_preference
     root to: "dashboard#index"
-    resources :articles, only: %i[index new create] do
+    resources :articles, only: %i[index new create edit update] do
       resource :card, only: %i[edit update], controller: 'article_cards'
     end
 
@@ -22,6 +23,8 @@ Rails.application.routes.draw do
       post :deliver, on: :member
     end
     resource :translation, only: :create
+    resource :text_preview, only: :create
+    resource :site_publication, only: %i[new create]
     resource :site_setting, only: %i[edit update]
 
     get "pages/:page_id/preview/frame",
@@ -39,12 +42,14 @@ Rails.application.routes.draw do
 
       resources :sections, except: :show do
         collection do
+          post :layout_preview
           patch :swap_positions
           patch :swap_fields
         end
 
         member do
           patch :clear_field
+          post :layout_preview
         end
 
         resources :section_items, except: :show
@@ -53,6 +58,7 @@ Rails.application.routes.draw do
   end
 
   scope "(/s/:site_slug)" do
+    get "favicon.png", to: "favicons#show", as: :site_favicon, defaults: { format: :png }
     get "sitemap.xml", to: "discovery#sitemap", as: :sitemap, defaults: { format: :xml }
     get "robots.txt", to: "discovery#robots", as: :robots
     root to: "pages#home"

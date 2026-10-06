@@ -18,12 +18,12 @@ class EditorialContentsTest < ActionDispatch::IntegrationTest
     get admin_articles_path
     assert_response :success
     get new_admin_article_path
-    assert_select 'form[action=?]', admin_articles_path(locale: 'pt-BR')
+    assert_select 'form[action=?]', admin_articles_path
     assert_difference '@tenant.pages.editorial.count', 1 do
       post admin_articles_path, params: { page: { name: 'Reflexão de hoje', content_kind: 'reflection' } }
     end
     article = @tenant.pages.editorial.last
-    assert_redirected_to admin_page_sections_path(article, locale: 'pt-BR')
+    assert_redirected_to edit_admin_article_path(article)
     assert_not article.published?
     assert_not article.show_in_nav?
     assert_equal %w[hero text], article.sections.draft.ordered.pluck(:section_type)
@@ -36,7 +36,7 @@ class EditorialContentsTest < ActionDispatch::IntegrationTest
     get admin_articles_path
     assert_includes response.body, 'Reflexão de hoje'
     patch admin_page_path(article), params: { page: { content_kind: 'article', name: 'Artigo revisado' } }
-    assert_redirected_to admin_articles_path(locale: 'pt-BR')
+    assert_redirected_to admin_articles_path
     assert_equal 'article', article.reload.content_kind
   end
 
@@ -49,7 +49,7 @@ class EditorialContentsTest < ActionDispatch::IntegrationTest
       patch admin_page_section_section_item_path(@page, @section, @card), params: { from_preview: '1', write_article: '1', section_item: { title: @card.title } }
     end
     article = @card.reload.linked_page
-    assert_redirected_to admin_page_sections_path(article, locale: 'pt-BR')
+    assert_redirected_to edit_admin_article_path(article)
     assert_equal 'A new path', article.sections.draft.find_by!(section_type: 'hero').title_en
     assert_equal @card.body, article.sections.draft.find_by!(section_type: 'text').body
     heading = article.sections.draft.find_by!(section_type: 'hero')
@@ -60,9 +60,10 @@ class EditorialContentsTest < ActionDispatch::IntegrationTest
     assert_no_difference 'Page.count' do
       patch admin_page_section_section_item_path(@page, @section, @card), params: { write_article: '1', section_item: { title: @card.title } }
     end
-    get admin_page_preview_frame_path(@page, locale: 'en')
-    assert_select ".compact-card__link[href='#{admin_page_preview_path(article, locale: 'en')}'][target='_top']", text: /Learn more/
-    assert_select '.compact-card--linked[data-controller="card-reader"]', count: 0
+    post admin_language_preference_path, params: { language: "en" }, as: :json
+    get admin_page_preview_frame_path(@page)
+    assert_select ".compact-card__link[href='#{admin_page_preview_path(article)}'][target='_top']", text: /Learn more/
+    assert_select '.compact-card--linked dialog', count: 0
     get admin_page_sections_path(article)
     assert_select "a[href*='/section_items/#{@card.id}/edit']", text: /Voltar ao card/
   end
@@ -102,7 +103,7 @@ class EditorialContentsTest < ActionDispatch::IntegrationTest
     assert_no_difference 'SectionItem.count' do
       delete admin_page_path(article)
     end
-    assert_redirected_to admin_articles_path(locale: 'pt-BR')
+    assert_redirected_to admin_articles_path
     assert_nil @card.reload.linked_page_id
     assert_nil @page.sections.published.first.section_items.first.linked_page_id
   end
@@ -161,7 +162,8 @@ class EditorialContentsTest < ActionDispatch::IntegrationTest
 
     get admin_page_preview_path(article)
     assert_select '.admin-preview-header .article-publication time', text: '27/09/2026'
-    get admin_page_preview_frame_path(article, locale: 'en')
+    post admin_language_preference_path, params: { language: "en" }, as: :json
+    get admin_page_preview_frame_path(article)
     assert_select '.article-publication', text: /Published on.*September 27, 2026/m
 
     PagePublicationService.new(page: @page).call

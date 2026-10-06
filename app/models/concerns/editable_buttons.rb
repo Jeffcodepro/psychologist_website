@@ -10,6 +10,10 @@ module EditableButtons
           public_send("#{attribute}=", nil)
         end
         validate do
+          # Existing links may outlive a deleted destination. Only newly assigned
+          # buttons need destination validation; rendering omits missing targets.
+          unchanged_owner = !changes.key?("tenant_id") && !changes.key?("page_id")
+          next if persisted? && unchanged_owner && !will_save_change_to_attribute?(attribute)
           errors.add(attribute, "verifique o texto e o destino dos botões") unless ActionButtonSchema.valid?(public_send(attribute), tenant: tenant)
         end
       end

@@ -1,0 +1,31 @@
+.section-frame .section-frame__banner > .section-frame__overlay {
+  display: block;
+  background: var(--section-banner-tint-color);
+  opacity: var(--section-banner-tint-opacity);
+}
+.section-frame .flexible-section__image-frame::after {
+  content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: var(--section-image-tint-color); opacity: var(--section-image-tint-opacity);
+}
+.media-overlay-editor {
+  border: 1px solid #dce5df; border-radius: 14px; padding: 18px; margin: 18px 0; background: #f7faf8;
+  h4 { font: 600 15px/1.5 $body-font; margin: 0 0 12px; color: #314f3e; }
+  &__panel { display: grid; grid-template-columns: minmax(0, 1fr) minmax(140px, 240px); gap: 20px; align-items: center; }
+  &__panel[hidden] { display: none; }
+  &__fields { min-width: 0; display: grid; gap: 14px; }
+  &__fields label { display: block; font: 600 13px/1.5 $body-font; margin-bottom: 6px; }
+  &__fields small { color: #63766b; font: 400 12px/1.5 $body-font; }
+  &__color, &__intensity { display: flex; gap: 10px; align-items: center; }
+  &__sample { position: relative; width: 100%; aspect-ratio: 16 / 10; overflow: hidden; border-radius: 10px; background: linear-gradient(140deg, #eef1e8, #a1bdad); }
+  &__sample img { width: 100%; height: 100%; object-fit: cover; }
+  &__sample::after { content: ""; position: absolute; inset: 0; background: var(--overlay-sample-color); opacity: var(--overlay-sample-opacity); pointer-events: none; }
+}
+.admin-section-editor, .preview-editor {
+  .media-overlay-editor input[type="color"] { flex: 0 0 42px; width: 42px; height: 42px; min-height: 42px; padding: 3px; border: 1px solid #cbd9d1; border-radius: 8px; }
+  .media-overlay-editor input[type="text"] { min-width: 0; }
+  .media-overlay-editor input[type="number"] { width: 84px; flex: 0 0 84px; min-height: 42px; padding: 8px; }
+  .media-overlay-editor input[type="range"] { flex: 1; min-width: 0; min-height: 24px; height: 24px; padding: 0; border: 0; box-shadow: none; accent-color: #327656; }
+}
+.button-designer__translation .section-translation-feedback { margin: 10px 0 0; font-size: 13px; }
+.button-designer__translation .admin-button-secondary { margin-top: 10px; }
+@media (max-width: 600px) { .media-overlay-editor__panel { grid-template-columns: minmax(0, 1fr); } .media-overlay-editor__sample { max-width: 280px; } }

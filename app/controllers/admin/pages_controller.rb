@@ -27,6 +27,7 @@ class Admin::PagesController < Admin::BaseController
   end
 
   def edit
+    redirect_to edit_admin_article_path(@page) if @page.editorial?
   end
 
   def update

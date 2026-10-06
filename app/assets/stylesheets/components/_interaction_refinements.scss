@@ -1,0 +1,70 @@
+// Directional choices are laid out in the direction they represent.
+.element-drop-zones, .element-drop-zones[data-field="image"] {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: minmax(66px, 1fr) minmax(78px, 1fr) minmax(66px, 1fr) minmax(82px, 1fr);
+  gap: 10px; padding: 48px 16px 42px; overflow-y: auto;
+  background: rgba(245,249,246,.97); border: 1px solid #b7cfc0;
+  box-shadow: 0 20px 70px rgba(27,53,39,.2); backdrop-filter: blur(8px);
+  .element-drop-zone {
+    position: static; inset: auto; width: auto; height: auto; min-height: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;
+    padding: 7px; border: 1px solid #c7dacf; background: #fff; font-size: 12px; line-height: 1.25;
+  }
+  .element-drop-zone:hover, .element-drop-zone.is-hovered { background: #e1efe6; border-color: #397657; }
+  .element-drop-zone:focus-visible { outline: 2px solid #397657; outline-offset: 2px; }
+  .element-drop-zone--top { grid-area: 1 / 2; }
+  .element-drop-zone--left { grid-area: 2 / 1; }
+  .element-drop-zone--center { grid-area: 2 / 2; }
+  .element-drop-zone--right { grid-area: 2 / 3; }
+  .element-drop-zone--bottom { grid-area: 3 / 2; }
+  .element-drop-zone--between { grid-area: 4 / 1; }
+  .element-drop-zone--before_buttons { grid-area: 4 / 2; }
+  .element-drop-zone--background { grid-area: 4 / 3; }
+  .element-drop-zones__map { grid-area: 2 / 2; display: none; }
+  &[data-field="image"] .element-drop-zones__map { display: flex; flex-direction: column; justify-content: center; gap: 4px; padding: 10px; border: 1px dashed #b5c7bc; border-radius: 8px; color: #84958a; font: 500 11px/1.2 $body-font; }
+  .element-drop-zones__map i { height: 3px; background: #cbd7cf; border-radius: 2px; &:nth-last-child(2) { width: 70%; } }
+  .element-drop-zone[hidden] { display: none; }
+  .element-drop-zone__diagram { position: relative; width: 44px; height: 26px; flex-shrink: 0; border-radius: 4px; background: #f0f4f1; }
+  .element-drop-zone__diagram i { position: absolute; border-radius: 2px; }
+  .position-text { background: #a8b9ae; left: 14px; top: 10px; width: 17px; height: 7px; }
+  .position-image { background: #418766; width: 12px; height: 10px; left: 16px; top: 8px; }
+  .position-action { display: none; background: #c2ad68; height: 3px; width: 12px; }
+  .element-drop-zone--top { .position-image { top: 3px; } .position-text { top: 16px; } }
+  .element-drop-zone--bottom { .position-image { top: 14px; } .position-text { top: 4px; } }
+  .element-drop-zone--left { .position-image { left: 5px; } .position-text { left: 22px; } }
+  .element-drop-zone--right { .position-image { left: 27px; } .position-text { left: 5px; } }
+  .element-drop-zone--between { .position-text { top: 3px; height: 3px; } .position-action { display: block; left: 16px; top: 21px; background: #a8b9ae; } }
+  .element-drop-zone--before_buttons { .position-text { top: 3px; height: 3px; } .position-action { display: block; top: 21px; left: 16px; } }
+  .element-drop-zone--background { .position-image { inset: 3px; width: auto; height: auto; } .position-text { z-index: 1; background: #fff; top: 9px; height: 5px; } }
+}
+.element-drop-zones[hidden] { display: none; }
+// Keep compact cards aligned within grids and carousels.
+.compact-carousel__track { align-items: stretch; justify-content: var(--cards-justify, center); }
+.card-collection__grid { align-items: stretch; grid-auto-rows: 440px; }
+.compact-carousel.is-overflowing .compact-carousel__track { justify-content: flex-start; }
+.compact-carousel__position { display: flex; justify-content: center; align-items: center; gap: 12px; margin-top: 20px; min-height: 28px; }
+.compact-carousel__counter { color: #62786a; font: 500 11px/1.4 $body-font; font-variant-numeric: tabular-nums; }
+.compact-carousel__position input.compact-carousel__range {
+  appearance: none; width: 150px; height: 28px; min-height: 0; padding: 0; margin: 0; border: 0; background: transparent; cursor: pointer;
+  &::-webkit-slider-runnable-track { height: 3px; background: #d9e2dc; border-radius: 3px; }
+  &::-webkit-slider-thumb { appearance: none; width: 24px; height: 7px; margin-top: -2px; border-radius: 8px; background: #3a7055; border: 0; }
+  &::-moz-range-track { height: 3px; background: #d9e2dc; border-radius: 3px; }
+  &::-moz-range-thumb { width: 24px; height: 7px; border-radius: 8px; background: #3a7055; border: 0; }
+  &:focus-visible { outline: 2px solid #397657; outline-offset: 3px; border-radius: 6px; }
+}
+.compact-carousel__position[hidden] { display: none; }
+@media (min-width: 601px) {
+  .compact-carousel__pagination { display: none; }
+}
+@media (max-width: 600px) {
+  .compact-carousel__position { display: none; }
+  .element-drop-zones, .element-drop-zones[data-field="image"] { gap: 7px; padding-inline: 10px; .element-drop-zone { font-size: 11px; padding: 5px; } }
+}
+
+.site-action.site-action--custom { background: var(--button-background); color: var(--button-text); border-color: var(--button-background); &:hover { background: var(--button-background); color: var(--button-text); filter: brightness(.94); } }
+.site-action.site-action--small { padding: 9px 16px; font-size: 12px; }
+.site-action.site-action--large { padding: 16px 28px; font-size: 17px; }
+.site-action.site-action--rounded { border-radius: 10px; }
+.site-action.site-action--square { border-radius: 3px; }
+.button-designer__sample { display: flex; align-items: center; padding-top: 18px; }
+.button-designer input[type="color"] { width: 100%; min-height: 42px; padding: 4px; border-radius: 8px; }

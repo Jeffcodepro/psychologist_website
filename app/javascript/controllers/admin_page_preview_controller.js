@@ -5,15 +5,15 @@ export default class extends Controller {
     "iframe",
     "device",
     "deviceButton",
-    "languageButton"
+    "languageButton", "status"
   ]
 
   static values = {
-    frameUrl: String
+    frameUrl: String, locale: String, languageUrl: String
   }
 
   connect() {
-    this.locale = new URL(this.iframeTarget.src).searchParams.get("locale") || "pt-BR"
+    this.locale = this.localeValue || "pt-BR"
     this.device = "desktop"
     this.updateLanguageButtons(this.locale)
 
@@ -64,50 +64,40 @@ export default class extends Controller {
     this.syncEditingDevice()
   }
 
-  changeLanguage(event) {
-    const locale =
-      event.currentTarget.dataset.locale
-
-    if (!locale) return
-
-    this.locale = locale
-    const parentUrl = new URL(window.location.href)
-    parentUrl.searchParams.set("locale", locale)
-    history.replaceState({}, "", parentUrl)
-    document.querySelectorAll('a[href]').forEach(link => {
-      const target = new URL(link.href, location.origin)
-      if (target.origin === location.origin && target.pathname.startsWith('/admin')) {
-        target.searchParams.set('locale', locale)
-        link.href = target.toString()
-      }
-    })
-
-    const url =
-      this.currentFrameUrl()
-
-    url.searchParams.set(
-      "locale",
-      locale
-    )
-
-    this.iframeTarget.src =
-      url.toString()
-
-    this.updateLanguageButtons(locale)
+  async changeLanguage(event) {
+    const locale = event.currentTarget.dataset.locale
+    if (!locale || this.changingLanguage) return
+    this.changingLanguage = true
+    this.languageButtonTargets.forEach(button => { button.disabled = true })
+    try {
+      const response = await fetch(this.languageUrlValue, {
+        method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json",
+          "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]')?.content || '' },
+        body: JSON.stringify({ language: locale })
+      })
+      if (!response.ok) throw new Error()
+      const data = await response.json()
+      this.locale = data.language
+      const url = this.currentFrameUrl()
+      url.searchParams.delete("locale")
+      this.iframeTarget.src = url.toString()
+      this.updateLanguageButtons(this.locale)
+      this.statusTarget.textContent = ""
+    } catch (_) {
+      this.statusTarget.textContent = "Não foi possível trocar o idioma. Tente novamente."
+    } finally {
+      this.changingLanguage = false
+      this.languageButtonTargets.forEach(button => { button.disabled = false })
+    }
   }
 
   handleFrameLoad() {
     this.syncEditingDevice()
-    const url =
-      this.currentFrameUrl()
-
-    const locale =
-      url.searchParams.get("locale") ||
-      "pt-BR"
-
-    this.locale = locale
-
-    this.updateLanguageButtons(locale)
+    try {
+      const language = this.iframeTarget.contentDocument.documentElement.lang
+      if (["pt-BR", "en"].includes(language)) this.locale = language
+    } catch (_) { }
+    this.updateLanguageButtons(this.locale)
   }
 
   syncEditingDevice() {

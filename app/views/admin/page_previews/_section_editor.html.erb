@@ -2,14 +2,13 @@
   form_id = "preview-section-form-#{section.id}"
 
   return_to = admin_page_preview_frame_path(
-    @page,
-    locale: I18n.locale
+    @page
   )
 %>
 
 <div
   class="preview-editor"
-  data-controller="preview-editor preview-editor-tabs section-composition translation"
+  data-controller="preview-editor-tabs section-composition translation"
   data-translation-url-value="<%= admin_translation_path %>"
 >
   <div class="preview-editor__header">
@@ -38,6 +37,7 @@
   </div>
 
   <nav class="preview-editor__tabs">
+    <button type="button" class="preview-editor__tab" data-preview-editor-tabs-target="tab" data-tab="buttons" data-action="preview-editor-tabs#select">Botões</button>
     <button
       type="button"
       class="preview-editor__tab is-active"
@@ -113,6 +113,9 @@
             ) %>
       </section>
 
+    <section class="preview-editor__panel" data-preview-editor-tabs-target="panel" data-panel="buttons" hidden>
+      <%= render "admin/sections/button_fields", f: f, section: section %>
+    </section>
       <% if section.section_type == "contact" %>
         <section class="preview-editor__panel" data-preview-editor-tabs-target="panel" data-panel="contact_fields" hidden><%= render "admin/sections/contact_fields", f: f, section: section %></section>
       <% end %>

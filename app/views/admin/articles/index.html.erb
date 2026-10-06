@@ -9,10 +9,10 @@
           <%= render "shared/article_publication", page: article %>
         </div>
         <div class="admin-site-page__actions">
-          <%= link_to 'Editar conteúdo', admin_page_sections_path(article), class: 'admin-button admin-button--primary' %>
+          <%= link_to 'Editar conteúdo', edit_admin_article_path(article), class: 'admin-button admin-button--primary' %>
           <%= link_to 'Card em Conteúdos', edit_admin_article_card_path(article), class: 'admin-button-secondary' %>
           <%= link_to 'Pré-visualizar e publicar', admin_page_preview_path(article), class: 'admin-button-secondary' %>
-          <%= link_to 'Configurar texto', edit_admin_page_path(article), class: 'admin-button-quiet' %>
+          <%= link_to 'Ajustar blocos e imagens', admin_page_sections_path(article), class: 'admin-button-quiet' %>
           <%= button_to 'Excluir texto', admin_page_path(article), method: :delete, class: 'admin-button-quiet admin-button-danger', form: { data: { turbo_confirm: 'Excluir este texto e seus blocos? Os cards serão mantidos, mas perderão o link para ele.' } } %>
         </div>
       </article>

@@ -1,24 +1,26 @@
 <%
-  preview_mode = request.path.include?("/preview/frame")
+  preview_mode = local_assigns.fetch(:preview_mode, request.path.include?("/preview/frame"))
+  interactive_preview = local_assigns.fetch(:interactive_preview, preview_mode)
   banners = section_media_entries(section, "banner")
   images = section_media_entries(section, "image")
 %>
-<div class="section-frame section-frame--<%= section.effective_banner_layout %> <%= 'section-frame--with-media' if banners.any? %> <%= 'section-frame--preview' if preview_mode %>"
+<div class="section-frame section-frame--<%= section.effective_banner_layout %> <%= 'section-frame--with-media' if banners.any? %> <%= 'section-frame--preview' if interactive_preview %>"
      data-section-frame-id="<%= section.id %>"
-     <% if preview_mode %>data-controller="visual-drag" data-visual-drag-section-id-value="<%= section.id %>" data-visual-drag-swap-url-value="<%= swap_fields_admin_page_sections_path(@page) %>" data-visual-drag-update-url-value="<%= admin_page_section_path(@page, section) %>"<% end %>
+     <% if interactive_preview %>data-controller="visual-drag" data-visual-drag-section-id-value="<%= section.id %>" data-visual-drag-swap-url-value="<%= swap_fields_admin_page_sections_path(@page) %>" data-visual-drag-update-url-value="<%= admin_page_section_path(@page, section) %>"<% end %>
+     <% %w[desktop tablet mobile].each do |device| %>data-layout-<%= device %>="<%= section_media_layout(section, device) %>" <% end %>
      data-banner-tablet="<%= section.visual_value('banner_layout', 'tablet') %>" data-banner-mobile="<%= section.visual_value('banner_layout', 'mobile') %>"
      style="<%= section_style_variables(section) %>">
   <% if banners.any? %>
     <div class="section-frame__banner" data-preview-field="banner">
-      <% if preview_mode %><%= render "admin/page_previews/element_handle", field: "banner", label: "Banner" %><% end %>
+      <% if interactive_preview %><%= render "admin/page_previews/element_handle", field: "banner", label: "Banner" %><% end %>
       <%= render "sections/media_sequence", section: section, role: "banner", entries: banners %>
       <div class="section-frame__overlay"></div>
     </div>
   <% end %>
   <div class="section-frame__content">
-    <%= render "sections/flexible", section: section, images: images, preview_mode: preview_mode %>
+    <%= render "sections/flexible", section: section, images: images, preview_mode: preview_mode, interactive_preview: interactive_preview %>
   </div>
-  <% if preview_mode %>
+  <% if interactive_preview %>
     <%= render "admin/page_previews/element_drop_zones" %>
   <% end %>
 </div>

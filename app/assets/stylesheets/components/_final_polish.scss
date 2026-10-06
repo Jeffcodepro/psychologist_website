@@ -9,18 +9,10 @@
   &__arrow:focus-visible { outline: 2px solid #327656; outline-offset: 2px; }
   &__viewport { scrollbar-width: none; }
   &__viewport::-webkit-scrollbar { display: none; }
-  &__playback { display: flex; align-items: center; gap: 6px; margin: 8px auto 0; min-height: 36px; padding: 5px 10px; border: 0; border-radius: 20px; background: transparent; color: #526b5c; font: 500 12px/1.5 $body-font; }
-  &__playback[hidden] { display: none; }
-  &__playback svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
-  &__playback:focus-visible { outline: 2px solid #327656; outline-offset: 2px; }
-  &__play-icon { display: none; }
-  &__playback[aria-pressed="true"] &__pause-icon { display: none; }
-  &__playback[aria-pressed="true"] &__play-icon { display: block; }
 }
 .compact-carousel__stage:has(.compact-carousel__arrow[hidden]) { padding-inline: 0; }
 @media (hover: hover) {
   .compact-carousel__arrow:hover { background: #355746; color: #fff; border-color: #355746; }
-  .compact-carousel__playback:hover { background: #e9efe9; color: #355746; }
 }
 .card-collection .compact-card__content { display: flex; flex-direction: column; overflow: hidden; overscroll-behavior: auto; }
 .compact-card__excerpt { flex: 1; min-height: 0; overflow: hidden; }
@@ -52,8 +44,6 @@
 .form-designer__field .form-designer__required { flex-direction: row; align-items: center; }
 .form-designer__required input[type="checkbox"] { width: 20px; height: 20px; min-height: 0; margin: 0; }
 @media (max-width: 575px) { .contact-fields { grid-template-columns: minmax(0, 1fr); } .form-designer__toolbar { flex-wrap: wrap; } }
-.font-picker__option[hidden] { display: none; }
-.font-picker__search { display: grid; gap: 8px; padding: 12px; }
 .section-frame .section-heading, .section-frame .compact-card__title {
   font-weight: var(--section-title-font-weight) !important;
   font-style: var(--section-title-font-style) !important;
@@ -105,7 +95,7 @@
 .article-card-preview { position: sticky; top: 96px; padding: 20px; background: #eef3ef; border: 1px solid #dce4df; border-radius: 18px; }
 .article-card-preview > h2 { font-size: 22px; margin: 0 0 10px; }
 .article-card-preview > p { font: 400 13px/1.6 $body-font; color: #617269; margin: 14px 0; }
-.article-card-preview .compact-card { max-width: 100%; width: 100%; height: 410px; }
+
 .article-card-preview > a { display: flex; justify-content: center; margin-top: 20px; }
 .admin-article-card-editor .form-select { min-height: 46px; border: 1px solid #dce4df; border-radius: 10px; }
 .admin-article-card-editor .form-control { border-radius: 9px; padding: 12px; font: 400 15px/1.5 $body-font; background-color: #fff; }

@@ -36,7 +36,7 @@ class PagePublicationService
   def publish_sections
     @page.sections
          .draft
-         .order(:position)
+         .order(:position, :id)
          .each do |draft_section|
 
       published_section =
@@ -79,6 +79,12 @@ class PagePublicationService
     published_section.publication_state =
       "published"
 
+    # Removing a destination must not prevent another page from publishing.
+    published_section.action_buttons = draft_section.action_buttons.reject do |button|
+      button['action'] == 'section' &&
+        !@page.tenant.sections.draft.exists?(navigation_key: button['value'])
+    end
+
     published_section.save!
 
     published_section
@@ -94,7 +100,7 @@ class PagePublicationService
   )
     source_section
       .section_items
-      .order(:position)
+      .order(:position, :id)
       .each do |draft_item|
 
       published_item =

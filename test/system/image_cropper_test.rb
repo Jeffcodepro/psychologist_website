@@ -27,6 +27,7 @@ class ImageCropperTest < ApplicationSystemTestCase
     assert_selector '[data-image-cropper-target="positionHint"]', text: "Zoom ajustado para 115%"
 
     # At 100% this axis had no overflow; moving it now must visibly shift the image.
+    editor_ratio = find('[data-image-cropper-target="frame"]').evaluate_script("this.clientWidth / this.clientHeight")
     original_top = crop_image_top
     set_range "y", 25
     assert_operator crop_image_top, :>, original_top + 5
@@ -42,6 +43,8 @@ class ImageCropperTest < ApplicationSystemTestCase
     PagePublicationService.new(page: @content_page).call
     logout
     visit public_page_path(slug: @content_page.slug)
+    public_ratio = find(".compact-card__image-frame").evaluate_script("this.clientWidth / this.clientHeight")
+    assert_in_delta editor_ratio, public_ratio, 0.01
     image = find(".compact-card__image")
     assert_equal "50% 25%", image.evaluate_script("getComputedStyle(this).objectPosition")
     assert_match(/matrix\(1\.15, 0, 0, 1\.15, 0, 0\)/, image.evaluate_script("getComputedStyle(this).transform"))
@@ -110,6 +113,6 @@ class ImageCropperTest < ApplicationSystemTestCase
   end
 
   def crop_image_top
-    find('[data-image-cropper-target="image"]').evaluate_script("this.getBoundingClientRect().top")
+    find('[data-image-cropper-target="image"]').evaluate_script("this.getBoundingClientRect().top - this.parentElement.getBoundingClientRect().top")
   end
 end

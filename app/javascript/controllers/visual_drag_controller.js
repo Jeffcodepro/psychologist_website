@@ -49,19 +49,26 @@ export default class extends Controller {
     this.hintTarget.textContent = `${this.handle.textContent.trim()} · solte ou escolha uma posição`
     this.element.classList.add("is-element-dragging")
     this.positionZones()
+    this.zonesTarget.dataset.field = this.field
+    const imageLabels = { top: "Acima", left: "Esquerda", right: "Direita", bottom: "Abaixo", between: "Entre título e parágrafo", before_buttons: "Entre parágrafo e botões", background: "Imagem de fundo" }
+    const formLabels = { top_left: "Acima · esquerda", top: "Acima · centro", top_right: "Acima · direita", left: "Ao lado · esquerda", right: "Ao lado · direita", bottom_left: "Abaixo · esquerda", bottom: "Abaixo · centro", bottom_right: "Abaixo · direita" }
+    const buttonLabels = { top: "Antes dos textos", between: "Entre título e parágrafo", bottom: "Depois dos textos", left: "Alinhar à esquerda", center: "Centralizar", right: "Alinhar à direita", before_cards: "Acima dos cards", after_cards: "Abaixo dos cards" }
+    const labels = this.field === "form" ? formLabels : this.field === "buttons" ? buttonLabels : this.field === "image" ? imageLabels : this.field === "banner" ?
+      { top: "Banner acima", center: "Imagem de fundo", bottom: "Banner abaixo" } :
+      { top: "Acima", left: "Esquerda", center: "Centralizar", right: "Direita", bottom: "Abaixo" }
     this.zoneTargets.forEach(zone => {
-      const direction = zone.dataset.position
-      zone.hidden = this.field === "banner" ? ["left", "right"].includes(direction) : this.field === "image" && direction === "center"
-      zone.textContent = this.field === "banner" ? { top: "Banner acima", center: "Imagem de fundo", bottom: "Banner abaixo" }[direction] : { top: "Acima", left: "Esquerda", center: "Centralizar", right: "Direita", bottom: "Abaixo" }[direction]
+      zone.hidden = !labels[zone.dataset.position]
+      zone.querySelector("[data-position-label]").textContent = labels[zone.dataset.position] || ""
     })
   }
 
   positionZones() {
     const rect = this.element.getBoundingClientRect()
-    const top = Math.max(82, rect.top)
-    const height = Math.min(rect.bottom, innerHeight - 16) - top
-    this.zonesTarget.hidden = height < 220
-    Object.assign(this.zonesTarget.style, { top: `${top}px`, left: `${Math.max(8, rect.left + 8)}px`, width: `${Math.min(innerWidth - 16, rect.width - 16)}px`, height: `${Math.max(0, height)}px` })
+    const height = Math.min(490, innerHeight - 32)
+    const width = Math.min(680, innerWidth - 24, Math.max(300, rect.width - 16))
+    const top = Math.max(16, Math.min(rect.top + 24, innerHeight - height - 16))
+    const left = Math.max(12, Math.min(rect.left + (rect.width - width) / 2, innerWidth - width - 12))
+    Object.assign(this.zonesTarget.style, { top: `${top}px`, left: `${left}px`, width: `${width}px`, height: `${height}px` })
   }
 
   move(event) {
@@ -78,7 +85,7 @@ export default class extends Controller {
     const zone = target?.closest("[data-position]")
     if (zone && this.zonesTarget.contains(zone)) zone.classList.add("is-hovered")
     const other = target?.closest(".preview-editable-section")
-    if (other && other.dataset.sectionId !== String(this.sectionIdValue)) {
+    if (this.field !== "form" && other && other.dataset.sectionId !== String(this.sectionIdValue)) {
       this.otherTarget = other.querySelector(`[data-preview-field="${this.field}"]`)
       this.otherTarget?.classList.add("is-field-highlighted")
       this.otherSection = other.dataset.sectionId
@@ -99,9 +106,13 @@ export default class extends Controller {
   async choose(event) { await this.apply(event.currentTarget.dataset.position); this.cancel() }
 
   fieldsFor(position) {
-    if (this.field === "buttons") return ["left", "center", "right"].includes(position) ? { buttons_alignment: position } : { buttons_position: position === "top" ? "before_text" : "after_text" }
+    if (this.field === "form") {
+      if (["left", "right"].includes(position)) return { form_position: position }
+      return { form_position: position.startsWith("top") ? "before_text" : "after_text", form_alignment: position.endsWith("_left") ? "left" : position.endsWith("_right") ? "right" : "center" }
+    }
+    if (this.field === "buttons") return ["left", "center", "right"].includes(position) ? { buttons_alignment: position } : { buttons_position: { top: "before_text", between: "between_text", bottom: "after_text", before_cards: "before_cards", after_cards: "after_cards" }[position] }
     if (this.field === "banner") return { banner_layout: { top: "top", center: "background", bottom: "bottom" }[position] }
-    if (this.field === "image") return { media_layout: { left: "text_right", right: "text_left", top: "media_top", bottom: "media_bottom" }[position] }
+    if (this.field === "image") return { media_layout: { left: "text_right", right: "text_left", top: "media_top", bottom: "media_bottom", between: "media_between", before_buttons: "media_before_buttons", background: "media_background" }[position] }
     if (["left", "center", "right"].includes(position)) return { [this.field === "title" ? "title_alignment" : "body_alignment"]: position }
     return { text_order: (this.field === "title") === (position === "top") ? "title_first" : "body_first" }
   }
@@ -116,6 +127,7 @@ export default class extends Controller {
       if (!response.ok) throw new Error()
       const data = await response.json()
       this.element.style.cssText = data.style_variables
+      Object.entries(data.media_layouts).forEach(([device, layout]) => { this.element.setAttribute(`data-layout-${device}`, layout) })
       this.element.dataset.bannerTablet = data.banner_tablet
       this.element.dataset.bannerMobile = data.banner_mobile
       this.element.classList.remove("section-frame--top", "section-frame--background", "section-frame--bottom")

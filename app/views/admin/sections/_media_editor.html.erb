@@ -8,7 +8,6 @@
     <% if role == "banner" %>
       <div class="admin-section-editor__input-grid">
         <%= f.input :banner_layout, collection: [["Faixa acima", "top"], ["Imagem de fundo", "background"], ["Faixa abaixo", "bottom"]], label: "Onde exibir o banner", include_blank: false %>
-        <%= f.input :banner_overlay, label: "Escurecimento do fundo (%)", input_html: { min: 0, max: 90 } %>
       </div>
     <% else %>
       <label class="cms-toggle">
@@ -16,6 +15,7 @@
         <span><strong>Usar a foto profissional nesta seção</strong><small>Opcional. Quando desativado, só aparecem as imagens que você adicionar aqui.</small></span>
       </label>
     <% end %>
+    <%= render "admin/sections/media_overlay", f: f, section: section, role: role %>
     <div data-media-library-target="primary"><%= render "admin/shared/image_cropper", f: f, record: section, media: role, title: role == "banner" ? "Banner principal" : "Fotografia principal" %></div>
     <% if section.persisted? && section.public_send(role).attached? %>
       <%= f.hidden_field "remove_#{role}", value: "0", data: { media_library_target: "removeFlag" } %>

@@ -6,7 +6,7 @@
     <%= f.hidden_field :item_kind %>
     <%= hidden_field_tag :from_preview, params[:from_preview] == "1" ? "1" : nil %>
     <section class="admin-section-editor__panel is-active">
-      <div class="admin-section-editor__panel-heading"><span>Conteúdo</span><h2><%= @section_item.item_kind == "question" ? "Pergunta e resposta" : "Texto do card" %></h2><p>Textos longos terão a opção “Ler mais”, mantendo os cards com a mesma altura.</p></div>
+      <div class="admin-section-editor__panel-heading"><span>Conteúdo</span><h2><%= @section_item.item_kind == "question" ? "Pergunta e resposta" : "Texto do card" %></h2></div>
       <%= f.input :title, label: @section_item.item_kind == "question" ? "Pergunta" : "Título", input_html: { data: { translation_target: "titlePt" } } %>
       <%= f.input :body, label: @section_item.item_kind == "question" ? "Resposta" : (@section_item.linked_page&.editorial? ? 'Resumo do card' : 'Texto'), input_html: { rows: 5, data: { translation_target: "bodyPt" } } %>
       <details class="admin-optional-fields"><summary>Versão em inglês (opcional)</summary>
@@ -21,13 +21,14 @@
           <%= f.input :linked_page_id, as: :select, collection: current_tenant.pages.ordered.map { |page| ["#{page.content_label}: #{page.name}#{' · rascunho' unless page.published?}", page.id] }, include_blank: 'Sem redirecionamento', label: 'Abrir página ou texto completo' %>
           <p>O card inteiro será clicável. Escolha um conteúdo existente ou use “Salvar e criar texto completo” para começar um artigo com este título, texto e imagem.</p>
           <% if @section_item.linked_page && @section_item.linked_page.tenant_id == current_tenant.id %>
-            <%= link_to 'Editar texto de destino', admin_page_sections_path(@section_item.linked_page), class: 'admin-button-secondary' %>
+            <%= link_to 'Editar texto de destino', (@section_item.linked_page.editorial? ? edit_admin_article_path(@section_item.linked_page) : admin_page_sections_path(@section_item.linked_page)), class: 'admin-button-secondary' %>
             <% unless @section_item.linked_page.published? %><p>O texto de destino está em rascunho. Publique-o para ativar o link no site.</p><% end %>
           <% end %>
           <p>Depois de salvar o destino, publique também a página que contém este card.</p>
         </section>
       <% end %>
       <% unless @section_item.item_kind == "question" %><%= render "admin/shared/image_cropper", f: f, record: @section_item, title: "Imagem opcional" %><% end %>
+      <% if @section_item.item_kind == "card" %><%= render "admin/section_items/presentation", f: f %><% end %>
       <div class="admin-section-editor__input-grid"><%= f.input :position, label: "Ordem de exibição", input_html: { min: 0 } %><%= f.input :visible, as: :boolean, label: "Exibir este conteúdo" %></div>
     </section>
     <footer class="admin-section-editor__actions"><div class="admin-section-editor__actions-left"><%= link_to "Voltar ao bloco", (params[:from_preview] == "1" ? admin_page_preview_path(@page) : edit_admin_page_section_path(@page, @section)), class: "admin-button-quiet" %></div><div class="admin-section-editor__actions-right">

@@ -32,7 +32,8 @@ class ArticleCardsTest < ActionDispatch::IntegrationTest
     get edit_admin_article_card_path(article)
     assert_response :success
     assert_select '.article-card-preview .compact-card__link', text: /Saiba mais/
-    assert_select '.article-card-preview a[href=?]', admin_page_preview_path(article, locale: 'pt-BR')
+    assert_select '.article-card-preview button[data-preview-destination]', text: /Saiba mais/
+    assert_select '.article-card-preview a[href]', count: 0
   end
 
   test 'cards move and change independently while published snapshots and full text remain untouched' do
@@ -42,7 +43,7 @@ class ArticleCardsTest < ActionDispatch::IntegrationTest
     PagePublicationService.new(page: @contents).call
     post_body = article.sections.draft.find_by!(section_type: 'text').body
     patch admin_article_card_path(article), params: { card_section: @highlights.id, article_card: { title: 'Título da chamada', body: 'Resumo escolhido pela autora.', body_en: 'Chosen summary.', visible: true } }
-    assert_redirected_to edit_admin_article_card_path(article, locale: 'pt-BR')
+    assert_redirected_to edit_admin_article_card_path(article)
     assert_equal @highlights.id, card.reload.section_id
     assert_equal 'Resumo escolhido pela autora.', card.body
     assert_equal post_body, article.sections.draft.find_by!(section_type: 'text').body

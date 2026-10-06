@@ -2,6 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["tab", "panel"]
+  static values = { initial: String }
 
   connect() {
     const active =
@@ -10,7 +11,7 @@ export default class extends Controller {
       ) || this.tabTargets[0]
 
     if (active) {
-      this.activate(active.dataset.tab)
+      this.activate(this.initialValue || active.dataset.tab)
     }
   }
 

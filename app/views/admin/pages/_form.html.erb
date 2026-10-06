@@ -133,40 +133,10 @@
       </div>
     </header>
 
-    <div class="admin-form-grid admin-form-grid--2">
-      <%= f.input(
-            :seo_title,
-            label: "Título SEO",
-            hint: "Recomendado: até 60 caracteres."
-          ) %>
-
-      <%= f.input(
-            :seo_title_en,
-            label: "Título SEO em inglês",
-            hint: "Recomendado: até 60 caracteres."
-          ) %>
-    </div>
-
-    <div class="admin-form-grid admin-form-grid--2">
-      <%= f.input(
-            :seo_description,
-            as: :text,
-            label: "Descrição SEO",
-            hint: "Recomendado: até 160 caracteres.",
-            input_html: {
-              rows: 4
-            }
-          ) %>
-
-      <%= f.input(
-            :seo_description_en,
-            as: :text,
-            label: "Descrição SEO em inglês",
-            input_html: {
-              rows: 4
-            }
-          ) %>
-    </div>
+    <%= render "admin/shared/seo_fields", f: f %>
+    <details class="admin-optional-fields"><summary>SEO em inglês</summary>
+      <%= render "admin/shared/seo_fields", f: f, language: "en" %>
+    </details>
   </section>
 
   <div class="admin-settings-actions">

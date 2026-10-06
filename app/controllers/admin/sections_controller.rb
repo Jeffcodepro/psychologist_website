@@ -5,6 +5,7 @@ class Admin::SectionsController < Admin::BaseController
     update
     destroy
     clear_field
+    layout_preview
   ]
 
   def index
@@ -18,7 +19,8 @@ class Admin::SectionsController < Admin::BaseController
     @section = @page.sections.new(
       publication_state: "draft",
       position: next_position,
-      section_type: "text",
+      section_type: params[:preset] == "buttons" ? "cta" : "text",
+      action_buttons: params[:preset] == "buttons" ? [{ label: "Saiba mais", action: "contact", value: "", style: "primary" }] : [],
       image_shape: "rounded",
       media_layout: "text_left",
       media_size: "medium",
@@ -62,6 +64,7 @@ class Admin::SectionsController < Admin::BaseController
             media_size: @section.effective_media_size,
             image_shape: @section.effective_image_shape,
             banner_layout: @section.effective_banner_layout,
+            media_layouts: %w[desktop tablet mobile].index_with { |device| helpers.section_media_layout(@section, device) },
             style_variables: helpers.section_style_variables(@section),
             banner_tablet: @section.visual_value("banner_layout", "tablet"),
             banner_mobile: @section.visual_value("banner_layout", "mobile")
@@ -98,18 +101,35 @@ class Admin::SectionsController < Admin::BaseController
   end
 
   def swap_positions
-    first = @page.sections.draft.find(params[:first_id])
-    second = @page.sections.draft.find(params[:second_id])
+    @page.with_lock do
+      sections = @page.sections.draft.ordered.to_a
+      first = sections.find { |section| section.id.to_s == params[:first_id].to_s }
+      second = sections.find { |section| section.id.to_s == params[:second_id].to_s }
+      raise ActiveRecord::RecordNotFound unless first && second
 
-    first_position = first.position
-    second_position = second.position
-
-    Section.transaction do
-      first.update!(position: second_position)
-      second.update!(position: first_position)
+      # Normalize legacy duplicate positions and change only ordering metadata.
+      # Unrelated content validation must not prevent moving an existing block.
+      first_index, second_index = sections.index(first), sections.index(second)
+      sections[first_index], sections[second_index] = second, first
+      sections.each_with_index do |section, index|
+        section.update_columns(position: index + 1, updated_at: Time.current)
+      end
     end
 
     redirect_after_change
+  end
+
+  def layout_preview
+    fields = SectionLayout::DEFAULTS.keys + %w[media_layout media_size image_shape text_order buttons_position buttons_alignment title body title_en body_en section_type]
+    preview = params.fetch(:section, ActionController::Parameters.new).permit(*fields,
+      responsive_settings: { tablet: fields, mobile: fields })
+    @section.assign_attributes(preview)
+    unless @section.valid?
+      render plain: "Confira os valores de espaçamento e aparência.", status: :unprocessable_entity
+      return
+    end
+    @site_setting = current_tenant.site_setting
+    render "admin/sections/layout_preview", layout: "section_spacing_preview"
   end
 
   def swap_fields
@@ -167,6 +187,10 @@ class Admin::SectionsController < Admin::BaseController
   end
 
   def set_section
+    if action_name == "layout_preview" && params[:id].blank?
+      @section = @page.sections.new(section_type: "text", position: next_position)
+      return
+    end
     @section = @page
       .sections
       .draft
@@ -178,6 +202,8 @@ class Admin::SectionsController < Admin::BaseController
       .require(:section)
       .permit(
         :section_type,
+        *SectionLayout::DEFAULTS.keys,
+        *SectionMediaOverlay::FIELDS,
         :form_fields_json, :action_buttons_json, :buttons_position, :buttons_alignment,
         :title,
         :title_en,
@@ -306,6 +332,8 @@ class Admin::SectionsController < Admin::BaseController
   end
 
   def redirect_after_change
+    return head :no_content if request.format.json?
+
     redirect_to(
       safe_preview_return_path ||
         admin_page_preview_path(@page)

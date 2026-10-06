@@ -230,6 +230,7 @@ GEM
     pg (1.6.3-x86_64-darwin)
     pg (1.6.3-x86_64-linux)
     pg (1.6.3-x86_64-linux-musl)
+    phonelib (0.10.27)
     popper_js (2.11.8)
     pp (0.6.4)
       prettyprint
@@ -289,6 +290,7 @@ GEM
       prism (>= 1.6.0)
       rbs (>= 4.0.0)
       tsort
+    redcarpet (3.6.1)
     redis (6.0.0)
       redis-client (= 0.30.1)
     redis-client (0.30.1)
@@ -385,9 +387,11 @@ DEPENDENCIES
   json (= 2.21.2)
   minitest (~> 5.26)
   pg (~> 1.1)
+  phonelib (~> 0.10.27)
   puma (>= 5.0)
   rack-attack
   rails (~> 8.1.0)
+  redcarpet (~> 3.6)
   redis
   sassc-rails
   selenium-webdriver

@@ -10,6 +10,7 @@
 <div
   class="admin-section-editor"
   data-controller="section-form-tabs section-composition translation"
+  data-section-form-tabs-initial-value="<%= params[:preset] == 'buttons' ? 'buttons' : 'content' %>"
   data-translation-url-value="<%= admin_translation_path %>"
 >
   <div class="admin-breadcrumb">
@@ -52,6 +53,7 @@
   </header>
 
   <nav class="admin-section-editor__tabs">
+    <button type="button" class="admin-section-editor__tab" data-section-form-tabs-target="tab" data-tab="buttons" data-action="section-form-tabs#select">Botões</button>
     <button
       type="button"
       class="admin-section-editor__tab is-active"
@@ -128,6 +130,9 @@
           ) %>
     </section>
 
+    <section class="admin-section-editor__panel" data-section-form-tabs-target="panel" data-panel="buttons" hidden>
+      <%= render "admin/sections/button_fields", f: f, section: section %>
+    </section>
     <% if section.section_type == "contact" %>
       <section class="admin-section-editor__panel" data-section-form-tabs-target="panel" data-panel="contact_fields" hidden>
         <%= render "admin/sections/contact_fields", f: f, section: section %>

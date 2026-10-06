@@ -41,11 +41,11 @@
   &--vertical &__grid { grid-template-columns: minmax(0, 760px); }
 }
 .compact-carousel {
-  width: 100%; max-width: calc(var(--cards-columns) * 360px + (var(--cards-columns) - 1) * 20px);
+  width: 100%; max-width: none;
   display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-inline: auto;
   &__viewport { grid-column: 1 / -1; grid-row: 1; min-width: 0; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: thin; }
   &__track { display: flex; align-items: stretch; gap: 20px; }
-  &__track > .compact-card { flex: 0 0 calc((100% - (var(--cards-columns) - 1) * 20px) / var(--cards-columns)); scroll-snap-align: start; }
+  &__track > .compact-card { flex: 0 0 calc((100% - (var(--carousel-columns, 3) - 1) * var(--section-cards-gap, 20px)) / var(--carousel-columns, 3)); scroll-snap-align: start; }
   &__arrow { width: 38px; height: 38px; border-radius: 50%; border: 1px solid #ccd8d0; background: #fff; color: #344d40; font-size: 20px; grid-row: 2; }
   &__arrow:first-child { justify-self: end; }
   &__arrow:last-child { justify-self: start; }
@@ -141,9 +141,10 @@
 .site-identity-file-input { position: absolute !important; opacity: 0 !important; width: 1px !important; height: 1px !important; padding: 0 !important; border: 0 !important; overflow: hidden; }
 label:has(> .site-identity-file-input:focus-visible) { outline: 2px solid #1769ff; outline-offset: 4px; }
 // Form controls must not inherit full-width text-field rules.
-.admin-section-editor .cms-toggle {
+.admin-section-editor .cms-toggle, .preview-editor .cms-toggle {
   display: flex; align-items: center; gap: 12px; padding: 16px; border: 1px solid #dce5df; border-radius: 12px; background: #f7faf8; margin: 18px 0;
-  input[type="checkbox"] { appearance: auto; width: 20px !important; height: 20px !important; min-height: 20px !important; flex: 0 0 20px; padding: 0 !important; margin: 0; accent-color: #327656; box-shadow: none !important; }
+  input[type="hidden"] { display: none !important; }
+  input[type="checkbox"] { appearance: auto; display: block; width: 20px !important; height: 20px !important; min-height: 20px !important; flex: 0 0 20px; padding: 0 !important; margin: 0; accent-color: #327656; box-shadow: none !important; }
   strong { display: block; font: 600 14px/1.5 $body-font; color: #314f3e; }
   small { display: block; font: 400 12px/1.5 $body-font; color: #68796e; margin-top: 3px; }
 }
@@ -167,8 +168,8 @@ label:has(> .site-identity-file-input:focus-visible) { outline: 2px solid #1769f
 .flexible-section--faq .questions-list { width: 100%; }
 .flexible-section--faq .question { padding-inline: 0; }
 .flexible-section--faq .question[open] { padding-inline: 16px; }
-.compact-carousel { max-width: none; }
-.compact-carousel__track > .compact-card { max-width: none; flex: 0 0 calc((100% - (var(--fitted-cards, 1) - 1) * 20px) / var(--fitted-cards, 1)); }
+.compact-carousel__track > .compact-card { max-width: 360px; }
+@media (max-width: 600px) { .compact-carousel { --carousel-columns: 1; } .compact-carousel__track > .compact-card { max-width: none; } }
 .compact-carousel__arrow[hidden] { display: none; }
 .reveal-word { display: inline-block; transition: opacity 180ms linear, transform 220ms ease-out; }
 @media (prefers-reduced-motion: reduce) { .reveal-word { opacity: 1 !important; transform: none !important; transition: none; } }

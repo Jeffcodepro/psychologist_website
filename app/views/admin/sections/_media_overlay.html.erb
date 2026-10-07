@@ -30,7 +30,7 @@
         <small>0% sem camada · 100% cor sólida. Vazio usa o padrão.</small>
       </div>
       <div class="media-overlay-editor__sample" data-overlay-sample aria-label="Prévia do overlay">
-        <% if entry %><%= display_image_tag entry[:attachment], profile: :content, sizes: "280px", alt: "" %><% end %>
+        <% if entry&.dig(:video) %><%= render "shared/video_media", record: entry[:record], role: entry[:media], title: section.localized_title %><% elsif entry %><%= display_image_tag entry[:attachment], profile: :content, sizes: "280px", alt: "" %><% end %>
       </div>
     </div>
   <% end %>

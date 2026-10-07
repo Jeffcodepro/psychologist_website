@@ -4,7 +4,8 @@
 <% preview_body = card_preview_body(item, linked: destination.present?) %>
 <% plain_body = FormattedContent.plain(preview_body) %>
 <% summary = truncate(plain_body, length: destination ? 240 : 360, separator: " ") %>
-<% has_image = saved_image?(attachment) %>
+<% has_video = item.video_available? %>
+<% has_image = has_video || (!item.video_source? && saved_image?(attachment)) %>
 <article class="psychology-card compact-card <%= 'compact-card--linked' if destination %> <%= 'compact-card--with-image' if has_image %>" data-controller="card-reader" data-card-reader-truncated-value="<%= summary != plain_body %>" data-action="card-preview:refresh->card-reader#refresh" data-card-id="<%= item.id %>"
   <% CardPresentation::DEVICES.each do |device| %>
     data-card-layout-<%= device %>="<%= item.card_value('image_layout', device) %>"
@@ -16,6 +17,8 @@
       <% if editor_preview %>data-image-cropper-target="frame" data-action="pointerdown->image-cropper#start pointermove->image-cropper#move pointerup->image-cropper#stop pointercancel->image-cropper#stop"<% end %>>
       <% if editor_preview %>
         <%= tag.img src: (media_editor_image_url(attachment, item) if has_image), alt: item.localized_title, class: "psychology-card__image compact-card__image", draggable: false, data: { image_cropper_target: "image", action: "load->image-cropper#loaded" } %>
+      <% elsif has_video %>
+        <%= render "shared/video_media", record: item %>
       <% else %>
         <%= display_image_tag attachment, remove_background: item.remove_media_background?, alt: item.localized_title, class: "psychology-card__image compact-card__image", loading: "lazy" %>
       <% end %>

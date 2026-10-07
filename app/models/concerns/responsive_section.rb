@@ -3,6 +3,9 @@ module ResponsiveSection
 
   DEVICES = %w[tablet mobile].freeze
   ENUM_FIELDS = SectionLayout::FORM_OPTIONS.transform_values { |(_, options)| options.map(&:last) }.merge({
+    "cards_orientation" => %w[horizontal vertical], "cards_wrap" => %w[true false],
+    "cards_alignment" => %w[left center right], "cards_placement" => %w[before after],
+    "cards_autoplay" => %w[true false],
     "buttons_position" => SectionLayout::BUTTON_POSITIONS.map(&:last),
     "buttons_alignment" => %w[left center right],
     "media_layout" => %w[text_left text_right media_top media_bottom media_between media_before_buttons media_background],
@@ -18,6 +21,7 @@ module ResponsiveSection
     "visible" => %w[true false]
   }).freeze
   NUMBER_FIELDS = SectionLayout::SPACING.transform_values { |(_, _, range)| range }.merge(SectionMediaOverlay::NUMBER_FIELDS).merge({
+    "cards_autoplay_seconds" => 2..30,
     "title_line_height" => 1..2.5, "body_line_height" => 1..2.5,
     "title_letter_spacing" => -1..4, "body_letter_spacing" => -1..4,
     "title_font_size" => 10..120, "body_font_size" => 10..120,

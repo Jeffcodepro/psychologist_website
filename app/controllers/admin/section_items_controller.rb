@@ -127,13 +127,13 @@ class Admin::SectionItemsController < Admin::BaseController
         :body_en,
         :position,
         :visible,
-        :image,
+        :image, :video, :remove_video,
         :remove_image,
         :image_position_x,
         :image_position_y,
         :image_zoom,
         :image_shape,
-        card_settings: CardPresentation::PARAMS, media_adjustments: MediaAdjustable::PARAMS
+        video_settings: VideoMedia::PARAMS, card_settings: CardPresentation::PARAMS, media_adjustments: MediaAdjustable::PARAMS
       )
   end
 

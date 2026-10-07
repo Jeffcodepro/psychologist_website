@@ -1,5 +1,6 @@
 class SectionSlide < ApplicationRecord
   include ReusesImageUploads
+  include VideoMedia
   include MediaAdjustable
   belongs_to :section
   has_one_attached :image do |attachable|
@@ -17,6 +18,7 @@ class SectionSlide < ApplicationRecord
   private
 
   def valid_image
+    return if video_source?
     unless image.attached?
       errors.add(:image, "selecione uma imagem ou remova este espaço")
       return

@@ -48,7 +48,7 @@ module SectionsHelper
       end
       buttons_position = section.visual_value("buttons_position", device)
       collection_buttons = %w[before_cards after_cards].include?(buttons_position)
-      cards_order = section.cards_placement == "before" ? 10 : 30
+      cards_order = section.visual_value("cards_placement", device) == "before" ? 10 : 30
       values["cards-order"] = cards_order
       values["buttons-collection-order"] = cards_order + (buttons_position == "before_cards" ? -1 : 1)
       values["buttons-inline-display"] = collection_buttons ? "none" : "flex"
@@ -74,10 +74,21 @@ module SectionsHelper
       values["image-overflow"] = shape == "cutout" ? "visible" : "hidden"
       values["image-tint-display"] = shape == "cutout" ? "none" : "block"
       values["image-ratio"] = %w[square circle].include?(shape) ? "1 / 1" : "4 / 5"
+      size = section.visual_value("media_size", device)
       values["image-width"] = { "small" => "250px", "medium" => "350px", "large" => "460px" }.fetch(section.visual_value("media_size", device))
       layout = section_media_layout(section, device)
       stacked = !%w[text_left text_right].include?(layout)
       values["layout-columns"] = stacked ? "minmax(0, 1fr)" : "minmax(0, 1.15fr) minmax(0, 0.85fr)"
+      if (shape == "cutout" || section.remove_media_background?) && !section.video_source?
+        values["image-width"] = { "small" => "260px", "medium" => (device == "mobile" ? "78vw" : "400px"), "large" => "600px" }.fetch(size)
+        unless stacked
+          media_fraction = { "small" => 0.30, "medium" => 0.42, "large" => 0.58 }.fetch(size)
+          columns = ["minmax(0, #{1 - media_fraction}fr)", "minmax(0, #{media_fraction}fr)"]
+          columns.reverse! if layout == "text_right"
+          values["layout-columns"] = columns.join(" ")
+        end
+      end
+      values["image-ratio"] = "16 / 9" if section.video_source? && !%w[square circle].include?(shape)
       values["copy-order"] = %w[text_right media_top].include?(layout) ? 2 : 1
       values["media-order"] = %w[text_right media_top].include?(layout) ? 1 : 2
       values["display"] = section.visual_value("visible", device).to_s == "false" ? "none" : "flex"
@@ -114,13 +125,19 @@ module SectionsHelper
   def section_media_entries(section, role)
     entries = []
     primary = section.public_send(role)
-    if primary.attached?
+    if section.video_available?(role)
+      entries << { record: section, media: role, primary: true, video: true }
+    elsif !section.video_source?(role) && primary.attached?
       entries << { attachment: primary, record: section, media: role, primary: true }
-    elsif role == "image" && section.use_profile_image? && @site_setting&.profile_image&.attached?
+    elsif !section.video_source?(role) && role == "image" && section.use_profile_image? && @site_setting&.profile_image&.attached?
       entries << { attachment: @site_setting.profile_image, record: section, media: role, primary: true }
     end
     section.slides_for(role).each do |slide|
-      entries << { attachment: slide.image, record: slide, media: "image", primary: false }
+      if slide.video_available?
+        entries << { record: slide, media: "image", primary: false, video: true }
+      elsif !slide.video_source?
+        entries << { attachment: slide.image, record: slide, media: "image", primary: false }
+      end
     end
     entries
   end

@@ -21,6 +21,8 @@ class ArticleFromCardService
         heading.update!(image_position_x: card.image_position_x, image_position_y: card.image_position_y,
           image_zoom: card.image_zoom, image_shape: card.image_shape, media_adjustments: card.media_adjustments)
       end
+      heading.video.attach(card.video.blob) if card.video.attached?
+      heading.update!(video_settings: card.video_settings)
       article.sections.create!(section_type: 'text', position: 2, body: card.body, body_en: card.body_en)
       card.update!(linked_page: article)
       ArticleCardService.new(article: article).save! unless card.section.page.slug == 'conteudos'

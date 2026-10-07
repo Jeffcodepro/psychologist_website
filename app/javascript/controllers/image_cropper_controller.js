@@ -199,6 +199,7 @@ export default class extends Controller {
   }
 
   start(event) {
+    if (event.target.closest(".cms-video")) return
     if (!this.imageTarget.naturalWidth) return
     event.preventDefault()
     const overflow = this.cropOverflow()

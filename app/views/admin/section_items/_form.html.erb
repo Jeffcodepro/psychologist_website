@@ -27,7 +27,7 @@
           <p>Depois de salvar o destino, publique também a página que contém este card.</p>
         </section>
       <% end %>
-      <% unless @section_item.item_kind == "question" %><%= render "admin/shared/image_cropper", f: f, record: @section_item, title: "Imagem opcional" %><% end %>
+      <% unless @section_item.item_kind == "question" %><%= render "admin/shared/media_input", f: f, record: @section_item, title: "Imagem opcional" %><% end %>
       <% if @section_item.item_kind == "card" %><%= render "admin/section_items/presentation", f: f %><% end %>
       <div class="admin-section-editor__input-grid"><%= f.input :position, label: "Ordem de exibição", input_html: { min: 0 } %><%= f.input :visible, as: :boolean, label: "Exibir este conteúdo" %></div>
     </section>

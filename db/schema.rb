@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_02_180000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_07_160000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -105,6 +105,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_02_180000) do
     t.string "item_kind", default: "card", null: false
     t.bigint "linked_page_id"
     t.jsonb "card_settings", default: {}, null: false
+    t.jsonb "video_settings", default: {}, null: false
     t.index ["linked_page_id"], name: "index_section_items_on_linked_page_id"
     t.index ["section_id"], name: "index_section_items_on_section_id"
   end
@@ -120,6 +121,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_02_180000) do
     t.jsonb "media_adjustments", default: {}, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.jsonb "video_settings", default: {}, null: false
     t.index ["section_id"], name: "index_section_slides_on_section_id"
   end
 
@@ -195,6 +197,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_02_180000) do
     t.string "buttons_alignment", default: "left", null: false
     t.jsonb "layout_settings", default: {}, null: false
     t.uuid "navigation_key", default: -> { "gen_random_uuid()" }, null: false
+    t.jsonb "video_settings", default: {}, null: false
     t.index ["page_id", "publication_state", "anchor"], name: "index_sections_on_page_state_anchor", unique: true, where: "(anchor IS NOT NULL)"
     t.index ["page_id", "publication_state", "navigation_key"], name: "index_sections_on_navigation_key", unique: true
     t.index ["page_id", "publication_state", "position"], name: "index_sections_on_page_state_position"

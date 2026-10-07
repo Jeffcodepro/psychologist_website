@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["slide", "button", "counter"]
-  static values = { delay: { type: Number, default: 5000 } }
+  static values = { manual: Boolean, delay: { type: Number, default: 5000 } }
 
   connect() {
     this.index = 0
@@ -25,15 +25,19 @@ export default class extends Controller {
 
   resume() {
     this.pause()
-    if (this.slideTargets.length < 2 || this.pausedByUser || this.motion.matches || document.hidden || this.element.matches(":focus-within")) return
+    if (this.manualValue || this.slideTargets.length < 2 || this.pausedByUser || this.motion.matches || document.hidden || this.element.matches(":focus-within")) return
     this.timer = setInterval(() => this.next(), Math.max(2000, this.delayValue))
   }
 
-  next() {
-    this.index = (this.index + 1) % this.slideTargets.length
+  previous() { this.show(-1) }
+  next() { this.show(1) }
+
+  show(direction) {
+    this.index = (this.index + direction + this.slideTargets.length) % this.slideTargets.length
     this.slideTargets.forEach((slide, i) => {
       slide.classList.toggle("is-active", i === this.index)
       slide.setAttribute("aria-hidden", i !== this.index)
+      slide.inert = i !== this.index
     })
     if (this.hasCounterTarget) this.counterTarget.textContent = `${this.index + 1} / ${this.slideTargets.length}`
   }

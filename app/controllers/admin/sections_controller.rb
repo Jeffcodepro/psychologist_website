@@ -168,10 +168,12 @@ class Admin::SectionsController < Admin::BaseController
       @section.update!(title_en: nil)
     when "body_en"
       @section.update!(body_en: nil)
-    when "image"
-      @section.image.attachment&.destroy!
-    when "banner"
-      @section.banner.attachment&.destroy!
+    when "image", "banner"
+      Section.transaction do
+        @section.public_send(field).attachment&.destroy!
+        @section.media_video_attachment(field).attachment&.destroy!
+        @section.update!(video_settings: @section.video_settings.except(field))
+      end
     else
       head :unprocessable_entity
       return
@@ -245,6 +247,7 @@ class Admin::SectionsController < Admin::BaseController
         :image_shape,
         :media_layout,
         :media_size,
+        :video, :banner_video, :remove_video, :remove_banner_video,
         :banner_layout,
         :image,
         :banner,
@@ -261,9 +264,10 @@ class Admin::SectionsController < Admin::BaseController
         :cards_columns_mobile,
         :cards_autoplay,
         :cards_autoplay_seconds,
+        video_settings: VideoMedia::PARAMS,
         media_adjustments: MediaAdjustable::PARAMS,
         section_slides_attributes: [:id, :role, :position, :image, :image_position_x, :image_position_y,
-          :image_zoom, :image_shape, :_destroy, { media_adjustments: MediaAdjustable::PARAMS }],
+          :image_zoom, :image_shape, :video, :remove_video, :_destroy, { video_settings: VideoMedia::PARAMS, media_adjustments: MediaAdjustable::PARAMS }],
         responsive_settings: {
           tablet: ResponsiveSection::FIELDS,
           mobile: ResponsiveSection::FIELDS
@@ -320,6 +324,16 @@ class Admin::SectionsController < Admin::BaseController
       target_attachment.attach(source_blob) if source_blob
       source_slides.each { |slide| slide.update!(section: target) }
       target_slides.each { |slide| slide.update!(section: source) }
+      video_name = field == "banner" ? :banner_video : :video
+      source_video = source.public_send(video_name).blob if source.public_send(video_name).attached?
+      target_video = target.public_send(video_name).blob if target.public_send(video_name).attached?
+      source.public_send(video_name).detach
+      target.public_send(video_name).detach
+      source.public_send("#{video_name}=", target_video)
+      target.public_send("#{video_name}=", source_video)
+      source_video_settings = source.video_settings.deep_dup
+      source.video_settings = source.video_settings.merge(field => target.video_settings.fetch(field, {}))
+      target.video_settings = target.video_settings.merge(field => source_video_settings.fetch(field, {}))
       fields = %W[#{field}_position_x #{field}_position_y #{field}_zoom]
       fields += %w[image_shape use_profile_image] if field == "image"
       source_values = source.attributes.slice(*fields)

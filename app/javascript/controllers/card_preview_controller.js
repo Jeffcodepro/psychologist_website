@@ -80,7 +80,8 @@ export default class extends Controller {
     }
     const image = this.card.querySelector(".compact-card__image")
     const removing = this.form.querySelector(`[name="${this.scopeValue}[remove_image]"][type="checkbox"]`)?.checked
-    const hasImage = Boolean(image.getAttribute("src")) && !removing
+    const source = this.element.closest(".media-input")?.querySelector("[data-media-source-target=source]")?.value
+    const hasImage = source && source !== "image" ? Boolean(this.card.querySelector(".cms-video")) : Boolean(image.getAttribute("src")) && !removing
     this.card.querySelector(".compact-card__media").hidden = !hasImage
     this.card.classList.toggle("compact-card--with-image", hasImage)
     image.alt = title

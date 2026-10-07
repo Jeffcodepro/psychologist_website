@@ -23,8 +23,8 @@ class Admin::ArticleCardsController < Admin::BaseController
   end
 
   def card_params
-    params.require(:article_card).permit(:title, :title_en, :body, :body_en, :image, :remove_image,
+    params.require(:article_card).permit(:title, :title_en, :body, :body_en, :image, :remove_image, :video, :remove_video,
       :visible, :position, :image_position_x, :image_position_y, :image_zoom, :image_shape,
-      card_settings: CardPresentation::PARAMS, media_adjustments: MediaAdjustable::PARAMS)
+      video_settings: VideoMedia::PARAMS, card_settings: CardPresentation::PARAMS, media_adjustments: MediaAdjustable::PARAMS)
   end
 end

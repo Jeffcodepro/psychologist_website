@@ -1,5 +1,6 @@
 class Section < ApplicationRecord
   include ReusesImageUploads
+  include VideoMedia
   include EditableButtons
   editable_buttons :action_buttons
   validates :buttons_position, inclusion: { in: SectionLayout::BUTTON_POSITIONS.map(&:last) }
@@ -99,11 +100,11 @@ class Section < ApplicationRecord
       section_items.select { |item| item.visible? && item.item_kind == kind }
         .sort_by { |item| [item.position || 0, item.id || 0] }
     else
-      section_items.where(item_kind: kind).visible.ordered.includes(:linked_page, image_attachment: :blob)
+      section_items.where(item_kind: kind).visible.ordered.includes(:linked_page, image_attachment: :blob, video_attachment: :blob)
     end
   end
   accepts_nested_attributes_for :section_slides, allow_destroy: true,
-    reject_if: ->(attrs) { attrs["id"].blank? && attrs["image"].blank? }
+    reject_if: ->(attrs) { attrs["id"].blank? && attrs["image"].blank? && attrs["video"].blank? && attrs.dig("video_settings", "image", "source").to_s.in?(["", "image"]) }
 
   validates :text_order, inclusion: { in: %w[title_first body_first] }
   validates :title_alignment, :body_alignment, inclusion: { in: TEXT_ALIGNMENTS }, allow_blank: true
@@ -121,7 +122,7 @@ class Section < ApplicationRecord
   validates :media_interval_seconds, numericality: { only_integer: true, greater_than_or_equal_to: 2, less_than_or_equal_to: 30 }
 
   def slides_for(role)
-    section_slides.reject(&:marked_for_destruction?).select { |slide| slide.role == role && slide.image.attached? }.sort_by { |slide| [slide.position, slide.id || 0] }
+    section_slides.reject(&:marked_for_destruction?).select { |slide| slide.role == role && (slide.video_available? || (!slide.video_source? && slide.image.attached?)) }.sort_by { |slide| [slide.position, slide.id || 0] }
   end
 
   has_one_attached :image do |attachable|
@@ -130,7 +131,8 @@ class Section < ApplicationRecord
   has_one_attached :banner do |attachable|
     ImageDelivery.configure(attachable, :banner)
   end
-  attr_accessor :remove_image, :remove_banner
+  has_one_attached :banner_video
+  attr_accessor :remove_image, :remove_banner, :remove_banner_video
 
   enum :publication_state, {
     draft: "draft",
@@ -354,8 +356,24 @@ class Section < ApplicationRecord
     overlay_color.presence || "#17231f"
   end
 
-  def cards_carousel?
-    cards_orientation == "horizontal" && !cards_wrap?
+  def cards_device_config(device = "desktop")
+    {
+      orientation: visual_value("cards_orientation", device),
+      wrap: ActiveModel::Type::Boolean.new.cast(visual_value("cards_wrap", device)),
+      alignment: visual_value("cards_alignment", device),
+      autoplay: ActiveModel::Type::Boolean.new.cast(visual_value("cards_autoplay", device)),
+      seconds: visual_value("cards_autoplay_seconds", device).to_i,
+      columns: public_send("cards_columns_#{device}")
+    }
+  end
+
+  def cards_carousel?(device = "desktop")
+    config = cards_device_config(device)
+    config[:orientation] == "horizontal" && !config[:wrap]
+  end
+
+  def cards_carousel_on_any_screen?
+    %w[desktop tablet mobile].any? { |device| cards_carousel?(device) }
   end
 
   def editor_type_label

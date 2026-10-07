@@ -2,10 +2,12 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["viewport", "track", "pagination", "position", "range", "counter"]
-  static values = { autoplay: { type: Boolean, default: true }, delay: { type: Number, default: 5000 }, pageLabel: { type: String, default: "Página" } }
+  static values = { enabled: { type: Boolean, default: true }, autoplay: { type: Boolean, default: true }, delay: { type: Number, default: 5000 }, pageLabel: { type: String, default: "Página" } }
 
   connect() {
     this.connected = true
+    this.onVideoPlay = () => this.pause()
+    this.element.addEventListener("cms-video:play", this.onVideoPlay)
     this.timer = null
     this.pausedByUser = false
     this.keyboardFocused = false
@@ -26,6 +28,7 @@ export default class extends Controller {
 
   disconnect() {
     this.connected = false
+    this.element.removeEventListener("cms-video:play", this.onVideoPlay)
     this.resizeObserver.disconnect()
     this.settingsObserver.disconnect()
     window.removeEventListener("resize", this.onBreakpointChange)
@@ -36,6 +39,7 @@ export default class extends Controller {
     this.mobile.removeEventListener("change", this.onBreakpointChange)
   }
 
+  enabledValueChanged() { if (this.connected) this.fitCards() }
   delayValueChanged() { if (this.connected) this.restartAutoplay() }
   autoplayValueChanged() { if (this.connected) this.syncAutoplay() }
 
@@ -47,7 +51,7 @@ export default class extends Controller {
     // rows; a legacy "1 column" value must not stretch carousel cards.
     this.perPage = this.mobile.matches ? 1 : Math.max(1, Math.floor((width + gap) / (300 + gap)))
     this.element.style.setProperty("--carousel-columns", this.perPage)
-    this.fits = count <= this.perPage
+    this.fits = !this.enabledValue || count <= this.perPage
     this.element.classList.toggle("is-overflowing", !this.fits)
     this.element.querySelectorAll(".compact-carousel__arrow").forEach(button => { button.hidden = this.fits })
     if (this.fits) this.viewportTarget.scrollTo({ left: 0, behavior: "instant" })
@@ -122,7 +126,7 @@ export default class extends Controller {
   pause() { this.pausedByUser = true; this.syncAutoplay() }
   syncAutoplay() {
     if (!this.connected) return
-    if (!this.autoplayValue || this.fits || this.pausedByUser || this.keyboardFocused || this.motion.matches || document.hidden) { this.stopAutoplay(); return }
+    if (!this.enabledValue || !this.autoplayValue || this.fits || this.pausedByUser || this.keyboardFocused || this.motion.matches || document.hidden) { this.stopAutoplay(); return }
     if (this.timer == null) this.timer = setInterval(() => this.move(1), this.delayValue)
   }
   stopAutoplay() { clearInterval(this.timer); this.timer = null }

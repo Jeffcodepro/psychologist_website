@@ -1,0 +1,52 @@
+// Media bounds remain owned by the section/card; video never stretches the card.
+.cms-video {
+  position: relative; width: 100%; height: 100%; min-height: 0; overflow: hidden; background: #13241c; isolation: isolate;
+  --video-fit: var(--video-desktop-fit, contain); --video-zoom: var(--video-desktop-zoom, 1);
+  --video-x: var(--video-desktop-x, 50%); --video-y: var(--video-desktop-y, 50%);
+  &__poster { width: 100%; height: 100%; object-fit: var(--video-fit); object-position: var(--video-x) var(--video-y); transform: scale(var(--video-zoom)); transform-origin: var(--video-x) var(--video-y); }
+  &__play { position: absolute; inset: 0; display: grid; place-items: center; width: 100%; height: 100%; background: transparent; color: white; border: 0; cursor: pointer; }
+  &__play span { display: grid; place-items: center; width: 54px; height: 54px; border: 1px solid #ffffffa0; border-radius: 50%; background: #152b20dd; box-shadow: 0 4px 18px #0005; font-size: 22px; }
+  &__play:focus-visible { outline: 3px solid #fff; outline-offset: -5px; }
+}
+@mixin video-device($device) { --video-fit: var(--video-#{$device}-fit); --video-zoom: var(--video-#{$device}-zoom); --video-x: var(--video-#{$device}-x); --video-y: var(--video-#{$device}-y); }
+@media (min-width: 601px) and (max-width: 1024px) { .cms-video { @include video-device(tablet); } }
+@media (max-width: 600px) { .cms-video { @include video-device(mobile); } }
+@each $device in desktop, tablet, mobile { .cms-video[data-preview-device="#{$device}"] { @include video-device($device); } }
+.cms-video-dialog { width: calc(100vw - 28px); max-width: 960px; padding: 48px 0 0; border: 0; border-radius: 16px; background: #102019; color: white;
+  &::backdrop { background: #000c; }
+  iframe, video { display: block; width: 100%; aspect-ratio: 16 / 9; min-height: 200px; max-height: calc(100dvh - 110px); border: 0; background: black; }
+  &__close { position: absolute; top: 4px; right: 8px; width: 40px; height: 40px; background: transparent; border: 0; color: white; font-size: 30px; }
+}
+.media-input { margin-block: 18px; min-width: 0;
+  > label { display: block; font-weight: 600; margin-bottom: 8px; }
+  &__video { display: grid; gap: 18px; margin-top: 18px;
+    label { display: block; margin-bottom: 8px; font-weight: 600; }
+    small { display: block; margin-top: 8px; color: #61736a; }
+    .form-control { width: 100%; min-height: 46px; padding: 12px 14px; border: 1px solid #cbd8d1; border-radius: 12px; background: #fff; color: #273e32; font: inherit; }
+    .form-control:focus { outline: 2px solid #1769ff; outline-offset: 2px; }
+  }
+  &__preview { width: 100%; max-width: 600px; aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden; background: #eef2ef; }
+  &__frame-fields { display: grid; grid-template-columns: minmax(0, 1fr) minmax(100px, 1fr); gap: 12px; align-items: center; padding: 18px 0; }
+  [hidden] { display: none !important; }
+  &.is-video.is-card .image-cropper__header, &.is-video.is-card .image-cropper__tools, &.is-video.is-card .image-cropper__dimensions,
+  &.is-video.is-card [data-action="image-cropper#choose"], &.is-video.is-card [data-image-cropper-target="empty"], &.is-video.is-card .image-cropper__grid { display: none; }
+}
+.media-sequence__navigation { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); z-index: 4; display: flex; align-items: center; gap: 12px; border-radius: 24px; background: #172c22e6; color: white; font-size: 12px;
+  button { width: 40px; height: 40px; border: 0; background: transparent; color: white; font-size: 25px; border-radius: 50%; }
+}
+.section-frame__overlay { pointer-events: none; }
+.compact-card:has(.cms-video) .compact-card__media { pointer-events: auto; }
+.compact-card:has(.cms-video) .compact-card__heading, .compact-card:has(.cms-video) .compact-card__body { pointer-events: none; }
+
+.cards-settings [data-cards-settings-target="panel"][hidden] { display: none; }
+.card-collection[data-cards-mode="grid"], .card-collection[data-cards-mode="vertical"] {
+  .compact-carousel { display: block; max-width: none; }
+  .compact-carousel__stage { display: block; padding: 0; }
+  .compact-carousel__viewport { overflow: visible; }
+  .compact-carousel__track { display: grid; grid-template-columns: repeat(var(--cards-columns), minmax(0, 360px)); grid-auto-rows: 440px; justify-content: var(--cards-justify); gap: var(--section-cards-gap, 20px); }
+  .compact-carousel__arrow, .compact-carousel__position, .compact-carousel__pagination { display: none !important; }
+}
+.card-collection[data-cards-mode="vertical"] .compact-carousel__track,
+.card-collection[data-cards-mode="vertical"] .card-collection__grid { grid-template-columns: minmax(0, 360px); }
+
+.compact-card:has(.cms-video) .compact-card__link::after { content: none; }

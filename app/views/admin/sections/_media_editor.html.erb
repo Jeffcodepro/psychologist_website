@@ -1,8 +1,8 @@
 <% return_path = local_assigns[:return_to].presence || (section.persisted? ? edit_admin_page_section_path(page, section) : admin_page_sections_path(page)) %>
 <article class="admin-section-editor__card">
-  <%= f.input :media_interval_seconds, label: "Tempo entre imagens (segundos)", input_html: { min: 2, max: 30 }, hint: "Com duas ou mais imagens, a troca é automática, sem setas laterais. Quem visita pode pausar a sequência." %>
+  <%= f.input :media_interval_seconds, label: "Tempo entre mídias (segundos)", input_html: { min: 2, max: 30 }, hint: "Sequências só com imagens avançam automaticamente. Com vídeos, a navegação é manual para não interromper a reprodução." %>
 </article>
-<% [["banner", "Banner ou imagem de fundo"], ["image", "Fotografia do conteúdo"]].each do |role, label| %>
+<% [["banner", "Banner ou imagem de fundo"], ["image", "Imagem ou vídeo do conteúdo"]].each do |role, label| %>
   <article class="admin-section-editor__card media-library" data-controller="media-library" data-media-library-token-value="NEW_SLIDE_<%= role.upcase %>">
     <h3><%= label %></h3>
     <% if role == "banner" %>
@@ -16,7 +16,7 @@
       </label>
     <% end %>
     <%= render "admin/sections/media_overlay", f: f, section: section, role: role %>
-    <div data-media-library-target="primary"><%= render "admin/shared/image_cropper", f: f, record: section, attachment: section_media_entries(section, role).find { |entry| entry[:primary] }&.fetch(:attachment) || section.public_send(role), media: role, title: role == "banner" ? "Banner principal" : "Fotografia principal" %></div>
+    <div data-media-library-target="primary"><%= render "admin/shared/media_input", f: f, record: section, attachment: section_media_entries(section, role).find { |entry| entry[:primary] }&.dig(:attachment) || section.public_send(role), media: role, title: role == "banner" ? "Banner principal" : "Fotografia principal" %></div>
     <% if section.persisted? && section.public_send(role).attached? %>
       <%= f.hidden_field "remove_#{role}", value: "0", data: { media_library_target: "removeFlag" } %>
       <button type="button" class="media-remove-button" data-media-library-target="removeButton" data-action="media-library#removePrimary" data-label="<%= role == 'banner' ? 'Remover este banner' : 'Remover esta fotografia' %>"><%= role == 'banner' ? 'Remover este banner' : 'Remover esta fotografia' %></button>
@@ -32,6 +32,6 @@
         <%= render "admin/sections/media_slide", f: slide_form, role: role %>
       <% end %>
     </template>
-    <button type="button" class="admin-button-secondary" data-action="media-library#add">+ <%= role == "banner" ? "Adicionar outro banner" : "Adicionar outra fotografia" %></button>
+    <button type="button" class="admin-button-secondary" data-action="media-library#add">+ <%= role == "banner" ? "Adicionar outro banner" : "Adicionar outra mídia" %></button>
   </article>
 <% end %>

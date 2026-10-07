@@ -1,0 +1,12 @@
+<% role = local_assigns.fetch(:role, "image"); video_id = record.youtube_id(role) %>
+<% source = record.video_value(role, "source"); file_url = source == "upload" ? video_file_url(record.media_video_attachment(role)) : nil %>
+<% title = local_assigns[:title].presence || (record.respond_to?(:localized_title) ? record.localized_title : nil).presence || "Vídeo" %>
+<div class="cms-video" data-controller="video-player" data-video-player-youtube-value="<%= video_id if source == 'youtube' %>" data-video-player-url-value="<%= file_url %>" data-video-player-title-value="<%= title %>" style="<%= video_frame_style(record, role) %>">
+  <% if source == "youtube" && video_id %>
+    <%= image_tag "https://i.ytimg.com/vi/#{video_id}/hqdefault.jpg", alt: "", class: "cms-video__poster", loading: "lazy" %>
+  <% elsif file_url %>
+    <video class="cms-video__poster" src="<%= file_url %>" preload="metadata" muted playsinline></video>
+  <% end %>
+  <button type="button" class="cms-video__play" data-action="video-player#play" aria-label="<%= I18n.locale == :en ? 'Play video' : 'Reproduzir vídeo' %>: <%= title %>"><span aria-hidden="true">▶</span></button>
+  <noscript><%= link_to "Abrir vídeo", source == "youtube" ? "https://www.youtube.com/watch?v=#{video_id}" : file_url, target: "_blank", rel: "noopener" %></noscript>
+</div>

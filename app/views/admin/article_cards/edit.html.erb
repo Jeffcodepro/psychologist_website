@@ -16,7 +16,7 @@
           <%= f.input :body_en, label: 'Resumo em inglês', input_html: { rows: 4, data: { translation_target: 'bodyEn' } } %>
         </details>
         <% attachment = @card.image.attached? && !@card.image.blob.persisted? ? SectionItem.new.image : @card.image %>
-        <%= render 'admin/shared/image_cropper', f: f, record: @card, attachment: attachment, title: 'Imagem do card (opcional)' %>
+        <%= render 'admin/shared/media_input', f: f, record: @card, attachment: attachment, title: 'Imagem do card (opcional)' %>
         <%= render "admin/section_items/presentation", f: f %>
         <div class="admin-section-editor__input-grid"><%= f.input :position, label: 'Ordem na seção', input_html: { min: 0 } %><%= f.input :visible, as: :boolean, label: 'Exibir card' %></div>
       </section>

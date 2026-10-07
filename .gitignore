@@ -56,3 +56,6 @@ storage/*
 # Local browser validation artifacts
 .playwright-cli/
 output/playwright/
+
+# Python deployment utility caches
+__pycache__/

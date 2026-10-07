@@ -38,9 +38,11 @@ class ArticleCardService
         title: heading&.title.presence || @article.name, title_en: heading&.title_en,
         body: excerpt(@article.description.presence || body&.body),
         body_en: excerpt(@article.description_en.presence || body&.body_en))
-      source = @article.sections.draft.ordered.detect { |section| section.image.attached? }
+      source = @article.sections.draft.ordered.detect { |section| section.image.attached? || section.video_available? }
       if source
-        card.image.attach(source.image.blob)
+        card.video.attach(source.video.blob) if source.video.attached?
+        card.video_settings = source.video_settings.slice("image")
+        card.image.attach(source.image.blob) if source.image.attached?
         card.assign_attributes(source.attributes.slice('image_position_x', 'image_position_y', 'image_zoom', 'image_shape', 'media_adjustments'))
       end
       card

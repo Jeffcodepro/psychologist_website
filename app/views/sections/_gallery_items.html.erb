@@ -1,9 +1,11 @@
 <div class="gallery-grid">
   <% section.visible_items("gallery").each do |item| %>
-    <% if item.image.attached? %>
+    <% if item.video_available? || (!item.video_source? && item.image.attached?) %>
       <figure style="<%= card_image_style(item) %>; <%= media_adjustment_style(item) %>">
         <div class="gallery-image-frame" data-shape="<%= item.image_shape %>">
+          <% if item.video_available? %><%= render "shared/video_media", record: item %><% else %>
           <%= display_image_tag item.image, remove_background: item.remove_media_background?, alt: item.localized_title, loading: "lazy", class: "gallery-image" %>
+          <% end %>
         </div>
         <figcaption><%= item.localized_title %></figcaption>
       </figure>

@@ -1,0 +1,44 @@
+<% role = local_assigns.fetch(:media, "image"); attachment_name = role == "banner" ? :banner_video : :video %>
+<% prefix = "#{f.object_name}[video_settings][#{role}]"; field_id = "#{f.object_name}_#{role}_video".gsub(/[^a-zA-Z0-9_-]/, "_") %>
+<% card = record.is_a?(SectionItem) && record.item_kind == "card" %>
+<div class="media-input" data-controller="media-source" data-media-source-card-value="<%= card %>" data-media-source-url-value="<%= video_file_url(record.media_video_attachment(role)) %>" data-action="input->media-source#refresh change->media-source#refresh click->media-source#syncCardDevice">
+  <label for="<%= field_id %>_source">Tipo de mídia</label>
+  <%= select_tag "#{prefix}[source]", options_for_select([["Imagem", "image"], ["Vídeo do YouTube", "youtube"], ["Vídeo do computador", "upload"]], record.video_value(role, "source")), id: "#{field_id}_source", data: { media_source_target: "source" } %>
+  <div class="media-input__video" data-media-source-target="videoPanel" <%= 'hidden' unless record.video_source?(role) %>>
+    <div data-media-source-target="youtubeFields">
+      <label for="<%= field_id %>_url">Link do YouTube</label>
+      <%= text_field_tag "#{prefix}[youtube_url]", record.video_value(role, "youtube_url"), id: "#{field_id}_url", class: "form-control", placeholder: "https://www.youtube.com/watch?v=…", data: { media_source_target: "youtube" } %>
+      <small>Cole o link do vídeo, Shorts ou transmissão. A prévia aparece abaixo.</small>
+    </div>
+    <div data-media-source-target="uploadFields">
+      <%= f.label attachment_name, "Arquivo de vídeo (MP4 ou WebM)" %>
+      <%= f.file_field attachment_name, accept: "video/mp4,video/webm", class: "form-control", data: { media_source_target: "file", action: "change->media-source#fileChanged" } %>
+      <small>Até 20 MB. MP4 com codec H.264 ou WebM. O vídeo começa quando o visitante toca em reproduzir.</small>
+      <% if record.media_video_attachment(role).attached? %><p><%= record.media_video_attachment(role).filename %></p><%= f.input "remove_#{attachment_name}", as: :boolean, label: "Remover vídeo ao salvar" %><% end %>
+    </div>
+    <p data-media-source-target="status" role="status"></p>
+    <div class="media-input__preview" data-media-source-target="preview" <%= 'hidden' if card %>></div>
+    <details class="media-input__framing"><summary>Enquadramento por tela</summary>
+      <p>O arquivo é o mesmo nas três telas. Os ajustes abaixo são independentes. O player abre inteiro para manter os controles acessíveis.</p>
+      <div class="device-appearance__selector" role="group" aria-label="Tela do vídeo">
+        <% {"desktop" => "Desktop", "tablet" => "Tablet", "mobile" => "Mobile"}.each do |device, label| %>
+          <button type="button" data-device="<%= device %>" data-action="media-source#deviceChanged" aria-pressed="<%= device == 'desktop' %>"><%= label %></button>
+        <% end %>
+      </div>
+      <% {"desktop" => "Desktop", "tablet" => "Tablet", "mobile" => "Mobile"}.each do |device, label| %>
+        <% device_prefix = device == "desktop" ? prefix : "#{prefix}[#{device}]" %>
+        <div class="media-input__frame-fields" data-media-source-target="frameFields" data-device="<%= device %>" <%= 'hidden' unless device == 'desktop' %>>
+          <label for="<%= field_id %>_<%= device %>_fit">Encaixe · <%= label %></label>
+          <%= select_tag "#{device_prefix}[fit]", options_for_select((device == 'desktop' ? [] : [["Herdar Desktop", ""]]) + [["Mostrar inteiro", "contain"], ["Preencher espaço", "cover"]], device == 'desktop' ? record.video_value(role, 'fit') : record.video_settings.dig(role, device, 'fit')), id: "#{field_id}_#{device}_fit", data: { video_setting: 'fit', device: device } %>
+          <% {"zoom" => ["Escala", 0.25, 3, 0.05], "x" => ["Posição horizontal (%)", 0, 100, 1], "y" => ["Posição vertical (%)", 0, 100, 1]}.each do |key, (text, min, max, step)| %>
+            <label for="<%= field_id %>_<%= device %>_<%= key %>"><%= text %> · <%= label %></label>
+            <%= number_field_tag "#{device_prefix}[#{key}]", device == 'desktop' ? record.video_value(role, key) : record.video_settings.dig(role, device, key), min: min, max: max, step: step, placeholder: ("Herdar Desktop" unless device == 'desktop'), id: "#{field_id}_#{device}_#{key}", class: "form-control", data: { video_setting: key, device: device } %>
+          <% end %>
+        </div>
+      <% end %>
+    </details>
+  </div>
+  <div data-media-source-target="imagePanel">
+    <%= render "admin/shared/image_cropper", **local_assigns.except(:media).merge(media: role) %>
+  </div>
+</div>

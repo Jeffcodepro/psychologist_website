@@ -1,5 +1,6 @@
 class SectionItem < ApplicationRecord
   include ReusesImageUploads
+  include VideoMedia
   include ImageAttachments
   validates_image_attachments :image
   include MediaAdjustable

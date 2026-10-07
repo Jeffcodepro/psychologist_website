@@ -1,6 +1,6 @@
 module ImagesHelper
   def saved_image?(attachment)
-    attachment.attached? && attachment.blob.persisted?
+    attachment&.attached? && attachment.blob.persisted?
   end
 
   def media_editor_image_url(attachment, record, media = "image")

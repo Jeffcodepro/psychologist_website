@@ -1,15 +1,21 @@
-<div class="media-sequence" data-controller="media-sequence" data-media-sequence-delay-value="<%= section.media_interval_seconds * 1000 %>"
+<div class="media-sequence" data-controller="media-sequence" data-media-sequence-manual-value="<%= entries.any? { |entry| entry[:video] } %>" data-media-sequence-delay-value="<%= section.media_interval_seconds * 1000 %>"
      data-action="focusin->media-sequence#pause focusout->media-sequence#resume"
      aria-label="<%= role == 'banner' ? 'Banners da seção' : 'Imagens da seção' %>">
   <% entries.each_with_index do |entry, index| %>
     <div class="media-sequence__slide <%= 'is-active' if index.zero? %>" data-media-sequence-target="slide" aria-hidden="<%= !index.zero? %>" style="<%= section_media_slide_style(entry, role) %>">
+      <% if entry[:video] %>
+        <%= render "shared/video_media", record: entry[:record], role: entry[:media], title: section.localized_title %>
+      <% else %>
       <%= display_image_tag entry[:attachment], profile: role == "banner" ? :banner : :content, remove_background: entry[:record].remove_media_background?(entry[:media]),
             sizes: role == "banner" ? "100vw" : "(max-width: 767px) 100vw, 60vw",
             eager: index.zero? && section == @sections&.first,
             alt: role == "banner" ? "" : section.localized_title, class: "media-sequence__image" %>
+      <% end %>
     </div>
   <% end %>
-  <% if entries.size > 1 %>
+  <% if entries.size > 1 && entries.any? { |entry| entry[:video] } %>
+    <div class="media-sequence__navigation"><button type="button" data-action="media-sequence#previous" aria-label="Mídia anterior">‹</button><span data-media-sequence-target="counter">1 / <%= entries.size %></span><button type="button" data-action="media-sequence#next" aria-label="Próxima mídia">›</button></div>
+  <% elsif entries.size > 1 %>
     <button type="button" class="media-sequence__pause" data-media-sequence-target="button" data-action="media-sequence#toggle" aria-pressed="false" aria-label="Pausar troca de imagens">Ⅱ</button>
     <span class="media-sequence__counter" data-media-sequence-target="counter" aria-hidden="true">1 / <%= entries.size %></span>
   <% end %>

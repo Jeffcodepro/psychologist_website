@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   web:
-    image: ${APP_IMAGE:-psychologist-website:1.2.7}
+    image: ${APP_IMAGE:-psychologist-website:1.2.8}
     environment:
       RAILS_ENV: production
       CLOUDINARY_URL_FILE: /run/secrets/cloudinary_url
@@ -24,10 +24,10 @@ services:
       SMTP_ADDRESS: smtp.gmail.com
       SMTP_PORT: "587"
       SMTP_DOMAIN: ${APP_HOST:-rosemarydias.com}
-      SMTP_USERNAME: ${SMTP_USERNAME:-jeffersonoliveira1212@gmail.com}
+      SMTP_USERNAME: ${SMTP_USERNAME:-rosemary.dias.psi@gmail.com}
       SMTP_PASSWORD_FILE: /run/secrets/smtp_password
-      MAILER_FROM: ${SMTP_USERNAME:-jeffersonoliveira1212@gmail.com}
-      CONTACT_RECIPIENT: ${CONTACT_RECIPIENT:-jeffersonoliveira1212@gmail.com}
+      MAILER_FROM: ${SMTP_USERNAME:-rosemary.dias.psi@gmail.com}
+      CONTACT_RECIPIENT: ${CONTACT_RECIPIENT:-rosemary.dias.psi@gmail.com}
       OPENAI_TRANSLATION_MODEL: gpt-5-nano
       OPENAI_API_KEY_FILE: /run/secrets/openai_api_key
     secrets:
@@ -80,7 +80,7 @@ services:
         - traefik.http.routers.psychologist.service=psychologist
         - traefik.http.routers.psychologist.middlewares=psychologist-upload
         - traefik.http.services.psychologist.loadbalancer.server.port=3000
-        - traefik.http.middlewares.psychologist-upload.buffering.maxRequestBodyBytes=31457280
+        - traefik.http.middlewares.psychologist-upload.buffering.maxRequestBodyBytes=67108864
         - traefik.http.routers.psychologist-http.rule=Host(`${APP_HOST:-rosemarydias.com}`) || Host(`www.${APP_HOST:-rosemarydias.com}`)
         - traefik.http.routers.psychologist-http.entrypoints=${TRAEFIK_HTTP_ENTRYPOINT:-web}
         - traefik.http.routers.psychologist-http.middlewares=psychologist-https
@@ -114,7 +114,7 @@ secrets:
     name: psychologist_db_password_v1
   smtp_password:
     external: true
-    name: psychologist_smtp_password_v1
+    name: ${SMTP_SECRET_NAME:-psychologist_smtp_password_v1}
   openai_api_key:
     external: true
     name: psychologist_openai_api_key_v1

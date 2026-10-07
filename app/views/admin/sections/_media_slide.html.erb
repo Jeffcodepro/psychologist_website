@@ -3,6 +3,6 @@
   <%= f.hidden_field :role %>
   <%= f.hidden_field :_destroy, value: false, data: { destroy_slide: true } %>
   <%= f.input :position, label: "Ordem na sequência", input_html: { min: 0 } %>
-  <%= render "admin/shared/image_cropper", f: f, record: f.object, kind: role, shape: (role == "banner" ? "rectangle" : f.object.section&.image_shape || f.object.image_shape), title: "Enquadramento e ajustes" %>
+  <%= render "admin/shared/media_input", f: f, record: f.object, kind: role, shape: (role == "banner" ? "rectangle" : f.object.section&.image_shape || f.object.image_shape), title: "Enquadramento e ajustes" %>
   <button type="button" class="admin-button-quiet" data-action="media-library#remove">Remover da sequência</button>
 </details>

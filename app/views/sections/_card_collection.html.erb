@@ -1,8 +1,8 @@
 <% items = section.visible_items("card") %>
 <% if items.any? %>
-  <div class="card-collection card-collection--<%= section.cards_orientation %> card-collection--<%= section.cards_alignment %>"
+  <div data-controller="cards-layout" data-cards-layout-config-value="<%= %w[desktop tablet mobile].to_h { |device| [device, section.cards_device_config(device)] }.to_json %>" class="card-collection card-collection--<%= section.cards_orientation %> card-collection--<%= section.cards_alignment %>"
        style="--cards-desktop: <%= section.cards_columns_desktop %>; --cards-tablet: <%= section.cards_columns_tablet %>; --cards-mobile: <%= section.cards_columns_mobile %>">
-    <% if section.cards_carousel? %>
+    <% if section.cards_carousel_on_any_screen? %>
       <% english = I18n.locale == :en %>
       <div class="compact-carousel" data-controller="cards-carousel" data-cards-carousel-page-label-value="<%= english ? 'Page' : 'Página' %>" data-cards-carousel-autoplay-value="<%= section.cards_autoplay? %>" data-cards-carousel-delay-value="<%= section.cards_autoplay_seconds * 1000 %>" data-action="focusin->cards-carousel#focusEntered focusout->cards-carousel#focusLeft keydown.esc->cards-carousel#pause">
         <div class="compact-carousel__stage">
@@ -24,7 +24,7 @@
 
       </div>
     <% else %>
-      <div class="card-collection__grid"><%= render partial: "sections/card", collection: items, as: :item %></div>
+      <div data-controller="cards-layout" data-cards-layout-config-value="<%= %w[desktop tablet mobile].to_h { |device| [device, section.cards_device_config(device)] }.to_json %>" class="card-collection__grid"><%= render partial: "sections/card", collection: items, as: :item %></div>
     <% end %>
   </div>
 <% end %>

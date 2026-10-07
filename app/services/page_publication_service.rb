@@ -58,6 +58,7 @@ class PagePublicationService
         copy = slide.dup
         copy.section = published_section
         copy.image.attach(slide.image.blob) if slide.image.attached?
+        copy.video.attach(slide.video.blob) if slide.video.attached?
         copy.save!
       end
 
@@ -85,6 +86,9 @@ class PagePublicationService
         !@page.tenant.sections.draft.exists?(navigation_key: button['value'])
     end
 
+    %i[video banner_video].each do |name|
+      published_section.public_send(name).attach(draft_section.public_send(name).blob) if draft_section.public_send(name).attached?
+    end
     published_section.save!
 
     published_section
@@ -106,7 +110,7 @@ class PagePublicationService
       published_item =
         target_section
           .section_items
-          .create!(
+          .build(
             draft_item.attributes.except(
               "id",
               "section_id",
@@ -114,6 +118,9 @@ class PagePublicationService
               "updated_at"
             )
           )
+
+      published_item.video.attach(draft_item.video.blob) if draft_item.video.attached?
+      published_item.save!
 
       copy_attachment(
         source: draft_item,

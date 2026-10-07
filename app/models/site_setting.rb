@@ -1,4 +1,5 @@
 class SiteSetting < ApplicationRecord
+  include ReusesImageUploads
   belongs_to :tenant
   include EditableButtons
   editable_buttons :header_actions, :footer_actions

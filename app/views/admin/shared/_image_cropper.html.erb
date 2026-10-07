@@ -3,6 +3,7 @@
   kind = local_assigns.fetch(:kind, media)
   device = local_assigns[:device]
   attachment = local_assigns.fetch(:attachment) { record.public_send(media) }
+  has_image = saved_image?(attachment)
   is_card = record.is_a?(SectionItem)
   full_card = is_card && record.item_kind == "card"
   shape = kind == "banner" ? "rectangle" : (device ? record.visual_value("image_shape", device) : record.image_shape)
@@ -19,8 +20,8 @@
          data-action="image-cropper:changed->card-preview#render"
          data-image-cropper-shape-value="<%= shape %>"
          data-image-cropper-adjustments-value="<%= MediaAdjustable::DEFAULTS.keys.to_h { |key| [key, record.media_adjustment(media, key)] }.to_json %>"
-         data-image-cropper-original-url-value="<%= url_for(attachment) if attachment.attached? %>"
-         data-image-cropper-cutout-url-value="<%= ImageDelivery.cloudinary_url(attachment.blob, width: 1600, remove_background: true) if attachment.attached? && ImageDelivery.cloudinary?(attachment.blob) %>"
+         data-image-cropper-original-url-value="<%= url_for(attachment) if has_image %>"
+         data-image-cropper-cutout-url-value="<%= ImageDelivery.cloudinary_url(attachment.blob, width: 1600, remove_background: true) if has_image && ImageDelivery.cloudinary?(attachment.blob) %>"
          data-image-cropper-base-shape-value="<%= record.image_shape %>"
          data-image-cropper-shape-field-value="<%= record.is_a?(SectionSlide) ? 'section' : scope %>[image_shape]"
          data-image-cropper-kind-value="<%= is_card ? 'card' : kind %>"
@@ -28,6 +29,7 @@
          data-image-cropper-y-value="<%= record.public_send("#{media}_position_y") %>"
          data-image-cropper-zoom-value="<%= record.public_send("#{media}_zoom") %>">
   <header class="image-cropper__header">
+    <% if attachment.attached? && !has_image %><p role="status">A imagem ainda não foi enviada. Corrija os campos indicados e selecione o arquivo novamente antes de salvar.</p><% end %>
     <h3><%= title %></h3>
     <% if media == "banner" %><p>O recorte do banner se adapta à largura da tela. Quando usado como fundo, também acompanha a altura do conteúdo.</p><% end %>
     <p><%= device ? "O enquadramento é exclusivo desta tela. A imagem original é compartilhada." : "Escolha a foto, arraste para posicionar e ajuste o zoom. A área da moldura mostra o recorte que será exibido." %></p>
@@ -40,15 +42,15 @@
       <div class="image-cropper__stage">
         <div class="image-cropper__frame" data-image-cropper-target="frame"
              data-action="pointerdown->image-cropper#start pointermove->image-cropper#move pointerup->image-cropper#stop pointercancel->image-cropper#stop">
-          <%= image_tag(attachment.attached? ? media_editor_image_url(attachment, record, media) : "", alt: "Prévia do enquadramento", class: attachment.attached? ? "" : "is-hidden", draggable: false, loading: "lazy", decoding: "async", data: { image_cropper_target: "image", action: "load->image-cropper#loaded error->image-cropper#imageFailed" }) %>
-          <div class="image-cropper__empty <%= 'is-hidden' if attachment.attached? %>" data-image-cropper-target="empty">Selecione uma imagem para começar</div>
+          <%= image_tag(has_image ? media_editor_image_url(attachment, record, media) : "", alt: "Prévia do enquadramento", class: has_image ? "" : "is-hidden", draggable: false, loading: "lazy", decoding: "async", data: { image_cropper_target: "image", action: "load->image-cropper#loaded error->image-cropper#imageFailed" }) %>
+          <div class="image-cropper__empty <%= 'is-hidden' if has_image %>" data-image-cropper-target="empty">Selecione uma imagem para começar</div>
           <div class="image-cropper__grid" aria-hidden="true"></div>
         </div>
       </div>
       <% end %>
       <p class="image-cropper__dimensions" data-image-cropper-target="dimensions" aria-live="polite">JPG, PNG ou WebP · <%= kind == "banner" ? "sugestão: 1920 × 760 px" : (is_card ? "sugestão: 1200 × 750 px" : "sugestão: 1200 × 1500 px") %></p>
       <% unless device %>
-        <button type="button" class="admin-button-secondary" data-action="image-cropper#choose"><%= attachment.attached? ? "Trocar imagem" : "Escolher imagem" %></button>
+        <button type="button" class="admin-button-secondary" data-action="image-cropper#choose"><%= has_image ? "Trocar imagem" : "Escolher imagem" %></button>
         <%= f.file_field media, id: "#{input_id}_file", accept: "image/png,image/jpeg,image/webp", hidden: true, tabindex: -1, data: { image_cropper_target: "file", action: "change->image-cropper#fileChanged" } %>
       <% end %>
     </div>
@@ -80,8 +82,8 @@
         <details class="image-cropper__adjustments">
           <summary>Remover fundo com IA</summary>
           <%= hidden_field_tag "#{scope}[media_adjustments][#{media}][remove_background]", record.media_adjustment(media, "remove_background"), id: "#{input_id}_remove_background", data: { image_cropper_target: "adjustment", adjustment: "remove_background" } %>
-          <button type="button" class="admin-button-secondary" data-image-cropper-target="backgroundButton" data-action="image-cropper#toggleBackground" <%= 'disabled' unless attachment.attached? && ImageDelivery.cloudinary?(attachment.blob) %>>Remover fundo</button>
-          <p data-image-cropper-target="backgroundStatus" role="status"><%= attachment.attached? && ImageDelivery.cloudinary?(attachment.blob) ? "O original é preservado. O processamento utiliza créditos de transformação do Cloudinary e depende da disponibilidade na sua conta." : "Salve a imagem no Cloudinary para habilitar o recorte por IA. Você também pode enviar um PNG ou WebP já sem fundo." %></p>
+          <button type="button" class="admin-button-secondary" data-image-cropper-target="backgroundButton" data-action="image-cropper#toggleBackground" <%= 'disabled' unless has_image && ImageDelivery.cloudinary?(attachment.blob) %>>Remover fundo</button>
+          <p data-image-cropper-target="backgroundStatus" role="status"><%= has_image && ImageDelivery.cloudinary?(attachment.blob) ? "O original é preservado. O processamento utiliza créditos de transformação do Cloudinary e depende da disponibilidade na sua conta." : "Salve a imagem no Cloudinary para habilitar o recorte por IA. Você também pode enviar um PNG ou WebP já sem fundo." %></p>
         </details>
         <details class="image-cropper__adjustments" open>
           <summary>Girar e espelhar</summary>
@@ -111,7 +113,7 @@
       <button type="button" class="admin-button-secondary" data-action="image-cropper#reset">Centralizar e redefinir zoom</button>
       <% if device %>
         <button type="button" class="admin-button-quiet" data-action="image-cropper#inherit">Usar enquadramento do desktop</button>
-      <% elsif is_card && attachment.attached? %>
+      <% elsif is_card && has_image %>
         <%= f.input :remove_image, as: :boolean, label: "Remover imagem ao salvar" %>
       <% end %>
       <small>O recorte será salvo junto com as alterações do formulário.</small>

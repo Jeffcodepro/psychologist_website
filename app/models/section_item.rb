@@ -1,4 +1,5 @@
 class SectionItem < ApplicationRecord
+  include ReusesImageUploads
   include ImageAttachments
   validates_image_attachments :image
   include MediaAdjustable
@@ -25,7 +26,6 @@ class SectionItem < ApplicationRecord
   end
 
   attr_accessor :remove_image
-  after_save :detach_removed_image
 
   validates :image_position_x, :image_position_y,
             numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 100 }
@@ -68,10 +68,5 @@ class SectionItem < ApplicationRecord
     unless item_kind == 'card' && linked_page && linked_page.tenant_id == section&.page&.tenant_id
       errors.add(:linked_page_id, 'escolha uma página ou texto deste site')
     end
-  end
-
-  def detach_removed_image
-    # Published cards may still reference the same blob.
-    image.detach if ActiveModel::Type::Boolean.new.cast(remove_image)
   end
 end

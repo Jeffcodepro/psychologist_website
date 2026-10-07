@@ -32,7 +32,10 @@ class ImagePresentationTest < ApplicationSystemTestCase
     [1440, 390].each do |width|
       page.driver.browser.execute_cdp("Emulation.setDeviceMetricsOverride", width: width, height: 950, deviceScaleFactor: 1, mobile: false)
       logo = find('.site-navbar__logo-link')
-      assert_selector '.site-navbar__logo-link[style*="width:"]'
+      # ResizeObserver updates after the viewport change has been painted.
+      assert_selector '.site-navbar__logo-link[style*="width:"]' do |candidate|
+        candidate.evaluate_script('Math.abs(this.getBoundingClientRect().width - this.parentElement.clientHeight * 0.8) <= 1')
+      end
       bounds = logo.evaluate_script("({link: this.getBoundingClientRect().width, frame: this.parentElement.clientWidth, height: this.parentElement.clientHeight})")
       assert_in_delta bounds['height'] * 0.8, bounds['link'], 1
       assert_operator bounds['link'], :<, bounds['frame'] / 2

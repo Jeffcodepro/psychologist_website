@@ -29,5 +29,5 @@ end %>
   </div>
   <output class="card-editor-preview__size" data-card-preview-target="size" aria-live="polite">Até 360 × 440 px</output>
   <label class="card-editor-preview__width">Largura da prévia <input type="range" min="240" max="360" value="360" step="1" data-action="input->card-preview#widthChanged" aria-label="Largura da prévia"></label>
-  <p data-image-cropper-target="empty" class="<%= 'is-hidden' if attachment.attached? %>">Escolha uma imagem para visualizar o recorte no card.</p>
+  <p data-image-cropper-target="empty" class="<%= 'is-hidden' if saved_image?(attachment) %>">Escolha uma imagem para visualizar o recorte no card.</p>
 </div>

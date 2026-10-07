@@ -1,4 +1,5 @@
 class Section < ApplicationRecord
+  include ReusesImageUploads
   include EditableButtons
   editable_buttons :action_buttons
   validates :buttons_position, inclusion: { in: SectionLayout::BUTTON_POSITIONS.map(&:last) }
@@ -130,9 +131,6 @@ class Section < ApplicationRecord
     ImageDelivery.configure(attachable, :banner)
   end
   attr_accessor :remove_image, :remove_banner
-  after_save do
-    %w[image banner].each { |media| public_send(media).detach if ActiveModel::Type::Boolean.new.cast(public_send("remove_#{media}")) }
-  end
 
   enum :publication_state, {
     draft: "draft",

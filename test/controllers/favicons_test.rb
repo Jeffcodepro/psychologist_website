@@ -28,7 +28,10 @@ class FaviconsTest < ActionDispatch::IntegrationTest
     end
     get site_favicon_path, headers: { 'If-None-Match' => etag }
     assert_response :not_modified
-    attach_logo(@settings, 'replacement.png')
+    attach_logo(@settings, 'same-content-renamed.png')
+    get site_favicon_path, headers: { 'If-None-Match' => etag }
+    assert_response :not_modified
+    attach_logo(@settings, 'replacement.png', color: [80, 40, 110, 255])
     get site_favicon_path, headers: { 'If-None-Match' => etag }
     assert_response :success
     assert_not_equal etag, response.headers['ETag']
@@ -57,8 +60,8 @@ class FaviconsTest < ActionDispatch::IntegrationTest
 
   private
 
-  def attach_logo(settings, filename = 'logo.png')
-    image = Vips::Image.black(300, 180).new_from_image([30, 90, 60, 255]).cast(:uchar).write_to_buffer('.png')
+  def attach_logo(settings, filename = 'logo.png', color: [30, 90, 60, 255])
+    image = Vips::Image.black(300, 180).new_from_image(color).cast(:uchar).write_to_buffer('.png')
     settings.logo.attach(io: StringIO.new(image), filename: filename, content_type: 'image/png')
   end
 end

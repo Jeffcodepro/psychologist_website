@@ -5,6 +5,7 @@ module SafeUploads
 
   included do
     before_action :validate_upload_inputs!, if: -> { %w[create update].include?(action_name) }
+    around_action :reuse_uploads_within_site, if: -> { @contains_image_upload }
   end
 
   private
@@ -17,6 +18,10 @@ module SafeUploads
     render plain: "Imagem inválida. Envie JPG, PNG ou WebP de até 10 MB.", status: :unprocessable_entity
   end
 
+  def reuse_uploads_within_site(&action)
+    ImageUploadReuse.within_site(current_tenant.id, &action)
+  end
+
   def inspect_uploads(values)
     values.each_pair do |key, value|
       next if %w[media_adjustments responsive_settings].include?(key.to_s)
@@ -26,6 +31,7 @@ module SafeUploads
         value.tempfile.rewind
         raise ActionController::BadRequest unless ALLOWED_TYPES.include?(type)
         value.content_type = type
+        @contains_image_upload = true
       elsif value.respond_to?(:each_pair)
         inspect_uploads(value)
       elsif value.is_a?(Array)

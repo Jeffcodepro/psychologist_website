@@ -61,7 +61,7 @@ class ImageDeliveryTest < ActionDispatch::IntegrationTest
   test "new uploads enqueue their display variants in the background" do
     clear_enqueued_jobs
     assert_enqueued_jobs 3, only: ActiveStorage::TransformJob do
-      @settings.logo.attach(io: StringIO.new(@original), filename: 'new-logo.png', content_type: 'image/png')
+      @settings.logo.attach(io: StringIO.new(Vips::Image.new_from_buffer(@original, '').flip(:horizontal).write_to_buffer('.png')), filename: 'new-logo.png', content_type: 'image/png')
     end
   end
 

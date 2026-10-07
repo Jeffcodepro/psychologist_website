@@ -1,6 +1,10 @@
 module ImagesHelper
+  def saved_image?(attachment)
+    attachment.attached? && attachment.blob.persisted?
+  end
+
   def media_editor_image_url(attachment, record, media = "image")
-    return unless attachment.attached?
+    return unless saved_image?(attachment)
     if record.remove_media_background?(media) && ImageDelivery.cloudinary?(attachment.blob)
       ImageDelivery.cloudinary_url(attachment.blob, width: 1600, remove_background: true)
     else
@@ -9,6 +13,7 @@ module ImagesHelper
   end
 
   def display_image_tag(attachment, profile: :content, sizes: "100vw", eager: false, remove_background: false, **options)
+    return "".html_safe unless saved_image?(attachment)
     defaults = { loading: eager ? "eager" : "lazy", decoding: "async", fetchpriority: eager ? "high" : "auto" }
     return image_tag(attachment, **defaults.merge(options)) unless attachment.variable?
 

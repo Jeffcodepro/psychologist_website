@@ -75,3 +75,22 @@ namespace :media do
     end
   end
 end
+
+namespace :media do
+  desc "Report original images, repeated files and old unattached blobs without changing storage"
+  task audit: :environment do
+    sites = ENV["TENANT_SLUG"].present? ? Tenant.where(slug: ENV.fetch("TENANT_SLUG")) : Tenant.all
+    abort "Site não encontrado." unless sites.exists?
+    sites.find_each do |site|
+      originals = ImageUploadReuse.blobs_for(site.id)
+      groups = originals.where.not(checksum: nil).group(:service_name, :checksum, :byte_size, :content_type).having("COUNT(*) > 1").count
+      copies = groups.values.sum { |count| count - 1 }
+      extra_bytes = groups.sum { |(_, _, size, _), count| size * (count - 1) }
+      puts "Site #{site.slug}: #{originals.count} originais vinculados; #{originals.sum(:byte_size)} bytes."
+      puts "  Conteúdo repetido: #{groups.size} grupos, #{copies} cópias extras, #{extra_bytes} bytes."
+    end
+    unused = ActiveStorage::Blob.unattached.where(created_at: ...48.hours.ago)
+    puts "Banco inteiro: #{unused.count} arquivos sem vínculo criados há mais de 48h (#{unused.sum(:byte_size)} bytes)."
+    puts "Somente consulta. Nenhum upload, arquivo excluído ou alteração no Cloudinary. Variantes do CDN não entram nesta contagem."
+  end
+end

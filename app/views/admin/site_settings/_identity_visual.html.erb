@@ -33,7 +33,7 @@
                 pointercancel->asset-preview#endPosition
               "
             >
-              <% if site_setting.logo.attached? %>
+              <% if saved_image?(site_setting.logo) %>
                 <%= image_tag(
                       site_setting.logo,
                       alt: "",
@@ -64,7 +64,7 @@
                 data-asset-preview-target="focus"
               ></span>
 
-              <% if site_setting.logo.attached? %>
+              <% if saved_image?(site_setting.logo) %>
                 <span class="site-identity-drag-hint">
                   Arraste para reposicionar
                 </span>
@@ -83,7 +83,7 @@
 
         <label class="site-identity-picker">
           <span>
-            <%= site_setting.logo.attached? ? "Trocar logo" : "Selecionar logo" %>
+            <%= saved_image?(site_setting.logo) ? "Trocar logo" : "Selecionar logo" %>
           </span>
 
           <%= f.file_field(
@@ -238,7 +238,7 @@
               pointercancel->asset-preview#endPosition
             "
           >
-            <% if site_setting.profile_image.attached? %>
+            <% if saved_image?(site_setting.profile_image) %>
               <%= image_tag(
                     site_setting.profile_image,
                     alt: "",
@@ -269,7 +269,7 @@
               data-asset-preview-target="focus"
             ></span>
 
-            <% if site_setting.profile_image.attached? %>
+            <% if saved_image?(site_setting.profile_image) %>
               <span class="site-identity-drag-hint">
                 Arraste para reposicionar
               </span>
@@ -287,7 +287,7 @@
 
         <label class="site-identity-picker">
           <span>
-            <%= site_setting.profile_image.attached? ? "Trocar fotografia" : "Selecionar fotografia" %>
+            <%= saved_image?(site_setting.profile_image) ? "Trocar fotografia" : "Selecionar fotografia" %>
           </span>
 
           <%= f.file_field(

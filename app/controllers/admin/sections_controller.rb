@@ -169,9 +169,9 @@ class Admin::SectionsController < Admin::BaseController
     when "body_en"
       @section.update!(body_en: nil)
     when "image"
-      @section.image.detach
+      @section.image.attachment&.destroy!
     when "banner"
-      @section.banner.detach
+      @section.banner.attachment&.destroy!
     else
       head :unprocessable_entity
       return

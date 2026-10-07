@@ -1,4 +1,5 @@
 class SectionSlide < ApplicationRecord
+  include ReusesImageUploads
   include MediaAdjustable
   belongs_to :section
   has_one_attached :image do |attachable|
